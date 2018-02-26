@@ -9,8 +9,8 @@ typedef struct{
 		
 } ldpc;
 
-matrix encode(matrix G, matrix message);
-matrix decode(matrix H, matrix codeword, int n, int k);
+matrix encode(ldpc ldpc_object, matrix message);
+matrix decode(ldpc ldpc_object, matrix codeword);
 ldpc create_ldpc(int n, int k);
 void free_ldpc(ldpc ldpc_object);
 

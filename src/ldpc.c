@@ -1,13 +1,13 @@
 #include "ldpc.h"
 #include "matrix.h"
 
-matrix encode(matrix G, matrix message) {
-	return multiply_matrices(message, G);
+matrix encode(ldpc ldpc_object, matrix message) {
+	return multiply_matrices(message, ldpc_object.G);
 }
 
-matrix decode(matrix H, matrix codeword, int n, int k) {
+matrix decode(ldpc ldpc_object, matrix codeword) {
 	int decoded_rows = codeword.rows;
-	int decoded_columns = k;
+	int decoded_columns = ldpc_object.k;
 	matrix decoded = create_empty_matrix(1, decoded_rows * decoded_columns);	
 	
 	int i, j;
@@ -15,7 +15,7 @@ matrix decode(matrix H, matrix codeword, int n, int k) {
 	
 		for (j = 0; j < decoded_columns; j++) {
 			
-			decoded.body[i * k + j] = codeword.body[i][j];
+			decoded.body[i * decoded_columns + j] = codeword.body[i * decoded_columns + j];
 		}
 	}
 	
@@ -38,6 +38,8 @@ ldpc create_ldpc(int n, int k) {
 	free_matrix(ir);
 	free_matrix(P);
 	free_matrix(Pt);
+	
+	return ldpc_object;
 }
 
 void free_ldpc(ldpc ldpc_object) {

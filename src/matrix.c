@@ -78,6 +78,7 @@ matrix transpose_matrix(matrix M) {
 			MT.body[j][i] = M.body[i][j];
 		}
 	}
+	return MT;
 }
 
 
