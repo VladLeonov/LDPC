@@ -3,16 +3,15 @@
 #ifndef LDPC
 #define LDPC
 
-struct ldpc {
-	
+typedef struct{
 	matrix G, H;
 	int n, k;
-	
-	matrix encode(matrix message);
-	matric decode(matrix codeword);
-	void free();
-};
+		
+} ldpc;
 
+matrix encode(matrix G, matrix message);
+matrix decode(matrix H, matrix codeword, int n, int k);
 ldpc create_ldpc(int n, int k);
+void free_ldpc(ldpc ldpc_object);
 
 #endif
