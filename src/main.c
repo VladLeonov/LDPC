@@ -28,11 +28,13 @@ int main() {
 	M.body[2][2] = 1;
 	M.body[2][3] = 1;
 	
+	
 	printf("G = \n");
 	print_matrix(M);
+	print_matrix(copy_matrix(M));
 	printf("\n");
 	
-	create_systematic_view(M);
+	//create_systematic_view(M);
 	
 	system("pause");
 	return 0;

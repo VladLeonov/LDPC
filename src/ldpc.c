@@ -46,3 +46,15 @@ void free_ldpc(ldpc ldpc_object) {
 	free_matrix(ldpc_object.G);
 	free_matrix(ldpc_object.H);	
 }
+
+matrix copy_matrix(matrix matrix_object){
+	matrix new_matrix = create_empty_matrix(matrix_object.rows, matrix_object.columns);
+	int i = 0, j = 0;
+	for (i = 0; i < matrix_object.rows; i++) {
+		for (j = 0; j < matrix_object.columns; j++) {
+			new_matrix.body[i][j] = matrix_object.body[i][j];
+		}
+	}
+	
+	return new_matrix;
+}
