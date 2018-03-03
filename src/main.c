@@ -28,9 +28,12 @@ int main() {
 	M.body[2][2] = 1;
 	M.body[2][3] = 1;
 	
-	
+	ldpc ldpc_object;
+	print_ldpc(ldpc_object);
+	//ldpc_object = create_systematic_view(M);
 	printf("G = \n");
 	print_matrix(M);
+	printf("G = \n");
 	print_matrix(copy_matrix(M));
 	printf("\n");
 	

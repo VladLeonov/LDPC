@@ -34,6 +34,7 @@ ldpc create_ldpc(int n, int k) {
 	matrix Pt = transpose_matrix(P);
 	ldpc_object.G = combine_matrices(ik, P);
 	ldpc_object.H = combine_matrices(Pt, ir);
+	
 	free_matrix(ik);
 	free_matrix(ir);
 	free_matrix(P);
@@ -57,4 +58,31 @@ matrix copy_matrix(matrix matrix_object){
 	}
 	
 	return new_matrix;
+}
+
+void print_ldpc(ldpc ldpc_object) {
+	
+	int i = 0;
+	int j = 0;
+	printf("k:\n");
+	printf("%d\n", ldpc_object.k);
+	printf("n:\n");
+	printf("%d\n", ldpc_object.n);
+	printf("G:\n");
+	print_matrix(ldpc_object.G);
+	printf("\n");
+	printf("H:\n");
+	print_matrix(ldpc_object.H);
+	printf("\n");
+	printf("check_set\n");
+	for (i = 0; i < ldpc_object.check_size; i++) {
+		printf("%d ", ldpc_object.check_set[i]);
+	}
+	printf("\n");
+	
+	printf("information_set\n");
+	for (i = 0; i < (ldpc_object.n - ldpc_object.check_size); i++) {
+		printf("%d ", ldpc_object.information_set[i]);
+	}
+	printf("\n");
 }
