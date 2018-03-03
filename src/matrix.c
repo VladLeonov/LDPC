@@ -132,3 +132,15 @@ void print_matrix(matrix M) {
 		printf("\n");
 	}
 }
+
+matrix array_to_matrix(int **array, int rows, int columns) {
+	matrix new_matrix = create_empty_matrix(rows, columns);
+	int i, j;
+	for (i = 0; i < rows; i++) {
+		for (j = 0; j < columns; j++) {
+			new_matrix.body[i][j] = array[i][j];
+		}
+	}
+	
+	return new_matrix;
+}
