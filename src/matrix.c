@@ -122,3 +122,13 @@ void free_matrix(matrix M) {
 	free(M.body);
 	M = create_void_matrix();
 }
+
+void print_matrix(matrix M) {
+	int i, j;
+	for (i = 0; i < M.rows; i++) {
+		for (j = 0; j < M.columns; j++) {
+			printf("%c ", M.body[i][j] == 1 ? '1' : '0');
+		}
+		printf("\n");
+	}
+}
