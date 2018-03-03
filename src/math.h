@@ -1,3 +1,4 @@
 #include "matrix.h"
+#include "ldpc.h"
 
-matrix convert_to_systematic_view(matrix G);
+ldpc create_systematic_view(matrix G);

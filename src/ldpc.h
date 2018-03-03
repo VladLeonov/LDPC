@@ -5,7 +5,7 @@
 
 typedef struct{
 	matrix G, H;
-	int n, k, check_size;
+	int n, k, check_size, information_size;
 	int *check_set;
 	int *information_set;
 		

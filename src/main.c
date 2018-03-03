@@ -1,5 +1,6 @@
 #include "ldpc.h"
 #include "matrix.h"
+#include "math.h"
 
 int main() {
 
@@ -28,15 +29,13 @@ int main() {
 	M.body[2][2] = 1;
 	M.body[2][3] = 1;
 	
-	ldpc ldpc_object;
-	print_ldpc(ldpc_object);
-	//ldpc_object = create_systematic_view(M);
+	//print_ldpc(ldpc_object);
+	ldpc ldpc_object = create_systematic_view(M);
 	printf("G = \n");
-	print_matrix(M);
-	printf("G = \n");
-	print_matrix(copy_matrix(M));
+	print_matrix(M); 
 	printf("\n");
 	
+	print_ldpc(ldpc_object);
 	//create_systematic_view(M);
 	
 	system("pause");

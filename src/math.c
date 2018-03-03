@@ -1,6 +1,7 @@
 #include "matrix.h"
+#include "ldpc.h"
 
-void create_systematic_view(matrix G) {
+ldpc create_systematic_view(matrix G) {
 
 	int k = G.rows;
     int n = G.columns;
@@ -117,7 +118,7 @@ void create_systematic_view(matrix G) {
 		}
 	}
 	
-	printf("SF = \n");
+	/*printf("SF = \n");
 	print_matrix(G);
 	printf("\n");
 	
@@ -135,7 +136,31 @@ void create_systematic_view(matrix G) {
 	for (j = 0; j < n - check_size; j++) {
 		printf("%d ", information_set[j]);
 	}
-	printf("\n");
+	printf("\n");*/
+	
+	ldpc ldpc_object;
+	ldpc_object.G = G;
+	ldpc_object.H = H;
+	
+	i = 0;
+	ldpc_object.check_set = (int *) malloc(check_size);
+	for (i = 0; i < check_size; i++) {
+		ldpc_object.check_set[i] = check_set[i];
+	}
+	
+	i = 0;
+	int information_size = n - check_size;
+	ldpc_object.information_set = (int *) malloc(information_size);
+	for (i = 0; i < information_size; i++) {
+		ldpc_object.information_set[i] = information_set[i];
+	}	
+	
+	ldpc_object.k = G.rows;
+	ldpc_object.n = G.columns;
+	ldpc_object.check_size = check_size;
+	ldpc_object.information_size = information_size;
+
+	return ldpc_object;
 }
 
 int sum_rows(matrix G, int row_index) {

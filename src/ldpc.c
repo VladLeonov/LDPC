@@ -65,9 +65,9 @@ void print_ldpc(ldpc ldpc_object) {
 	int i = 0;
 	int j = 0;
 	printf("k:\n");
-	printf("%d\n", ldpc_object.k);
+	printf("%d\n\n", ldpc_object.k);
 	printf("n:\n");
-	printf("%d\n", ldpc_object.n);
+	printf("%d\n\n", ldpc_object.n);
 	printf("G:\n");
 	print_matrix(ldpc_object.G);
 	printf("\n");
@@ -81,7 +81,7 @@ void print_ldpc(ldpc ldpc_object) {
 	printf("\n");
 	
 	printf("information_set\n");
-	for (i = 0; i < (ldpc_object.n - ldpc_object.check_size); i++) {
+	for (i = 0; i < ldpc_object.information_size; i++) {
 		printf("%d ", ldpc_object.information_set[i]);
 	}
 	printf("\n");
