@@ -8,7 +8,6 @@ typedef struct{
 	int n, k, check_size, information_size;
 	int *check_set;
 	int *information_set;
-		
 } ldpc;
 
 matrix encode(ldpc ldpc_object, matrix message);

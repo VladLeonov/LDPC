@@ -2,8 +2,8 @@
 #define MATRIX
 
 typedef struct {
-	char **body;
-	int rows, columns;
+    char **body;
+    int rows, columns;
 } matrix;
 
 matrix create_empty_matrix(int rows, int columns);
