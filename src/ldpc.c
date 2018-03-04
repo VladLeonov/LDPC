@@ -64,25 +64,24 @@ void print_ldpc(ldpc ldpc_object) {
 	
 	int i = 0;
 	int j = 0;
-	printf("k:\n");
+	printf("k = ");
 	printf("%d\n\n", ldpc_object.k);
-	printf("n:\n");
+	printf("n = ");
 	printf("%d\n\n", ldpc_object.n);
-	printf("G:\n");
+	printf("G =\n");
 	print_matrix(ldpc_object.G);
 	printf("\n");
-	printf("H:\n");
+	printf("H =\n");
 	print_matrix(ldpc_object.H);
 	printf("\n");
-	printf("check_set\n");
+	printf("Check set =\n");
 	for (i = 0; i < ldpc_object.check_size; i++) {
 		printf("%d ", ldpc_object.check_set[i]);
 	}
-	printf("\n");
-	
-	printf("information_set\n");
+	printf("\n\n");
+	printf("Information set =\n");
 	for (i = 0; i < ldpc_object.information_size; i++) {
 		printf("%d ", ldpc_object.information_set[i]);
 	}
-	printf("\n");
+	printf("\n\n");
 }

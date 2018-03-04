@@ -18,25 +18,16 @@ int main() {
 		printf("%c ", message.body[0][i]);
 	}*/
 	
-	matrix M = create_zero_matrix(3, 5);
-	M.body[0][0] = 1;
-	M.body[0][1] = 1;
-	M.body[0][3] = 1;
-	M.body[1][1] = 1;
-	M.body[1][2] = 1;
-	M.body[1][4] = 1;
-	M.body[2][0] = 1;
-	M.body[2][2] = 1;
-	M.body[2][3] = 1;
+	int array[3][5] = {{0, 0, 1, 1, 1},
+				   {1, 0, 1, 1, 0},
+				   {1, 0, 0, 1, 1}};			   
+	matrix G = array_to_matrix(3, 5, array);		   
+	ldpc ldpc_object = create_systematic_view(G);
 	
-	//print_ldpc(ldpc_object);
-	ldpc ldpc_object = create_systematic_view(M);
 	printf("G = \n");
-	print_matrix(M); 
+	print_matrix(G); 
 	printf("\n");
-	
 	print_ldpc(ldpc_object);
-	//create_systematic_view(M);
 	
 	system("pause");
 	return 0;
