@@ -1,7 +1,9 @@
 #include "matrix.h"
 #include "ldpc.h"
 
-ldpc create_systematic_view(matrix G) {
+ldpc create_systematic_view(matrix G_old) {
+
+    matrix G = copy_matrix(G_old);
 
     int k = G.rows;
     int n = G.columns;
