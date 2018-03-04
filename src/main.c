@@ -24,10 +24,14 @@ int main() {
     matrix G = array_to_matrix(3, 5, array);
     ldpc ldpc_object = create_systematic_view(G);
 
-    printf("G = \n");
+    printf("Not systematic G = \n");
     print_matrix(G); 
     printf("\n");
     print_ldpc(ldpc_object);
+    
+    printf("G * HT = \n");
+    print_matrix(multiply_matrices(ldpc_object.G, transpose_matrix(ldpc_object.H)));
+    printf("\n");
 
     system("pause");
     return 0;
