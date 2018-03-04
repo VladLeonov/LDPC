@@ -12,7 +12,6 @@ typedef struct{
 
 matrix encode(ldpc ldpc_object, matrix message);
 matrix decode(ldpc ldpc_object, matrix codeword);
-matrix copy_matrix(matrix matrix_object);
 ldpc create_ldpc(int n, int k);
 void free_ldpc(ldpc ldpc_object);
 void print_ldpc(ldpc ldpc_object);
