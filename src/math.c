@@ -31,8 +31,8 @@ ldpc create_systematic_view(matrix G) {
             information_set[k] = -1;
             
             if (i >= k) {
-            	break;
-        	}
+                break;
+            }
         }
         
         if (i >= k) {
@@ -48,8 +48,8 @@ ldpc create_systematic_view(matrix G) {
             b = G.body[j][column_number];
         }
 
-		if (b == 1) {
-			information_set[i] = column_number;
+        if (b == 1) {
+            information_set[i] = column_number;
 	
 	       	// remove other ones from this column
 	       	int o, u;
