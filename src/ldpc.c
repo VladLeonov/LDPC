@@ -73,24 +73,44 @@ void print_ldpc(ldpc ldpc_object) {
     }
     printf("\n\n");
 }
-/*
-matrix gen_LDPC_rand(int J, int K, int M) {
+
+matrix create_H_rand(int J, int K, int M) {
 	int r = J * M;
 	int n = K * M;
-	int x[n];
-	matrix V = create_zero_matrix(r, n);
+	int *x;
+	fill_with_permutation(x, n);
+	matrix V = create_zero_matrix(r, K);
 	int I = 0;
-	int h, i;
-	
-	for (i = 0; i < n; i++) {
-		x[]
-	}
+	int h, i, index;
 	
 	for (h = 0; h < J; h++) {
 		int p = 0;
 		for (i = 0; i < M; i++) {
-			I++;
+			for (index = 0; index < K; index++) {
+				V.body[I][index] = x[p + index];
+			}
 			p = p + K;
+			I++;
+		}
+		fill_with_permutation(x, n);
+	}
+	
+	int rw[r];
+	
+	for (h = 0; h < r; h++) {
+		rw[h] = 0;
+		for (i = 0; i < K; i++) {
+			rw[h] += V.body[h][i];
 		}
 	}
-}*/
+	
+	matrix H = create_zero_matrix(r, n);
+	
+	for (i = 0; i < r; i++) {
+		for (h = 0; h < rw[i]; h++) {
+			H.body[i][V.body[i][h]] = 1;
+		}
+	}
+	
+	return H;
+}
