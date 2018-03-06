@@ -2,8 +2,8 @@
 #define MATRIX
 
 typedef struct {
-	char **body;
-	int rows, columns;
+    char **body;
+    int rows, columns;
 } matrix;
 
 matrix create_empty_matrix(int rows, int columns);
@@ -20,5 +20,6 @@ matrix create_void_matrix();
 int is_void_matrix(matrix M);
 
 void free_matrix(matrix M);
+matrix copy_matrix(matrix matrix_object);
 
 #endif
