@@ -7,9 +7,11 @@ matrix encode(ldpc ldpc_object, matrix message) {
 
 matrix count_syndrome(ldpc ldpc_object, matrix codedword) {
 	
-	matrix H = copy_matrix(ldpc_object.H);
+	matrix H = ldpc_object.H;
     matrix H_transposed = transpose_matrix(H);
 	matrix syndrome = multiply_matrices(codedword, H_transposed);
+	free_matrix(H);
+	free_matrix(H_transposed);
     
     return syndrome;
 }
@@ -71,3 +73,24 @@ void print_ldpc(ldpc ldpc_object) {
     }
     printf("\n\n");
 }
+/*
+matrix gen_LDPC_rand(int J, int K, int M) {
+	int r = J * M;
+	int n = K * M;
+	int x[n];
+	matrix V = create_zero_matrix(r, n);
+	int I = 0;
+	int h, i;
+	
+	for (i = 0; i < n; i++) {
+		x[]
+	}
+	
+	for (h = 0; h < J; h++) {
+		int p = 0;
+		for (i = 0; i < M; i++) {
+			I++;
+			p = p + K;
+		}
+	}
+}*/
