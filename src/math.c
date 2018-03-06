@@ -148,3 +148,16 @@ int sum_rows(matrix G, int row_index) {
     }
     return sum;
 }
+
+void fill_with_permutation(int *x, int n) {
+	int i, j, temp;
+    for (i = 0; i < n; i++) {
+        x[i] = i;
+    }
+    for (i = n-1; i > 0; i--) {
+        j = rand() % (i+1);
+        temp = x[j];
+        x[j] = x[i];
+        x[i] = temp;
+    }
+}
