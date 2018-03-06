@@ -42,7 +42,9 @@ ldpc create_ldpc(int n, int k) {
 
 void free_ldpc(ldpc ldpc_object) {
     free_matrix(ldpc_object.G);
-    free_matrix(ldpc_object.H);    
+    free_matrix(ldpc_object.H);
+	free(ldpc_object.check_set);
+	free(ldpc_object.information_set);   
 }
 
 void print_ldpc(ldpc ldpc_object) {
