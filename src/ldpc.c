@@ -110,5 +110,7 @@ matrix create_H_rand(int J, int K, int M) {
 		}
 	}
 	
+	free_matrix(V);
+	
 	return H;
 }
