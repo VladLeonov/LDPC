@@ -22,7 +22,7 @@ int main() {
                        {1, 0, 1, 1, 0},
                        {1, 0, 0, 1, 1}};
     matrix G = array_to_matrix(3, 5, array);
-    ldpc ldpc_object = create_systematic_view(G);
+    ldpc ldpc_object = create_systematic_view(G, 0);
 
     printf("Not systematic G = \n");
     print_matrix(G); 
