@@ -72,7 +72,7 @@ int* gauss_elimination(matrix G) {
     return information_set;
 }
 
-ldpc create_systematic_view(matrix G_old) {
+ldpc create_systematic_view(matrix G_old, char is_H_entered) {
 
     matrix G = copy_matrix(G_old);
 
@@ -94,7 +94,8 @@ ldpc create_systematic_view(matrix G_old) {
             check_size--;
         }
     }
-    char check_set[check_size];
+    
+    int *check_set = (int *) malloc(check_size);
     check_size = 0;
     for (i = 0; i < n; i++) {
         if (R[i] == 1) {
@@ -127,26 +128,26 @@ ldpc create_systematic_view(matrix G_old) {
     }
     
     ldpc ldpc_object;
-    ldpc_object.G = G;
-    ldpc_object.H = H;
+    if (!is_H_entered) {
+    	ldpc_object.G = G;
+		ldpc_object.H = H;
+		ldpc_object.check_set = check_set;
+		ldpc_object.information_set = information_set;
+		ldpc_object.k = G.rows;
+		ldpc_object.n = G.columns;
+		ldpc_object.check_size = check_size;
+		ldpc_object.information_size = n - check_size;	
+	} else {
+		ldpc_object.G = H;
+		ldpc_object.H = G;
+		ldpc_object.check_set = information_set;
+		ldpc_object.information_set = check_set;
+		ldpc_object.k = G.columns - G.rows;
+		ldpc_object.n = G.columns;
+		ldpc_object.check_size = n - check_size;
+		ldpc_object.information_size = check_size;
+	}
     
-    i = 0;
-    ldpc_object.check_set = (int *) malloc(check_size);
-    for (i = 0; i < check_size; i++) {
-        ldpc_object.check_set[i] = check_set[i];
-    }
-    
-    i = 0;
-    int information_size = n - check_size;
-    ldpc_object.information_set = (int *) malloc(information_size);
-    for (i = 0; i < information_size; i++) {
-        ldpc_object.information_set[i] = information_set[i];
-    }
-    
-    ldpc_object.k = G.rows;
-    ldpc_object.n = G.columns;
-    ldpc_object.check_size = check_size;
-    ldpc_object.information_size = information_size;
 
     return ldpc_object;
 }
@@ -158,4 +159,17 @@ int sum_rows(matrix G, int row_index) {
         sum += G.body[row_index][i];
     }
     return sum;
+}
+
+void fill_with_permutation(int *x, int n) {
+	int i, j, temp;
+    for (i = 0; i < n; i++) {
+        x[i] = i;
+    }
+    for (i = n-1; i > 0; i--) {
+        j = rand() % (i+1);
+        temp = x[j];
+        x[j] = x[i];
+        x[i] = temp;
+    }
 }
