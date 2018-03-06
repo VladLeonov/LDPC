@@ -1,20 +1,14 @@
 #include "matrix.h"
 #include "ldpc.h"
 
-ldpc create_systematic_view(matrix G_old) {
-
-    matrix G = copy_matrix(G_old);
-
-    int k = G.rows;
-    int n = G.columns;
-    
-    int information_set[k];
+int* gauss_elimination(matrix G) {
+	int k = G.rows;
+	int n = G.columns;
+    int* information_set = (int*) malloc(k * sizeof(int));
     int i, j;
     for (i = 0; i < k; i++){
         information_set[i] = -1;
     }
-    
-    // Gauss elimination
     
     i = 0;
     int column_number = 0;
@@ -65,20 +59,32 @@ ldpc create_systematic_view(matrix G_old) {
                 }
             }
 
-               // replace rows i and j
-               char *buff = G.body[i];
-               G.body[i] = G.body[j];
-               G.body[j] = buff;
+            // replace rows i and j
+            char *buff = G.body[i];
+            G.body[i] = G.body[j];
+            G.body[j] = buff;
 
-               i++;
+            i++;
         }
 
         column_number++;  // keep the same row, another column
     }
+    return information_set;
+}
+
+ldpc create_systematic_view(matrix G_old) {
+
+    matrix G = copy_matrix(G_old);
+
+    int k = G.rows;
+    int n = G.columns;
+    
+    int* information_set = gauss_elimination(G);
 
     // transposition
     char R[n];
     int check_size = n;
+    int i, j;
     for (i = 0; i < n; i++) {
         R[i] = 1;
     }
