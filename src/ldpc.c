@@ -75,7 +75,7 @@ void print_ldpc(ldpc ldpc_object) {
 matrix create_H_rand(int J, int K, int M) {
 	int r = J * M;
 	int n = K * M;
-	int *x;
+	int *x = (int *) malloc(n * sizeof(int));
 	fill_with_permutation(x, n);
 	matrix V = create_zero_matrix(r, K);
 	int I = 0;
@@ -105,7 +105,7 @@ matrix create_H_rand(int J, int K, int M) {
 	matrix H = create_zero_matrix(r, n);
 	
 	for (i = 0; i < r; i++) {
-		for (h = 0; h < rw[i]; h++) {
+		for (h = 0; h < K; h++) {
 			H.body[i][V.body[i][h]] = 1;
 		}
 	}

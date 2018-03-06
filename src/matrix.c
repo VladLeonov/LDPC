@@ -8,10 +8,10 @@ matrix create_empty_matrix(int rows, int columns) {
     matrix M;
     M.rows = rows;
     M.columns = columns;
-    M.body = (char**) malloc(rows * sizeof(char*));
+    M.body = (int**) malloc(rows * sizeof(int*));
     int i;
     for (i = 0; i < rows; i++) {
-        M.body[i] = (char*) malloc(columns * sizeof(char));
+        M.body[i] = (int*) malloc(columns * sizeof(int));
     }
     return M;
 }

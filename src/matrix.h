@@ -2,7 +2,7 @@
 #define MATRIX
 
 typedef struct {
-    char **body;
+    int **body;
     int rows, columns;
 } matrix;
 

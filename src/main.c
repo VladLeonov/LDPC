@@ -18,7 +18,7 @@ int main() {
         printf("%c ", message.body[0][i]);
     }*/
 
-    int array[3][5] = {{0, 0, 1, 1, 1},
+    /*int array[3][5] = {{0, 0, 1, 1, 1},
                        {1, 0, 1, 1, 0},
                        {1, 0, 0, 1, 1}};
     matrix G = array_to_matrix(3, 5, array);
@@ -31,8 +31,11 @@ int main() {
     
     printf("G * HT = \n");
     print_matrix(multiply_matrices(ldpc_object.G, transpose_matrix(ldpc_object.H)));
-    printf("\n");
-
+    printf("\n");*/
+    
+	matrix H = create_H_rand(2, 3, 4);
+	print_matrix(H);
+	free_matrix(H);
     system("pause");
     return 0;
 }
