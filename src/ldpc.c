@@ -7,10 +7,8 @@ matrix encode(ldpc ldpc_object, matrix message) {
 
 matrix count_syndrome(ldpc ldpc_object, matrix codedword) {
 	
-	matrix H = ldpc_object.H;
-    matrix H_transposed = transpose_matrix(H);
+    matrix H_transposed = transpose_matrix(ldpc_object.H);
 	matrix syndrome = multiply_matrices(codedword, H_transposed);
-	free_matrix(H);
 	free_matrix(H_transposed);
     
     return syndrome;
