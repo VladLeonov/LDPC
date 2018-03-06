@@ -11,7 +11,7 @@ typedef struct{
 } ldpc;
 
 matrix encode(ldpc ldpc_object, matrix message);
-matrix decode(ldpc ldpc_object, matrix codeword);
+matrix count_syndrome(ldpc ldpc_object, matrix codedword);
 ldpc create_ldpc(int n, int k);
 void free_ldpc(ldpc ldpc_object);
 void print_ldpc(ldpc ldpc_object);
