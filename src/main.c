@@ -4,38 +4,32 @@
 
 int main() {
 
-    /*matrix message = create_empty_matrix(1, 20);
-    int i;
-    for (i = 0; i < 20; i++) {
-        message.body[0][i] = 'a' + i;
-    }
-
-    ldpc ldpc_object = create_ldpc(7, 4);
-    matrix encoded = encode(ldpc_object, message);
-    matrix decoded = decode(ldpc_object, encoded);
-
-    for (i = 0; i < 20; i++) {
-        printf("%c ", message.body[0][i]);
-    }*/
-
-    /*int array[3][5] = {{0, 0, 1, 1, 1},
-                       {1, 0, 1, 1, 0},
-                       {1, 0, 0, 1, 1}};
-    matrix G = array_to_matrix(3, 5, array);
-    ldpc ldpc_object = create_systematic_view(G, 0);
-
-    printf("Not systematic G = \n");
-    print_matrix(G); 
-    printf("\n");
-    print_ldpc(ldpc_object);
-    
-    printf("G * HT = \n");
-    print_matrix(multiply_matrices(ldpc_object.G, transpose_matrix(ldpc_object.H)));
-    printf("\n");*/
-    
-	matrix H = create_H_rand(2, 3, 4);
+    int J = 2, K = 5, M = 4;
+    matrix H = create_H_rand(J, K, M);
+	ldpc ldpc_object = create_systematic_view(H, 1);
+	
+	int message_size = M * (K - J);
+	int message[1][message_size];
+	int i;
+	for (i = 0; i < message_size; i++) {
+		message[0][i] = i % 2;
+	}
+	
+	matrix encoded_message = encode(ldpc_object, array_to_matrix(1, message_size, message));
+	matrix syndrome = count_syndrome(ldpc_object, encoded_message);
+	
+	printf("J = %d, K = %d, M = %d\n\n", J, K, M);
+	printf("Random H =\n");
 	print_matrix(H);
-	free_matrix(H);
+	printf("\n");
+	print_ldpc(ldpc_object);
+	printf("Syndrome =\n");
+	print_matrix(syndrome);
+	
     system("pause");
+    
+    free_matrix(H);
+    free_matrix(encoded_message);
+    free_matrix(syndrome);
     return 0;
 }

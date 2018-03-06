@@ -60,7 +60,7 @@ int* gauss_elimination(matrix G) {
             }
 
             // replace rows i and j
-            char *buff = G.body[i];
+            int *buff = G.body[i];
             G.body[i] = G.body[j];
             G.body[j] = buff;
 
@@ -82,7 +82,7 @@ ldpc create_systematic_view(matrix G_old, char is_H_entered) {
     int* information_set = gauss_elimination(G);
 
     // transposition
-    char R[n];
+    int R[n];
     int check_size = n;
     int i, j;
     for (i = 0; i < n; i++) {
