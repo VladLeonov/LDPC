@@ -14,22 +14,10 @@ matrix count_syndrome(ldpc ldpc_object, matrix codedword) {
     return syndrome;
 }
 
-ldpc create_ldpc(int n, int k) {
+ldpc create_ldpc(int J, int K, int M) {
     ldpc ldpc_object;
-    ldpc_object.n = n;
-    ldpc_object.k = k;
     
-    matrix ik = create_unit_matrix(k);
-    matrix ir = create_unit_matrix(n - k);
-    matrix P = create_sparse_matrix(k, n - k);
-    matrix Pt = transpose_matrix(P);
-    ldpc_object.G = combine_matrices(ik, P);
-    ldpc_object.H = combine_matrices(Pt, ir);
-    
-    free_matrix(ik);
-    free_matrix(ir);
-    free_matrix(P);
-    free_matrix(Pt);
+    //TODO
     
     return ldpc_object;
 }
@@ -148,3 +136,5 @@ columns_metadata create_columns_metadata(int* information_set, int n, int k) {
     
     return columns_mdata;
 }
+
+
