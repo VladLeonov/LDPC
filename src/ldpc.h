@@ -4,10 +4,15 @@
 #define LDPC
 
 typedef struct{
-	matrix G, H;
-	int n, k, check_size, information_size;
+	int check_size, information_size;
 	int *check_set;
 	int *information_set;
+} columns_metadata;
+
+typedef struct{
+	matrix G, H;
+	int n, k;
+	columns_metadata columns_mdata;
 } ldpc;
 
 matrix encode(ldpc ldpc_object, matrix message);
