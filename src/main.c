@@ -4,6 +4,10 @@
 
 int main() {
 
+    int J = 2, K = 5, M = 4;
+    ldpc ldpc_object = create_ldpc(J, K, M);
+    print_ldpc(ldpc_object);
+    system("pause");
     /*int J = 2, K = 5, M = 4;
     matrix H = create_H_rand(J, K, M);
 	ldpc ldpc_object = create_systematic_view(H, 1);

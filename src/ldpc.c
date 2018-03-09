@@ -1,5 +1,6 @@
 #include "ldpc.h"
 #include "matrix.h"
+#include "math.h"
 
 matrix encode(ldpc ldpc_object, matrix message) {
     return multiply_matrices(message, ldpc_object.G);
@@ -145,8 +146,8 @@ columns_metadata create_columns_metadata(int* check_set, int n, int k) {
     columns_metadata columns_mdata;
     columns_mdata.information_set = information_set;
     columns_mdata.check_set = check_set;
-    columns_mdata.information_size = n - check_size;
-    columns_mdata.check_size = check_size;
+    columns_mdata.information_size = information_size;
+    columns_mdata.check_size = n - information_size;
     
     return columns_mdata;
 }
