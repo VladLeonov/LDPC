@@ -37,8 +37,8 @@ ldpc create_ldpc(int n, int k) {
 void free_ldpc(ldpc ldpc_object) {
     free_matrix(ldpc_object.G);
     free_matrix(ldpc_object.H);
-	free(ldpc_object.check_set);
-	free(ldpc_object.information_set);   
+	free(ldpc_object.columns_mdata.check_set);
+	free(ldpc_object.columns_mdata.information_set);   
 }
 
 void print_ldpc(ldpc ldpc_object) {
@@ -59,15 +59,17 @@ void print_ldpc(ldpc ldpc_object) {
     print_matrix(ldpc_object.H);
     printf("\n");
     
+    columns_metadata columns_mdata = ldpc_object.columns_mdata;
+    
     printf("Check set =\n");
-    for (i = 0; i < ldpc_object.check_size; i++) {
-        printf("%d ", ldpc_object.check_set[i]);
+    for (i = 0; i < columns_mdata.check_size; i++) {
+        printf("%d ", columns_mdata.check_set[i]);
     }
     printf("\n\n");
     
     printf("Information set =\n");
-    for (i = 0; i < ldpc_object.information_size; i++) {
-        printf("%d ", ldpc_object.information_set[i]);
+    for (i = 0; i < columns_mdata.information_size; i++) {
+        printf("%d ", columns_mdata.information_set[i]);
     }
     printf("\n\n");
 }
@@ -113,4 +115,36 @@ matrix create_H_rand(int J, int K, int M) {
 	free_matrix(V);
 	
 	return H;
+}
+
+columns_metadata create_columns_metadata(int* information_set, int n, int k) {
+	int R[n];
+    int check_size = n;
+    int i, j;
+    for (i = 0; i < n; i++) {
+        R[i] = 1;
+    }
+    for (i = 0; i < k; i++) {
+        if (information_set[i] != -1) {
+            R[information_set[i]] = 0;
+            check_size--;
+        }
+    }
+    
+    int *check_set = (int *) malloc(check_size);
+    check_size = 0;
+    for (i = 0; i < n; i++) {
+        if (R[i] == 1) {
+            check_set[check_size] = i;
+            check_size++;
+        }
+    }
+    
+    columns_metadata columns_mdata;
+    columns_mdata.information_set = information_set;
+    columns_mdata.check_set = check_set;
+    columns_mdata.information_size = n - check_size;
+    columns_mdata.check_size = check_size;
+    
+    return columns_mdata;
 }

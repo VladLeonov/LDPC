@@ -21,5 +21,6 @@ ldpc create_ldpc(int n, int k);
 void free_ldpc(ldpc ldpc_object);
 void print_ldpc(ldpc ldpc_object);
 matrix create_H_rand(int J, int K, int M);
+columns_metadata create_columns_metadata(int* information_set, int n, int k);
 
 #endif
