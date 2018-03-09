@@ -185,7 +185,6 @@ matrix create_G_from_H_matrix(matrix H, columns_metadata columns_mdata) {
     }
     
     matrix PT = transpose_matrix(P);
-    free_matrix(P);
     for (j = 0; j < columns_mdata.check_size; j++) {
         for (i = 0; i < G.rows; i++) {
             G.body[i][columns_mdata.check_set[j]] = PT.body[i][j];
@@ -198,4 +197,10 @@ matrix create_G_from_H_matrix(matrix H, columns_metadata columns_mdata) {
             G.body[i][columns_mdata.information_set[j]] = U.body[i][j];
         }
     }
+    
+    free_matrix(P);
+    free_matrix(PT);
+    free_matrix(U);
+    
+    return G;
 }
