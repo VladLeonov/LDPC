@@ -4,7 +4,7 @@
 
 int main() {
 
-    int J = 2, K = 5, M = 4;
+    /*int J = 2, K = 5, M = 4;
     matrix H = create_H_rand(J, K, M);
 	ldpc ldpc_object = create_systematic_view(H, 1);
 	
@@ -33,6 +33,6 @@ int main() {
     
     free_matrix(H);
     free_matrix(encoded_message);
-    free_matrix(syndrome);
+    free_matrix(syndrome);*/
     return 0;
 }

@@ -72,7 +72,7 @@ int* gauss_elimination(matrix G) {
     return information_set;
 }
 
-ldpc create_systematic_view(matrix G_old, char is_H_entered) {
+/*ldpc create_systematic_view(matrix G_old, char is_H_entered) {
 
     matrix G = copy_matrix(G_old);
 
@@ -150,7 +150,7 @@ ldpc create_systematic_view(matrix G_old, char is_H_entered) {
     
 
     return ldpc_object;
-}
+}*/
 
 int sum_rows(matrix G, int row_index) {
     int i;
@@ -171,5 +171,31 @@ void fill_with_permutation(int *x, int n) {
         temp = x[j];
         x[j] = x[i];
         x[i] = temp;
+    }
+}
+
+matrix create_G_from_H_matrix(matrix H, columns_metadata columns_mdata) {
+	int i, j;
+	matrix G = create_zero_matrix(H.columns - H.rows, H.columns);
+    matrix P = create_empty_matrix(H.rows, columns_mdata.information_size);
+    for (j = 0; j < columns_mdata.information_size; j++) {
+        for (i = 0; i < H.rows; i++) {
+            P.body[i][j] = H.body[i][columns_mdata.information_set[j]];
+        }
+    }
+    
+    matrix PT = transpose_matrix(P);
+    free_matrix(P);
+    for (j = 0; j < columns_mdata.check_size; j++) {
+        for (i = 0; i < G.rows; i++) {
+            G.body[i][columns_mdata.check_set[j]] = PT.body[i][j];
+        }
+    }
+    
+    matrix U = create_unit_matrix(G.rows);
+    for (j = 0; j < columns_mdata.information_size; j++) {
+        for (i = 0; i < G.rows; i++) {
+            G.body[i][columns_mdata.information_set[j]] = U.body[i][j];
+        }
     }
 }
