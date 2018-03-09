@@ -18,6 +18,17 @@ ldpc create_ldpc(int J, int K, int M) {
     
     matrix H = create_H_rand(J, K, M);
     int* check_set = gauss_elimination(H);
+    columns_metadata columns_mdata = create_columns_metadata(check_set, K * M, J * M);
+    matrix cutted_H = copy_matrix_part(H, M * J - J + 1, K * M);
+    matrix G = create_G_from_H_matrix(cutted_H, columns_mdata);
+    
+    ldpc ldpc_object;
+    ldpc_object.G = G;
+    ldpc_object.H = H;
+    ldpc_object.columns_mdata = columns_mdata;
+    ldpc_object.n = G.columns;
+    ldpc_object.k = G.rows;
+    ldpc_object.r = H.rows;
     
     return ldpc_object;
 }
