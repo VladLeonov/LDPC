@@ -36,6 +36,9 @@ void print_ldpc(ldpc ldpc_object) {
     printf("k = ");
     printf("%d\n\n", ldpc_object.k);
     
+    printf("r = ");
+    printf("%d\n\n", ldpc_object.r);
+    
     printf("n = ");
     printf("%d\n\n", ldpc_object.n);
     
