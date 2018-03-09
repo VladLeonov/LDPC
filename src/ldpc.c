@@ -15,9 +15,9 @@ matrix count_syndrome(ldpc ldpc_object, matrix codedword) {
 }
 
 ldpc create_ldpc(int J, int K, int M) {
-    ldpc ldpc_object;
     
-    //TODO
+    matrix H = create_H_rand(J, K, M);
+    int* check_set = gauss_elimination(H);
     
     return ldpc_object;
 }
@@ -108,26 +108,26 @@ matrix create_H_rand(int J, int K, int M) {
 	return H;
 }
 
-columns_metadata create_columns_metadata(int* information_set, int n, int k) {
+columns_metadata create_columns_metadata(int* check_set, int n, int k) {
 	int R[n];
-    int check_size = n;
+    int information_size = n;
     int i, j;
     for (i = 0; i < n; i++) {
         R[i] = 1;
     }
     for (i = 0; i < k; i++) {
-        if (information_set[i] != -1) {
-            R[information_set[i]] = 0;
-            check_size--;
+        if (check_set[i] != -1) {
+            R[check_set[i]] = 0;
+            information_size--;
         }
     }
     
-    int *check_set = (int *) malloc(check_size);
-    check_size = 0;
+    int *information_set = (int *) malloc(information_size);
+    information_size = 0;
     for (i = 0; i < n; i++) {
         if (R[i] == 1) {
-            check_set[check_size] = i;
-            check_size++;
+            information_set[information_size] = i;
+            information_size++;
         }
     }
     
