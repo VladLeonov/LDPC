@@ -22,6 +22,9 @@ int main() {
 	printf("Random H =\n");
 	print_matrix(H);
 	printf("\n");
+	printf("Modified H =\n");
+	print_matrix(copy_matrix_part(ldpc_object.H, M * J - J + 1, ldpc_object.H.columns));
+	printf("\n");
 	print_ldpc(ldpc_object);
 	printf("Syndrome =\n");
 	print_matrix(syndrome);

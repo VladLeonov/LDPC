@@ -154,3 +154,24 @@ matrix copy_matrix(matrix matrix_object){
     }
     return new_matrix;
 }
+
+matrix copy_matrix_part(matrix old_matrix_object, int rows, int columns) {
+	
+	int i, j, new_rows;	
+	if (old_matrix_object.rows > rows) {
+		new_rows = rows;
+	} else {
+		new_rows = old_matrix_object.rows;
+	}
+	matrix new_matrix_object = create_zero_matrix(new_rows, columns);
+	
+	for (i = 0; i < new_rows; i++){
+		for (j = 0; j < old_matrix_object.columns; j++) {
+			if (old_matrix_object.body[i][j] != 0) {
+				new_matrix_object.body[i][j] = old_matrix_object.body[i][j];
+			}
+		}
+	}
+	
+	return new_matrix_object;
+}
