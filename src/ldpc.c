@@ -135,7 +135,7 @@ columns_metadata create_columns_metadata(int* check_set, int n, int k) {
         }
     }
 
-    int *information_set = (int *) malloc(information_size);
+    int *information_set = (int *) malloc(information_size * sizeof(int));
     information_size = 0;
     for (i = 0; i < n; i++) {
         if (R[i] == 1) {
@@ -143,6 +143,8 @@ columns_metadata create_columns_metadata(int* check_set, int n, int k) {
             information_size++;
         }
     }
+    
+    check_set = (int*) realloc(check_set, n - information_size);
 
     columns_metadata columns_mdata;
     columns_mdata.information_set = information_set;
