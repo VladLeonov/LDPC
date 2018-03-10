@@ -143,8 +143,8 @@ columns_metadata create_columns_metadata(int* check_set, int n, int k) {
             information_size++;
         }
     }
-    
-    check_set = (int*) realloc(check_set, n - information_size);
+
+    check_set = (int*) realloc(check_set, (n - information_size) * sizeof(int));
 
     columns_metadata columns_mdata;
     columns_mdata.information_set = information_set;
