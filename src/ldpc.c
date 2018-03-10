@@ -78,47 +78,47 @@ void print_ldpc(ldpc ldpc_object) {
 }
 
 matrix create_H_rand(int J, int K, int M) {
-	int r = J * M;
-	int n = K * M;
-	int *x = (int *) malloc(n * sizeof(int));
-	fill_with_permutation(x, n);
-	matrix V = create_zero_matrix(r, K);
-	int I = 0;
-	int h, i, index;
+    int r = J * M;
+    int n = K * M;
+    int *x = (int *) malloc(n * sizeof(int));
+    fill_with_permutation(x, n);
+    matrix V = create_zero_matrix(r, K);
+    int I = 0;
+    int h, i, index;
 
-	for (h = 0; h < J; h++) {
-		int p = 0;
-		for (i = 0; i < M; i++) {
-			for (index = 0; index < K; index++) {
-				V.body[I][index] = x[p + index];
-			}
-			p = p + K;
-			I++;
-		}
-		fill_with_permutation(x, n);
-	}
+    for (h = 0; h < J; h++) {
+        int p = 0;
+        for (i = 0; i < M; i++) {
+            for (index = 0; index < K; index++) {
+                V.body[I][index] = x[p + index];
+            }
+            p = p + K;
+            I++;
+        }
+        fill_with_permutation(x, n);
+    }
 
-	int rw[r];
+    int rw[r];
 
-	for (h = 0; h < r; h++) {
-		rw[h] = 0;
-		for (i = 0; i < K; i++) {
-			rw[h] += V.body[h][i];
-		}
-	}
+    for (h = 0; h < r; h++) {
+        rw[h] = 0;
+        for (i = 0; i < K; i++) {
+            rw[h] += V.body[h][i];
+        }
+    }
 
-	matrix H = create_zero_matrix(r, n);
+    matrix H = create_zero_matrix(r, n);
 
-	for (i = 0; i < r; i++) {
-		for (h = 0; h < K; h++) {
-			H.body[i][V.body[i][h]] = 1;
-		}
-	}
+    for (i = 0; i < r; i++) {
+        for (h = 0; h < K; h++) {
+            H.body[i][V.body[i][h]] = 1;
+        }
+    }
 
-	free(x);
-	free_matrix(V);
+    free(x);
+    free_matrix(V);
 
-	return H;
+    return H;
 }
 
 columns_metadata create_columns_metadata(int* check_set, int n, int k) {
