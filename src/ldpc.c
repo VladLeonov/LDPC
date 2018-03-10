@@ -31,6 +31,8 @@ ldpc create_ldpc(int J, int K, int M) {
     ldpc_object.k = G.rows;
     ldpc_object.r = H.rows;
 
+    free_matrix(cutted_H);
+
     return ldpc_object;
 }
 
