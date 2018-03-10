@@ -18,12 +18,20 @@ matrix create_empty_matrix(int rows, int columns) {
 
 
 matrix create_zero_matrix(int rows, int columns) {
-    matrix M = create_empty_matrix(rows, columns);
+    /*matrix M = create_empty_matrix(rows, columns);
     int i, j;
     for (i = 0; i < rows; i++) {
         for (j = 0; j < columns; j++) {
             M.body[i][j] = 0;
         }
+    }*/
+    matrix M;
+    M.rows = rows;
+    M.columns = columns;
+    M.body = (int**) malloc(rows * sizeof(int*));
+    int i;
+    for (i = 0; i < rows; i++) {
+        M.body[i] = (int*) calloc(columns, sizeof(int));
     }
     return M;
 }
@@ -66,7 +74,7 @@ matrix multiply_matrices(matrix M1, matrix M2) {
             }
         }
     }
-    return M;    
+    return M;
 }
 
 
@@ -156,22 +164,28 @@ matrix copy_matrix(matrix matrix_object){
 }
 
 matrix copy_matrix_part(matrix old_matrix_object, int rows, int columns) {
-	
-	int i, j, new_rows;	
+
+	int i, j, new_rows, new_columns;
+
 	if (old_matrix_object.rows > rows) {
 		new_rows = rows;
 	} else {
 		new_rows = old_matrix_object.rows;
 	}
-	matrix new_matrix_object = create_zero_matrix(new_rows, columns);
-	
+
+	if (old_matrix_object.columns > columns) {
+        new_columns = columns;
+	} else {
+        new_columns = old_matrix_object.columns;
+	}
+
+	matrix new_matrix_object = create_zero_matrix(rows, columns);
+
 	for (i = 0; i < new_rows; i++){
-		for (j = 0; j < old_matrix_object.columns; j++) {
-			if (old_matrix_object.body[i][j] != 0) {
-				new_matrix_object.body[i][j] = old_matrix_object.body[i][j];
-			}
+		for (j = 0; j < new_columns; j++) {
+			new_matrix_object.body[i][j] = old_matrix_object.body[i][j];
 		}
 	}
-	
+
 	return new_matrix_object;
 }
