@@ -13,6 +13,7 @@ typedef struct{
 	matrix G, H;
 	int n, k, r;
 	columns_metadata columns_mdata;
+	non_zero_data C, V;
 } ldpc;
 
 matrix encode(ldpc ldpc_object, matrix message);

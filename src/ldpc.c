@@ -31,6 +31,10 @@ ldpc create_ldpc(int J, int K, int M) {
     ldpc_object.k = G.rows;
     ldpc_object.r = H.rows;
 
+    //--------------------------------------------------------------
+    ldpc_object.C = get_non_zero_column_data(H);
+    ldpc_object.V = get_non_zero_column_data(transpose_matrix(H));
+    //--------------------------------------------------------------
     free_matrix(cutted_H);
 
     return ldpc_object;
@@ -77,6 +81,26 @@ void print_ldpc(ldpc ldpc_object) {
         printf("%d ", columns_mdata.information_set[i]);
     }
     printf("\n\n");
+
+    printf("C =\n");
+    for (i = 0; i < ldpc_object.H.columns; i++){
+        for (j = 0; j < ldpc_object.C.element_length[i]; j++) {
+            printf("%d ", ldpc_object.C.element_data[i][j]);
+        }
+        printf("\n");
+
+    }
+
+    printf("\n\n");
+
+    printf("V =\n");
+    for (i = 0; i < ldpc_object.H.rows; i++){
+        for (j = 0; j < ldpc_object.V.element_length[i]; j++) {
+            printf("%d ", ldpc_object.V.element_data[i][j]);
+        }
+        printf("\n");
+
+    }
 }
 
 matrix create_H_rand(int J, int K, int M) {
