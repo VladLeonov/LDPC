@@ -189,3 +189,29 @@ matrix copy_matrix_part(matrix old_matrix_object, int rows, int columns) {
 
 	return new_matrix_object;
 }
+
+non_zero_data get_non_zero_column_data(matrix matrix_object) {
+    non_zero_data result;
+    result.element_data = (int **)malloc(matrix_object.columns * sizeof(int *));
+    result.element_length = (int *)malloc(matrix_object.columns * sizeof(int));
+
+    int i, j, num_ones = 0;
+    int buf_column[matrix_object.rows];
+    for (i = 0; i < matrix_object.columns; i++) {
+        for (j = 0; j < matrix_object.rows; j++) {
+            if (matrix_object.body[j][i] != 0) {
+                buf_column[num_ones] = j;
+                num_ones ++;
+            }
+        }
+        result.element_length[i] = num_ones;
+        result.element_data[i] = (int *)malloc(num_ones * sizeof(int));
+
+        for (j = 0; j < num_ones; j++) {
+            result.element_data[i][j] = buf_column[j];
+        }
+        num_ones = 0;
+    }
+
+    return result;
+}
