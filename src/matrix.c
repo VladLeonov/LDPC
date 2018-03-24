@@ -70,7 +70,7 @@ matrix multiply_matrices(matrix M1, matrix M2) {
     for (i = 0; i < M1.rows; i++) {
         for (j = 0; j < M2.columns; j++) {
             for (k = 0; k < M1.columns; k++) {
-                M.body[i][j] += M1.body[i][k] * M2.body[k][j];
+                M.body[i][j] ^= M1.body[i][k] * M2.body[k][j];
             }
         }
     }
@@ -135,7 +135,7 @@ void print_matrix(matrix M) {
     int i, j;
     for (i = 0; i < M.rows; i++) {
         for (j = 0; j < M.columns; j++) {
-            printf("%c ", M.body[i][j] == 1 ? '1' : '0');
+            printf("%d ", M.body[i][j]);
         }
         printf("\n");
     }
