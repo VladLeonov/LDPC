@@ -22,8 +22,12 @@ int* gauss_elimination(matrix G) {
             }
             k--;
             free(G.body[k]);
+            
             G.rows--;
-
+            for (j = 0; j < G.columns; j++) {
+                G.body[G.rows][j] = 0;
+            }
+            
             information_set[k] = -1;
             
             if (i >= k) {
