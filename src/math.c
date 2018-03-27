@@ -9,12 +9,12 @@ int* gauss_elimination(matrix G) {
     for (i = 0; i < k; i++){
         information_set[i] = -1;
     }
-    
+
     i = 0;
     int column_number = 0;
 
     while (i < k) {
-        
+
         //throw away all-zero row
         while (sum_rows(G, i) == 0) {
             for (j = i; j < (k - 1); j++) {
@@ -22,27 +22,23 @@ int* gauss_elimination(matrix G) {
             }
             k--;
             free(G.body[k]);
-            
             G.rows--;
-            for (j = 0; j < G.columns; j++) {
-                G.body[G.rows][j] = 0;
-            }
-            
+
             information_set[k] = -1;
-            
+
             if (i >= k) {
                 break;
             }
         }
-        
+
         if (i >= k) {
             break;
         }
-        
+
         //find 1 in the column
         int b = 0;
         j = i - 1;
-        
+
         while ((b == 0) && (j < k - 1)) {
             j++;
             b = G.body[j][column_number];
@@ -50,12 +46,12 @@ int* gauss_elimination(matrix G) {
 
         if (b == 1) {
             information_set[i] = column_number;
-    
+
                // remove other ones from this column
                int o, u;
                for (o = 0; o < k; o++) {
                    if (o == j) continue;
-                   
+
                    if (G.body[o][column_number]==1) {
                        for (u = 0; u < n; u++) {
                            G.body[o][u] ^= G.body[j][u];
@@ -82,7 +78,7 @@ int* gauss_elimination(matrix G) {
 
     int k = G.rows;
     int n = G.columns;
-    
+
     int* information_set = gauss_elimination(G);
 
     // transposition
@@ -98,7 +94,7 @@ int* gauss_elimination(matrix G) {
             check_size--;
         }
     }
-    
+
     int *check_set = (int *) malloc(check_size);
     check_size = 0;
     for (i = 0; i < n; i++) {
@@ -115,7 +111,7 @@ int* gauss_elimination(matrix G) {
             P.body[i][j] = G.body[i][check_set[j]];
         }
     }
-    
+
     matrix PT = transpose_matrix(P);
     free_matrix(P);
     for (j = 0; j < n - check_size; j++) {
@@ -123,14 +119,14 @@ int* gauss_elimination(matrix G) {
             H.body[i][information_set[j]] = PT.body[i][j];
         }
     }
-    
+
     matrix U = create_unit_matrix(n - k);
     for (j = 0; j < check_size; j++) {
         for (i = 0; i < H.rows; i++) {
             H.body[i][check_set[j]] = U.body[i][j];
         }
     }
-    
+
     ldpc ldpc_object;
     if (!is_H_entered) {
     	ldpc_object.G = G;
@@ -140,7 +136,7 @@ int* gauss_elimination(matrix G) {
 		ldpc_object.k = G.rows;
 		ldpc_object.n = G.columns;
 		ldpc_object.check_size = check_size;
-		ldpc_object.information_size = n - check_size;	
+		ldpc_object.information_size = n - check_size;
 	} else {
 		ldpc_object.G = H;
 		ldpc_object.H = G;
@@ -151,7 +147,7 @@ int* gauss_elimination(matrix G) {
 		ldpc_object.check_size = n - check_size;
 		ldpc_object.information_size = check_size;
 	}
-    
+
 
     return ldpc_object;
 }*/
@@ -187,24 +183,48 @@ matrix create_G_from_H_matrix(matrix H, columns_metadata columns_mdata) {
             P.body[i][j] = H.body[i][columns_mdata.information_set[j]];
         }
     }
-    
+
     matrix PT = transpose_matrix(P);
     for (j = 0; j < columns_mdata.check_size; j++) {
         for (i = 0; i < G.rows; i++) {
             G.body[i][columns_mdata.check_set[j]] = PT.body[i][j];
         }
     }
-    
+
     matrix U = create_unit_matrix(G.rows);
     for (j = 0; j < columns_mdata.information_size; j++) {
         for (i = 0; i < G.rows; i++) {
             G.body[i][columns_mdata.information_set[j]] = U.body[i][j];
         }
     }
-    
+
     free_matrix(P);
     free_matrix(PT);
     free_matrix(U);
-    
+
     return G;
+}
+
+int get_indexes_of_common_elements(int *arr_a, int *arr_b, int *result, int len_a, int len_b) {
+    int i, j, result_length;
+    j = 0;
+    result_length = 0;
+
+    result = (int*)malloc(len_a * sizeof(int));
+
+    for (i = 0; i < len_a; i++) {
+        for (j = 0; j < len_b; j++) {
+            if (arr_a[i] == arr_b[j]) {
+                result[result_length] = j;
+                result_length++;
+            } else if (arr_a[i] < arr_b[j]) {
+                break;
+            } else {
+                continue;
+            }
+        }
+    }
+
+    realloc(result, result_length * sizeof(int));
+    return result_length;
 }
