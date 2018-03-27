@@ -21,7 +21,6 @@ int* gauss_elimination(matrix G) {
                 G.body[j] = G.body[j + 1];
             }
             k--;
-            free(G.body[k]);
             
             G.rows--;
             for (j = 0; j < G.columns; j++) {
