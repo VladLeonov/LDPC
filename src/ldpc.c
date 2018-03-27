@@ -11,7 +11,7 @@ matrix encode(ldpc ldpc_object, matrix message, char use_non_zero_data) {
 	int r = n - k;
     matrix data = copy_matrix_part(message, 1, k);
     matrix codeword = create_zero_matrix(1, n);
-    
+
     int* check_set = ldpc_object.columns_mdata.check_set;
     int* information_set = ldpc_object.columns_mdata.information_set;
 
@@ -19,32 +19,32 @@ matrix encode(ldpc ldpc_object, matrix message, char use_non_zero_data) {
     for (i = 0; i < k; i++) {
     	codeword.body[0][information_set[i]] = data.body[0][i];
 	}
-	
+
 	if (use_non_zero_data == FALSE) {
-		
+
 		for (i = 0; i < r; i++) {
 		    for (j = 0; j < k; j++) {
 			    codeword.body[0][check_set[i]] ^= data.body[0][j] * ldpc_object.H.body[i][information_set[j]];
-		    } 
+		    }
 	    }
-	    
+
 	} else {
-		
-		int* data_indices;
+
+		int* data_indices = (int*)malloc(ldpc_object.columns_mdata.information_size * sizeof(int));
 		int num_indices;
 		for (i = 0; i < r; i++) {
-			num_indices = get_indexes_of_common_elements(information_set, ldpc_object.V.element_data[i], data_indices, 
+			num_indices = get_indexes_of_common_elements(information_set, ldpc_object.V.element_data[i], data_indices,
 			                                             ldpc_object.columns_mdata.information_size, ldpc_object.V.element_length[i]);
+
 		    for (j = 0; j < num_indices; j++) {
 			    codeword.body[0][check_set[i]] ^= data.body[0][data_indices[j]];
 		    }
-		    free(data_indices);
 	    }
-		
+
 	}
-	
+
 	free_matrix(data);
-	
+
 	return codeword;
 }
 
@@ -52,13 +52,13 @@ matrix count_syndrome(ldpc ldpc_object, matrix codedword, char use_non_zero_data
 
     matrix syndrome;
     if (use_non_zero_data == FALSE) {
-    	
+
     	matrix H_transposed = transpose_matrix(ldpc_object.H);
 	    syndrome = multiply_matrices(codedword, H_transposed);
 	    free_matrix(H_transposed);
-    	
+
     } else {
-    	
+
     	syndrome = create_zero_matrix(1, ldpc_object.r);
     	int i, j;
     	for (i = 0; i < ldpc_object.r; i++) {
@@ -66,7 +66,7 @@ matrix count_syndrome(ldpc ldpc_object, matrix codedword, char use_non_zero_data
     			syndrome.body[0][i] ^= codedword.body[0][ldpc_object.V.element_data[i][j]];
 			}
 		}
-    	
+
 	}
 
     return syndrome;

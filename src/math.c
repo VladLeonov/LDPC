@@ -21,7 +21,6 @@ int* gauss_elimination(matrix G) {
                 G.body[j] = G.body[j + 1];
             }
             k--;
-            free(G.body[k]);
             G.rows--;
 
             information_set[k] = -1;
@@ -210,13 +209,12 @@ int get_indexes_of_common_elements(int *arr_a, int *arr_b, int *result, int len_
     j = 0;
     result_length = 0;
 
-    result = (int*)malloc(len_a * sizeof(int));
-
     for (i = 0; i < len_a; i++) {
         for (j = 0; j < len_b; j++) {
             if (arr_a[i] == arr_b[j]) {
-                result[result_length] = j;
+                result[result_length] = i;
                 result_length++;
+                break;
             } else if (arr_a[i] < arr_b[j]) {
                 break;
             } else {
@@ -225,6 +223,5 @@ int get_indexes_of_common_elements(int *arr_a, int *arr_b, int *result, int len_
         }
     }
 
-    realloc(result, result_length * sizeof(int));
     return result_length;
 }
