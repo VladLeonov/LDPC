@@ -2,8 +2,10 @@
 #include "matrix.h"
 #include "math.h"
 
-matrix encode(ldpc ldpc_object, matrix message) {
-    //return multiply_matrices(message, ldpc_object.G);
+#define TRUE !0
+#define FALSE 0
+
+matrix encode(ldpc ldpc_object, matrix message, char use_non_zero_data) {
     int n = ldpc_object.n;
 	int k = ldpc_object.k;
 	int r = n - k;
@@ -18,10 +20,27 @@ matrix encode(ldpc ldpc_object, matrix message) {
     	codeword.body[0][information_set[i]] = data.body[0][i];
 	}
 	
-	for (i = 0; i < r; i++) {
-		for (j = 0; j < k; j++) {
-			codeword.body[0][check_set[i]] ^= data.body[0][j] * ldpc_object.H.body[i][information_set[j]];
-		} 
+	if (use_non_zero_data == FALSE) {
+		
+		for (i = 0; i < r; i++) {
+		    for (j = 0; j < k; j++) {
+			    codeword.body[0][check_set[i]] ^= data.body[0][j] * ldpc_object.H.body[i][information_set[j]];
+		    } 
+	    }
+	    
+	} else {
+		
+		int* data_indices = NULL;
+		int num_indices;
+		for (i = 0; i < r; i++) {
+			num_indices = get_indexes_of_common_elements(information_set, ldpc_object.V.element_data[i], data_indices, 
+			                                             ldpc_object.columns_mdata.information_size, ldpc_object.V.element_length[i]);
+		    for (j = 0; j < num_indices; j++) {
+			    codeword.body[0][check_set[i]] ^= data.body[0][data_indices[j]];
+		    }
+		    free(data_indices);
+	    }
+		
 	}
 	
 	free_matrix(data);
@@ -108,6 +127,9 @@ void print_ldpc(ldpc ldpc_object) {
         for (j = 0; j < ldpc_object.C.element_length[i]; j++) {
             printf("%d ", ldpc_object.C.element_data[i][j]);
         }
+        if (ldpc_object.C.element_length[i] == 0) {
+        	printf("-");
+		}
         printf("\n");
     }
 
@@ -118,6 +140,9 @@ void print_ldpc(ldpc ldpc_object) {
         for (j = 0; j < ldpc_object.V.element_length[i]; j++) {
             printf("%d ", ldpc_object.V.element_data[i][j]);
         }
+        if (ldpc_object.V.element_length[i] == 0) {
+        	printf("-");
+		}
         printf("\n");
     }
 }
