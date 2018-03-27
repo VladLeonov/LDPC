@@ -30,7 +30,7 @@ matrix encode(ldpc ldpc_object, matrix message, char use_non_zero_data) {
 	    
 	} else {
 		
-		int* data_indices = NULL;
+		int* data_indices;
 		int num_indices;
 		for (i = 0; i < r; i++) {
 			num_indices = get_indexes_of_common_elements(information_set, ldpc_object.V.element_data[i], data_indices, 
@@ -48,11 +48,26 @@ matrix encode(ldpc ldpc_object, matrix message, char use_non_zero_data) {
 	return codeword;
 }
 
-matrix count_syndrome(ldpc ldpc_object, matrix codedword) {
+matrix count_syndrome(ldpc ldpc_object, matrix codedword, char use_non_zero_data) {
 
-    matrix H_transposed = transpose_matrix(ldpc_object.H);
-	matrix syndrome = multiply_matrices(codedword, H_transposed);
-	free_matrix(H_transposed);
+    matrix syndrome;
+    if (use_non_zero_data == FALSE) {
+    	
+    	matrix H_transposed = transpose_matrix(ldpc_object.H);
+	    syndrome = multiply_matrices(codedword, H_transposed);
+	    free_matrix(H_transposed);
+    	
+    } else {
+    	
+    	syndrome = create_zero_matrix(1, ldpc_object.r);
+    	int i, j;
+    	for (i = 0; i < ldpc_object.r; i++) {
+    		for (j = 0; j < ldpc_object.V.element_length[i]; j++) {
+    			syndrome.body[0][i] ^= codedword.body[0][ldpc_object.V.element_data[i][j]];
+			}
+		}
+    	
+	}
 
     return syndrome;
 }
