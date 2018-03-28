@@ -18,13 +18,6 @@ matrix create_empty_matrix(int rows, int columns) {
 
 
 matrix create_zero_matrix(int rows, int columns) {
-    /*matrix M = create_empty_matrix(rows, columns);
-    int i, j;
-    for (i = 0; i < rows; i++) {
-        for (j = 0; j < columns; j++) {
-            M.body[i][j] = 0;
-        }
-    }*/
     matrix M;
     M.rows = rows;
     M.columns = columns;
