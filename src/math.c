@@ -165,7 +165,7 @@ matrix  get_hard_from_soft(double soft[], int length) {
 }
 
 double log_tahn(double value) {
-    double t = exp(value);
+    double t = exp(abs(value));
     return log((t + 1)/(t - 1));
 }
 
@@ -185,11 +185,11 @@ double min(double value1, double value2) {
     }
 }
 
-double sum_array(double *array, int length) {
+double sum_array(int coloumns, double array[][coloumns], int coloumn_index, int rows) {
     int i;
     double result = 0.0;
-    for (int i = 0; i < length; i++) {
-        result += array[i];
+    for (int i = 0; i < rows; i++) {
+        result += array[i][coloumn_index];
     }
     return result;
 }
@@ -239,32 +239,33 @@ int decode_belief_propogandation(ldpc ldpc_object, double *y, matrix *hard_solut
         }
         
         //H rows processing
-        double a, b;
-        for (i = 0; i < n; i++) {
-            for (j = 0; j < C.element_length[i]; j++) {
-                int index_C = C.element_data[i][j];
-                a = 1;
-                b = 0;
-                for (k = 0; k < V.element_length[index_C]; k++) {
-                    L_element = L[index_C][V.element_data[index_C][k]];
-                    a *= sign(L_element);
-                    b += log_tahn(L_element);
-                }
-                a *= sign(L[index_C][i]);
-                b -= log_tahn(L[index_C][i]);
-                Z[index_C][i] = max(min(a * log_tahn(b), 19.07), -19.07);
-            }
-        }
+		double a, b;
+		int index_C;
+		for (i = 0; i < n; i++) {
+		    for (index_C = 0; index_C < C.element_length[i]; index_C++) {
+		        int j = C.element_data[i][index_C];
+		        a = 1;
+		        b = 0;
+		        for (k = 0; k < V.element_length[j]; k++) {
+		            L_element = L[j][V.element_data[j][k]];
+		            a *= sign(L_element);
+		            b += log_tahn(L_element);
+		        }
+		        a *= sign(L[j][i]);
+		        b -= log_tahn(L[j][i]);
+		        Z[j][i] = max(min(a * log_tahn(b), 1), -1);
+		    }
+		}
 
         //result forming
-        for (i = 0; i < (n - r); i++) {
-            soft[i] = y[i] + sum_array(Z[i], n);
+        for (i = 0; i < n; i++) {
+            soft[i] = y[i] + sum_array(n, Z, i, r);
         }
+        free_matrix(hard);
         hard = get_hard_from_soft(soft, n);
         free_matrix(syndrome);
         syndrome = count_syndrome(ldpc_object, hard, use_non_zero_data);
         iter++;
-
     }
     
     hard_solution->body = hard.body;
@@ -274,40 +275,6 @@ int decode_belief_propogandation(ldpc ldpc_object, double *y, matrix *hard_solut
     free_matrix(syndrome);
     
     return iter;
-}
-
-double* product_matrix(double **data, int rows, int columns) {
-    int i, j;
-    double *result = (double*)malloc(columns * sizeof(double));
-
-    for (i = 0; i < columns; i++) {
-        result[i] = 1;
-    }
-
-    for (i = 0; i < columns; i++) {
-        for (j = 0; j < rows; j++) {
-            result[i] *= data[i][j];
-        }
-    }
-
-    return result;
-}
-
-double* sum_matrix_columns(int rows, int columns, double data[rows][columns]) {
-    int i, j;
-    double result[columns];
-
-    for (i = 0; i < columns; i++) {
-        result[i] = 0;
-    }
-
-    for (i = 0; i < columns; i++) {
-        for (j = 0; j < rows; j++) {
-            result[i] += data[j][i];
-        }
-    }
-
-    return result;
 }
 
 int sum_syndrome(matrix syndrome) {
