@@ -151,15 +151,14 @@ int get_indexes_of_common_elements(int *arr_a, int *arr_b, int *result, int len_
 
 matrix  get_hard_from_soft(double soft[], int length) {
     matrix result = create_zero_matrix(1, length);
+    
     int i;
-
     for (i = 0; i < length; i++) {
         if (soft[i] > 0) {
             result.body[0][i] = 1;
         } else {
             result.body[0][i] = 0;
         }
-
     }
 
     return result;
@@ -186,7 +185,7 @@ double min(double value1, double value2) {
     }
 }
 
-double sum_array(int length, double *array) {
+double sum_array(double *array, int length) {
     int i;
     double result = 0.0;
     for (int i = 0; i < length; i++) {
@@ -224,10 +223,12 @@ int decode_belief_propogandation(ldpc ldpc_object, double *y, matrix *hard_solut
     int L_element = 0;
     int index_C = 0;
     int k;
+    
     while ((iter < MAXITER) && (sum_syndrome(syndrome) != 0)) {
         //H columns processing
-        double sum_Z = 0;
+        double sum_Z;
         for (i = 0; i < n; i++) {
+        	sum_Z = 0;
             for (j = 0; j < C.element_length[i]; j++) {
                 sum_Z += Z[C.element_data[i][j]][i];
             }
@@ -236,6 +237,7 @@ int decode_belief_propogandation(ldpc ldpc_object, double *y, matrix *hard_solut
                 L[index_C][i] = y[i] + sum_Z - Z[index_C][i];
             }
         }
+        
         //H rows processing
         double a, b;
         for (i = 0; i < n; i++) {
@@ -254,17 +256,23 @@ int decode_belief_propogandation(ldpc ldpc_object, double *y, matrix *hard_solut
             }
         }
 
+        //result forming
         for (i = 0; i < (n - r); i++) {
-            soft[i] = y[i] + sum_array(n, Z[i]);
+            soft[i] = y[i] + sum_array(Z[i], n);
         }
         hard = get_hard_from_soft(soft, n);
+        free_matrix(syndrome);
         syndrome = multiply_matrices(hard, transpose_matrix(H));
         iter++;
 
     }
+    
     hard_solution->body = hard.body;
     hard_solution->columns = hard.columns;
     hard_solution->rows = hard.rows;
+    
+    free_matrix(syndrome);
+    
     return iter;
 }
 
