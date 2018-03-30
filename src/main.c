@@ -2,6 +2,9 @@
 #include "matrix.h"
 #include "math.h"
 
+#include <stdlib.h>
+#include <stdio.h>
+
 #define TRUE !0
 #define FALSE 0
 

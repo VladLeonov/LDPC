@@ -1,7 +1,10 @@
 #include "matrix.h"
+
 #include "ldpc.h"
-#include "stdlib.h"
 #include "math.h"
+
+#include <stdlib.h>
+#include <math.h>
 
 #define MAXITER 10000
 int* gauss_elimination(matrix G) {
@@ -194,6 +197,26 @@ double sum_array(int coloumns, double array[][coloumns], int coloumn_index, int 
     return result;
 }
 
+int sum_syndrome(matrix syndrome) {
+    int result = 0;
+    int i = 0;
+    for (int i = 0; i < syndrome.columns; i++) {
+        result += syndrome.body[0][i];
+    }
+
+    return result;
+}
+
+int sign(double value) {
+    if (value > 0) {
+        return 1;
+    } else if (value < 0) {
+        return -1;
+    } else {
+        return 0;
+    }
+}
+
 int decode_belief_propogandation(ldpc ldpc_object, double *y, matrix *hard_solution, char use_non_zero_data) {
     matrix H = ldpc_object.H;
     int r = H.rows;
@@ -275,24 +298,4 @@ int decode_belief_propogandation(ldpc ldpc_object, double *y, matrix *hard_solut
     free_matrix(syndrome);
     
     return iter;
-}
-
-int sum_syndrome(matrix syndrome) {
-    int result = 0;
-    int i = 0;
-    for (int i = 0; i < syndrome.columns; i++) {
-        result += syndrome.body[0][i];
-    }
-
-    return result;
-}
-
-int sign(double value) {
-    if (value > 0) {
-        return 1;
-    } else if (value < 0) {
-        return -1;
-    } else {
-        return 0;
-    }
 }

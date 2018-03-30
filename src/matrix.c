@@ -3,6 +3,7 @@
 #include <malloc.h>
 #include <time.h>
 #include <stdlib.h>
+#include <stdio.h>
 
 matrix create_empty_matrix(int rows, int columns) {
     matrix M;

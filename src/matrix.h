@@ -25,6 +25,7 @@ matrix create_void_matrix();
 int is_void_matrix(matrix M);
 
 void free_matrix(matrix M);
+void print_matrix(matrix M);
 matrix copy_matrix(matrix matrix_object);
 matrix copy_matrix_part(matrix old_matrix_object, int rows, int columns);
 
