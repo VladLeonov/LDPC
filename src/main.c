@@ -30,7 +30,7 @@ int main() {
 
     matrix *hard_solution = (matrix*)malloc(sizeof(matrix));
 
-    printf("Iterations = %d\n", decode_belief_propogandation(ldpc_object, recieved_message, hard_solution));
+    printf("Iterations = %d\n", decode_belief_propogandation(ldpc_object, recieved_message, hard_solution, FALSE));
 
 	printf("encoded_message =\n");
     print_matrix(encoded_message);

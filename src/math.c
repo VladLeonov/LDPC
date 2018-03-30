@@ -194,7 +194,7 @@ double sum_array(double *array, int length) {
     return result;
 }
 
-int decode_belief_propogandation(ldpc ldpc_object, double *y, matrix *hard_solution) {
+int decode_belief_propogandation(ldpc ldpc_object, double *y, matrix *hard_solution, char use_non_zero_data) {
     matrix H = ldpc_object.H;
     int r = H.rows;
     int n = H.columns;
@@ -218,7 +218,7 @@ int decode_belief_propogandation(ldpc ldpc_object, double *y, matrix *hard_solut
 
     matrix hard = get_hard_from_soft(soft, n);
 
-    matrix syndrome = multiply_matrices(hard, transpose_matrix(H));
+    matrix syndrome = count_syndrome(ldpc_object, hard, use_non_zero_data);
     int iter = 0;
     int L_element = 0;
     int index_C = 0;
@@ -262,7 +262,7 @@ int decode_belief_propogandation(ldpc ldpc_object, double *y, matrix *hard_solut
         }
         hard = get_hard_from_soft(soft, n);
         free_matrix(syndrome);
-        syndrome = multiply_matrices(hard, transpose_matrix(H));
+        syndrome = count_syndrome(ldpc_object, hard, use_non_zero_data);
         iter++;
 
     }
