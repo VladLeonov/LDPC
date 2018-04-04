@@ -12,7 +12,6 @@ int main() {
 
     int J = 2, K = 5, M = 4;
     ldpc ldpc_object = create_ldpc(J, K, M);
-    //print_ldpc(ldpc_object);
 
     int message_size = M * (K - J) + J - 1;
 	int message[1][message_size];
@@ -22,14 +21,19 @@ int main() {
 	}
 
 	matrix encoded_message = encode(ldpc_object, array_to_matrix(1, message_size, message), TRUE);
-    encoded_message.body[0][8] ^= 1;
-    //matrix syndrome = count_syndrome(ldpc_object, encoded_message, FALSE);
+	
+	printf("encoded_message =\n");
+    print_matrix(encoded_message);
+    printf("\n");
+	
 
-    double *recieved_message = (double*) malloc(encoded_message.columns * sizeof(double));
+    float *recieved_message = (float*) malloc(encoded_message.columns * sizeof(float));
 
 	for (i = 0; i < encoded_message.columns; i++) {
-        recieved_message[i] = encoded_message.body[0][i] == 0 ? -1 : 1;
+        recieved_message[i] = 2 - 4 * encoded_message.body[0][i];
 	}
+	
+	recieved_message[8] *= -0.5;//-2
 
     matrix *hard_solution = (matrix*)malloc(sizeof(matrix));
 
@@ -39,19 +43,22 @@ int main() {
     print_matrix(encoded_message);
     printf("\n");
 
-    /*printf("syndrome =\n");
-    print_matrix(syndrome);
-    printf("\n");*/
-
     printf("hard_solution =\n");
     print_matrix(*hard_solution);
     printf("\n");
+    
+    print_matrix(count_syndrome(ldpc_object, *hard_solution, FALSE));
+    printf("\n");
+    
+    for (i = 0; i < encoded_message.columns; i++) {
+		printf(encoded_message.body[0][i] == hard_solution->body[0][i] ? ". " : "- ");
+	}
+	printf("\n");
 
     system("pause");
 
     free_ldpc(ldpc_object);
     free_matrix(encoded_message);
-    //free_matrix(syndrome);
 
     return 0;
 }
