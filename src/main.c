@@ -25,7 +25,6 @@ int main() {
 	printf("encoded_message =\n");
     print_matrix(encoded_message);
     printf("\n");
-	
 
     float *recieved_message = (float*) malloc(encoded_message.columns * sizeof(float));
 
@@ -39,21 +38,24 @@ int main() {
 
     printf("Iterations = %d\n", decode_belief_propogandation(ldpc_object, recieved_message, hard_solution, FALSE));
 
-	printf("encoded_message =\n");
-    print_matrix(encoded_message);
-    printf("\n");
-
     printf("hard_solution =\n");
     print_matrix(*hard_solution);
-    printf("\n");
-    
-    print_matrix(count_syndrome(ldpc_object, *hard_solution, FALSE));
-    printf("\n");
     
     for (i = 0; i < encoded_message.columns; i++) {
 		printf(encoded_message.body[0][i] == hard_solution->body[0][i] ? ". " : "- ");
 	}
+	printf("\n\n");
+	
+	int *hard = (int*) malloc(encoded_message.columns * sizeof(int));
+	printf("Iterations = %d\n", flooding(recieved_message, hard, ldpc_object));
+	printf("hard =\n");
+	for (i = 0; i < encoded_message.columns; i++) {
+		printf("%d ", hard[i]);
+	}
 	printf("\n");
+    for (i = 0; i < encoded_message.columns; i++) {
+		printf(encoded_message.body[0][i] == hard[i] ? ". " : "- ");
+	}
 
     system("pause");
 
