@@ -223,6 +223,95 @@ char check_syndrome(int *hard, int r, non_zero_data V) {
     return TRUE;
 }
 
+int flooding(float *soft, int *hard, ldpc ldpc_object) {
+	int i, j;
+    int n = ldpc_object.H.columns;
+    int r = ldpc_object.H.rows; // number of parity checks
+    non_zero_data V = ldpc_object.V;
+    non_zero_data C = ldpc_object.C;
+    
+    int rw[r];
+    for (i = 0; i < r; i++) {
+    	rw[i] = V.element_length[i];
+    }
+    int cw[n];
+    for (i = 0; i < n; i++) {
+    	cw[i] = C.element_length[i];
+    }
+    
+    float Z[r][n];  // current LLRS
+    for (i = 0; i < r; i++) {
+    	for (j = 0; j < n; j++) {
+	    	Z[r][n] = 0;
+	    }
+    }
+    
+    int soft_out[n];
+	for (i = 0; i < n; i++) {
+        if (soft[i] < 0) {
+            hard[i] = 1;
+        } else {
+            hard[i] = 0;
+        }
+        soft_out[i] = soft[i];
+    }
+
+    if (check_syndrome(hard, r, V) == TRUE) {
+        return 0;
+    } 
+
+    for (i = 0; i < r; i++) {
+    	for (j = 0; j < rw[i]; j++) {
+    		Z[i][V.element_data[i][j]] = soft[V.element_data[i][j]];
+    	}
+    }
+
+	int steps;
+    for (steps = 0; steps < MAXITER; steps++) {
+        // loop over checks
+        float* soft_buffer;
+        float y[n];
+        for (i = 0; i < r; i++) { 
+        	for (j = 0; j < rw[i]; j++) {
+	    		y[j] = Z[i][V.element_data[i][j]];
+	    	}
+	    	soft_buffer = map_sp(y, rw[i]);
+	    	
+	        for (j = 0; j < rw[i]; j++) {
+	    		Z[i][V.element_data[i][j]] = soft_buffer[j];
+	    	}
+	    	free(soft_buffer);
+        }
+
+        // symbol nodes
+        for (i = 0; i < n; i++) {
+            // prob domain
+            float sum_Z = 0;
+            for (j = 0; j < cw[i]; j++) {
+            	sum_Z += Z[C.element_data[i][j]][i];
+            }
+            soft_out[i] = soft[i] + sum_Z;
+            for (j = 0; j < cw[i]; j++) {
+				Z[C.element_data[i][j]][i] = soft_out[i] - Z[C.element_data[i][j]][i];
+			}
+        }
+
+        for (i = 0; i < n; i++) {
+	        if (soft_out[i] < 0) {
+	            hard[i] = 1;
+	        } else {
+	            hard[i] = 0;
+	        }
+	    }
+    
+        if (check_syndrome(hard, r, V) == TRUE) {
+            return steps;
+        }
+    }
+
+    return -MAXITER;	
+}
+
 matrix  get_hard_from_soft(float soft[], int length) {
     matrix result = create_zero_matrix(1, length);
     
