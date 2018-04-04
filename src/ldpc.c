@@ -78,7 +78,7 @@ matrix count_syndrome(ldpc ldpc_object, matrix codedword, char use_non_zero_data
 
 ldpc create_ldpc(int J, int K, int M) {
 
-    matrix H = create_H_rand(J, K, M);
+    matrix H = create_H_rand(0, J, K, M);
     int* check_set = gauss_elimination(H);
     columns_metadata columns_mdata = create_columns_metadata(check_set, K * M, J * M);
     matrix cutted_H = copy_matrix_part(H, M * J - J + 1, K * M);
@@ -166,7 +166,7 @@ void print_ldpc(ldpc ldpc_object) {
     }
 }
 
-matrix create_H_rand(int J, int K, int M) {
+matrix create_H_Gallager(int J, int K, int M) {
     int r = J * M;
     int n = K * M;
     int *x = (int *) malloc(n * sizeof(int));
@@ -208,6 +208,34 @@ matrix create_H_rand(int J, int K, int M) {
     free_matrix(V);
 
     return H;
+}
+
+matrix create_H_rand(int type, int J, int K, int M) {
+    /**/
+
+    // type=0/1/2/3/4/5/6
+    // 0=Gallager, 1 = Proto, 2= QC, 3=RU, 4 = lin-code, 5 =E ensemble
+    // 6 -nonbin  + given base matrix
+
+    matrix result;
+    switch (type) {
+        case 0:
+            result = create_H_Gallager(J, K, M);
+            break;
+        case 1:
+            break;
+        case 2:
+            break;
+        case 3:
+            break;
+        case 4:
+            break;
+        case 5:
+            break;
+        case 6:
+            break;
+    }
+    return result;
 }
 
 columns_metadata create_columns_metadata(int* check_set, int n, int k) {
