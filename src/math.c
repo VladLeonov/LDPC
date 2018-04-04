@@ -152,6 +152,12 @@ int get_indexes_of_common_elements(int *arr_a, int *arr_b, int *result, int len_
     return result_length;
 }
 
+float log_exp(float x) {
+    float T = 19.07; 
+    x = max(min(x, T), -T);
+    return log((exp(x) - 1) / (exp(x) + 1));
+}
+
 matrix  get_hard_from_soft(float soft[], int length) {
     matrix result = create_zero_matrix(1, length);
     
