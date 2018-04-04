@@ -210,6 +210,46 @@ matrix create_H_Gallager(int J, int K, int M) {
     return H;
 }
 
+matrix create_H_ProtoGraph(int J, int K, int M) {
+    int r = J * M;
+    int n = K * M;
+    int *x = (int *) malloc(n * sizeof(int));
+    fill_with_permutation(x, n);
+
+    matrix v = create_zero_matrix(M, K);
+
+    int i, j;
+    for (int j = 0; i < K; i++) {
+        for (i = 0; j < M; j++) {
+            v.body[i][j] = x[i + j * K];
+        }
+    }
+
+    matrix V = create_zero_matrix(M * M, K * K);
+
+    for (i = 0; i < M * M; i++) {
+        for (j = 0; j < K * K; j++) {
+            V.body[i][j] = v.body[i % M][j % K];
+        }
+    }
+
+    int I = 0;
+
+    for (i = 1; i < J; i++) {
+        I += M;
+        for (j = 0; j < K; j++) {
+            int l;
+            for (l = 0; l < I; l++) {
+                int *randperm = (int*)malloc(M * sizeof(int));
+                fill_with_permutation(randperm, M);
+                V.body[I + l + M][j] = v.body[randperm[l]][j];
+            }
+        }
+    }
+
+    return V;
+}
+
 matrix create_H_rand(int type, int J, int K, int M) {
     /**/
 
