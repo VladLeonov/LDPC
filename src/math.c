@@ -6,7 +6,7 @@
 #include <stdlib.h>
 #include <math.h>
 
-#define MAXITER 10000
+#define MAXITER 50
 int* gauss_elimination(matrix G) {
 	int k = G.rows;
 	int n = G.columns;
@@ -152,12 +152,12 @@ int get_indexes_of_common_elements(int *arr_a, int *arr_b, int *result, int len_
     return result_length;
 }
 
-matrix  get_hard_from_soft(double soft[], int length) {
+matrix  get_hard_from_soft(float soft[], int length) {
     matrix result = create_zero_matrix(1, length);
     
     int i;
     for (i = 0; i < length; i++) {
-        if (soft[i] > 0) {
+        if (soft[i] < 0) {
             result.body[0][i] = 1;
         } else {
             result.body[0][i] = 0;
@@ -167,12 +167,12 @@ matrix  get_hard_from_soft(double soft[], int length) {
     return result;
 }
 
-double log_tahn(double value) {
-    double t = exp(abs(value));
+float log_tahn(float value) {
+    float t = exp(abs(value));
     return log((t + 1)/(t - 1));
 }
 
-double max(double value1, double value2) {
+float max(float value1, float value2) {
     if (value1 > value2) {
         return value1;
     } else {
@@ -180,7 +180,7 @@ double max(double value1, double value2) {
     }
 }
 
-double min(double value1, double value2) {
+float min(float value1, float value2) {
     if (value1 > value2) {
         return value2;
     } else {
@@ -188,9 +188,9 @@ double min(double value1, double value2) {
     }
 }
 
-double sum_array(int coloumns, double array[][coloumns], int coloumn_index, int rows) {
+float sum_array(int coloumns, float array[][coloumns], int coloumn_index, int rows) {
     int i;
-    double result = 0.0;
+    float result = 0.0;
     for (int i = 0; i < rows; i++) {
         result += array[i][coloumn_index];
     }
@@ -207,7 +207,7 @@ int sum_syndrome(matrix syndrome) {
     return result;
 }
 
-int sign(double value) {
+int sign(float value) {
     if (value > 0) {
         return 1;
     } else if (value < 0) {
@@ -217,12 +217,12 @@ int sign(double value) {
     }
 }
 
-int decode_belief_propogandation(ldpc ldpc_object, double *y, matrix *hard_solution, char use_non_zero_data) {
+int decode_belief_propogandation(ldpc ldpc_object, float *y, matrix *hard_solution, char use_non_zero_data) {
     matrix H = ldpc_object.H;
     int r = H.rows;
     int n = H.columns;
-    double Z[r][n];
-    double L[r][n];
+    float Z[r][n];
+    float L[r][n];
     non_zero_data C = ldpc_object.C;
     non_zero_data V = ldpc_object.V;
 
@@ -234,7 +234,7 @@ int decode_belief_propogandation(ldpc ldpc_object, double *y, matrix *hard_solut
         }
     }
 
-    double soft[n];
+    float soft[n];
     for (i = 0; i < n; i++) {
         soft[i] = y[i];
     }
@@ -249,7 +249,7 @@ int decode_belief_propogandation(ldpc ldpc_object, double *y, matrix *hard_solut
     
     while ((iter < MAXITER) && (sum_syndrome(syndrome) != 0)) {
         //H columns processing
-        double sum_Z;
+        float sum_Z;
         for (i = 0; i < n; i++) {
         	sum_Z = 0;
             for (j = 0; j < C.element_length[i]; j++) {
@@ -262,7 +262,7 @@ int decode_belief_propogandation(ldpc ldpc_object, double *y, matrix *hard_solut
         }
         
         //H rows processing
-		double a, b;
+		float a, b;
 		int index_C;
 		for (i = 0; i < n; i++) {
 		    for (index_C = 0; index_C < C.element_length[i]; index_C++) {
@@ -270,13 +270,13 @@ int decode_belief_propogandation(ldpc ldpc_object, double *y, matrix *hard_solut
 		        a = 1;
 		        b = 0;
 		        for (k = 0; k < V.element_length[j]; k++) {
-		            L_element = L[j][V.element_data[j][k]];
-		            a *= sign(L_element);
-		            b += log_tahn(L_element);
+		        	if (V.element_data[j][k] != i) {
+			        	L_element = L[j][V.element_data[j][k]];
+			            a *= sign(L_element);
+			            b += log_tahn(L_element);	
+					}
 		        }
-		        a *= sign(L[j][i]);
-		        b -= log_tahn(L[j][i]);
-		        Z[j][i] = max(min(a * log_tahn(b), 1), -1);
+		        Z[j][i] = max(min(a * log_tahn(b), 19.07), -19.07);
 		    }
 		}
 
@@ -284,6 +284,7 @@ int decode_belief_propogandation(ldpc ldpc_object, double *y, matrix *hard_solut
         for (i = 0; i < n; i++) {
             soft[i] = y[i] + sum_array(n, Z, i, r);
         }
+        
         free_matrix(hard);
         hard = get_hard_from_soft(soft, n);
         free_matrix(syndrome);
