@@ -7,6 +7,23 @@
 #include <math.h>
 
 #define MAXITER 50
+
+float max(float value1, float value2) {
+    if (value1 > value2) {
+        return value1;
+    } else {
+        return value2;
+    }
+}
+
+float min(float value1, float value2) {
+    if (value1 > value2) {
+        return value2;
+    } else {
+        return value1;
+    }
+}
+
 int* gauss_elimination(matrix G) {
 	int k = G.rows;
 	int n = G.columns;
@@ -158,6 +175,37 @@ float log_exp(float x) {
     return log((exp(x) - 1) / (exp(x) + 1));
 }
 
+float* map_sp(float y[], int length) {
+    // LLR domain
+    int hard[length], synd = 0;
+    int i;
+    for (i = 0; i < length; i++) {
+        if (y[i] < 0) {
+            hard[i] = 1;
+            synd++;
+        } else {
+            hard[i] = 0;
+        }
+    }
+    synd %= 2;
+    
+    for (i = 0; i < length; i++) {
+        hard[i] = (hard[i] + synd) % 2;
+    }
+    
+    float alogpy[length], sum_alogpy = 0;
+    for (i = 0; i < length; i++) {
+        alogpy[i] = log_exp(abs(y[i]));
+        sum_alogpy += alogpy[i];
+    }
+    
+    float *soft_out = (float*) malloc(length * sizeof(float));
+    for (i = 0; i < length; i++) {
+    	soft_out[i] = (2 * hard[i] - 1) * log_exp(alogpy[i] - sum_alogpy);
+	}
+    return soft_out;
+}
+
 matrix  get_hard_from_soft(float soft[], int length) {
     matrix result = create_zero_matrix(1, length);
     
@@ -176,22 +224,6 @@ matrix  get_hard_from_soft(float soft[], int length) {
 float log_tahn(float value) {
     float t = exp(abs(value));
     return log((t + 1)/(t - 1));
-}
-
-float max(float value1, float value2) {
-    if (value1 > value2) {
-        return value1;
-    } else {
-        return value2;
-    }
-}
-
-float min(float value1, float value2) {
-    if (value1 > value2) {
-        return value2;
-    } else {
-        return value1;
-    }
 }
 
 float sum_array(int coloumns, float array[][coloumns], int coloumn_index, int rows) {
