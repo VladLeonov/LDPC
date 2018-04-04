@@ -6,6 +6,8 @@
 #include <stdlib.h>
 #include <math.h>
 
+#define TRUE !0
+#define FALSE 0
 #define MAXITER 50
 
 float max(float value1, float value2) {
@@ -204,6 +206,21 @@ float* map_sp(float y[], int length) {
     	soft_out[i] = (2 * hard[i] - 1) * log_exp(alogpy[i] - sum_alogpy);
 	}
     return soft_out;
+}
+
+char check_syndrome(int *hard, int r, non_zero_data V) {
+	int i, j, syn;
+    for (i = 0; i < r; i++) {
+    	syn = 0;
+    	for (j = 0; j < V.element_length[i]; j++) {
+    		syn += hard[V.element_data[i][j]];
+		}
+        syn %= 2;
+        if (syn > 0) {
+            return FALSE;
+        }
+    }
+    return TRUE;
 }
 
 matrix  get_hard_from_soft(float soft[], int length) {
