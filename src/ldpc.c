@@ -250,6 +250,28 @@ matrix create_H_ProtoGraph(int J, int K, int M) {
     return V;
 }
 
+matrix create_V_RU(int J, int K, int M) {
+    int r = J * M;
+    int n = K * M;
+    int *A = (int *) malloc(n * J * sizeof(int));
+    fill_with_permutation(A, n * J);
+    int i, j;
+
+    for (i = 0; i < n * J; i++) {
+        A[i] = (A[i] - 1) / J + 1;
+    }
+
+    matrix V = create_zero_matrix(J * M, K);
+
+    for (j = 0; j < K; j++ ) {
+        for (i = 0; i < J * M; i++) {
+            V.body[i][j] = A[i + j * K];
+        }
+    }
+
+    return V;
+}
+
 matrix create_H_rand(int type, int J, int K, int M) {
     /**/
 
@@ -263,6 +285,7 @@ matrix create_H_rand(int type, int J, int K, int M) {
             result = create_H_Gallager(J, K, M);
             break;
         case 1:
+            result = create_H_ProtoGraph(J, K, M);
             break;
         case 2:
             break;
