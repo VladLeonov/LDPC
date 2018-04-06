@@ -210,7 +210,7 @@ matrix create_H_Gallager(int J, int K, int M) {
     return H;
 }
 
-matrix create_H_ProtoGraph(int J, int K, int M) {
+matrix create_V_ProtoGraph(int J, int K, int M) {
     int r = J * M;
     int n = K * M;
     int *x = (int *) malloc(n * sizeof(int));
@@ -272,33 +272,55 @@ matrix create_V_RU(int J, int K, int M) {
     return V;
 }
 
+int get_max_element(int *array, int size) {
+    int result = (-1) * pow(2, sizeof(int) * 8);
+    int i;
+
+    for (i = 0; i < size; i++) {
+        if (result < array[i]) {
+            result = array[i];
+        }
+    }
+
+    return result;
+}
+
 matrix create_H_rand(int type, int J, int K, int M) {
     /**/
 
-    // type=0/1/2/3/4/5/6
-    // 0=Gallager, 1 = Proto, 2= QC, 3=RU, 4 = lin-code, 5 =E ensemble
-    // 6 -nonbin  + given base matrix
-
-    matrix result;
+    int r = J * M;
+    int n = K * M;
+    matrix result_V;
     switch (type) {
         case 0:
-            result = create_H_Gallager(J, K, M);
+            return create_H_Gallager(J, K, M);
             break;
         case 1:
-            result = create_H_ProtoGraph(J, K, M);
-            break;
-        case 2:
-            break;
-        case 3:
-            break;
-        case 4:
-            break;
-        case 5:
-            break;
-        case 6:
+            result_V = create_V_RU(J, K, M);
             break;
     }
-    return result;
+
+    matrix H = create_zero_matrix(r, n);
+
+    int rw[result_V.rows];
+    int cw[H.columns];
+    int i, j;
+
+
+    for (i = 0; i < result_V.rows; i++) {
+        rw[i] = 0;
+        for (j = 0; j < result_V.columns; j++) {
+            rw[i] += result_V.body[i][j];
+        }
+    }
+
+    for (int i = 0; i < r; i++) {
+        for (j = 0; j < rw[i]; j++) {
+            H.body[i][result_V.body[i][j]] = 1;
+        }
+    }
+
+    return H;
 }
 
 columns_metadata create_columns_metadata(int* check_set, int n, int k) {
