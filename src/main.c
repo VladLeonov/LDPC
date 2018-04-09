@@ -11,7 +11,7 @@
 int main() {
 
     int J = 2, K = 5, M = 4;
-    ldpc ldpc_object = create_ldpc(Gallager, J, K, M);
+    ldpc ldpc_object = create_ldpc(RU_code, J, K, M);
 
     int message_size = M * (K - J) + J - 1;
 	int message[1][message_size];

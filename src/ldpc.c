@@ -176,7 +176,7 @@ void print_ldpc(ldpc ldpc_object) {
     }
 }
 
-matrix create_H_Gallager(int J, int K, int M) {
+matrix create_V_Gallager(int J, int K, int M) {
     int r = J * M;
     int n = K * M;
     int *x = (int *) malloc(n * sizeof(int));
@@ -197,30 +197,12 @@ matrix create_H_Gallager(int J, int K, int M) {
         fill_with_permutation(x, n);
     }
 
-    int rw[r];
-
-    for (h = 0; h < r; h++) {
-        rw[h] = 0;
-        for (i = 0; i < K; i++) {
-            rw[h] += V.body[h][i];
-        }
-    }
-
-    matrix H = create_zero_matrix(r, n);
-
-    for (i = 0; i < r; i++) {
-        for (h = 0; h < K; h++) {
-            H.body[i][V.body[i][h]] = 1;
-        }
-    }
 
     free(x);
-    free_matrix(V);
-
-    return H;
+    return V;
 }
 
-matrix create_H_RU(int J, int K, int M) {
+matrix create_V_RU(int J, int K, int M) {
     int r = J * M;
     int n = K * M;
     int *A = (int *) malloc(n * J * sizeof(int));
@@ -238,30 +220,8 @@ matrix create_H_RU(int J, int K, int M) {
             V.body[i][j] = A[i + j * J * M];
         }
     }
-
-    int rw[r];
-
-
-    for (i = 0; i < V.rows; i++) {
-        rw[i] = 0;
-        for (j = 0; j < V.columns; j++) {
-            rw[i] += V.body[i][j];
-        }
-    }
-
-    matrix H = create_zero_matrix(r, n);
-
-    for (i = 0; i < r; i++) {
-        for (j = 0; j < K; j++) {
-            H.body[i][V.body[i][j]] = 1;
-        }
-    }
-
     free(A);
-    free_matrix(V);
-
-    print_matrix(H);
-    return H;
+    return V;
 }
 
 int get_max_element(int *array, int size) {
@@ -282,18 +242,34 @@ matrix create_H_rand(code_type type, int J, int K, int M) {
 
     int r = J * M;
     int n = K * M;
-    matrix result_V;
+    matrix V;
     switch (type) {
         case Gallager:
-            return create_H_Gallager(J, K, M);
+            V = create_V_Gallager(J, K, M);
             break;
         case RU_code:
-            return create_H_RU(J, K, M);
+            V = create_V_RU(J, K, M);
             break;
     }
 
+    int rw[r];
+    int i, h;
+    for (h = 0; h < r; h++) {
+        rw[h] = 0;
+        for (i = 0; i < K; i++) {
+            rw[h] += V.body[h][i];
+        }
+    }
 
-    //print_matrix(result_V);
+    matrix H = create_zero_matrix(r, n);
+
+    for (i = 0; i < r; i++) {
+        for (h = 0; h < K; h++) {
+            H.body[i][V.body[i][h]] = 1;
+        }
+    }
+    free_matrix(V);
+    return H;
 
 }
 
