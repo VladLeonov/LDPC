@@ -76,12 +76,22 @@ matrix count_syndrome(ldpc ldpc_object, matrix codedword, char use_non_zero_data
     return syndrome;
 }
 
-ldpc create_ldpc(int J, int K, int M) {
+ldpc create_ldpc(code_type type, int J, int K, int M) {
 
-    matrix H = create_H_rand(0, J, K, M);
+    matrix H = create_H_rand(type, J, K, M);
     int* check_set = gauss_elimination(H);
     columns_metadata columns_mdata = create_columns_metadata(check_set, K * M, J * M);
-    matrix cutted_H = copy_matrix_part(H, M * J - J + 1, K * M);
+
+    matrix cutted_H;
+    switch (type) {
+        case Gallager:
+            cutted_H = copy_matrix_part(H, M * J - J + 1, K * M);
+            break;
+        case RU_code:
+            cutted_H = copy_matrix(H);
+            break;
+    }
+
     matrix G = create_G_from_H_matrix(cutted_H, columns_mdata);
 
     ldpc ldpc_object;
@@ -210,47 +220,7 @@ matrix create_H_Gallager(int J, int K, int M) {
     return H;
 }
 
-matrix create_V_ProtoGraph(int J, int K, int M) {
-    int r = J * M;
-    int n = K * M;
-    int *x = (int *) malloc(n * sizeof(int));
-    fill_with_permutation(x, n);
-
-    matrix v = create_zero_matrix(M, K);
-
-    int i, j;
-    for (int j = 0; i < K; i++) {
-        for (i = 0; j < M; j++) {
-            v.body[i][j] = x[i + j * K];
-        }
-    }
-
-    matrix V = create_zero_matrix(M * M, K * K);
-
-    for (i = 0; i < M * M; i++) {
-        for (j = 0; j < K * K; j++) {
-            V.body[i][j] = v.body[i % M][j % K];
-        }
-    }
-
-    int I = 0;
-
-    for (i = 1; i < J; i++) {
-        I += M;
-        for (j = 0; j < K; j++) {
-            int l;
-            for (l = 0; l < I; l++) {
-                int *randperm = (int*)malloc(M * sizeof(int));
-                fill_with_permutation(randperm, M);
-                V.body[I + l + M][j] = v.body[randperm[l]][j];
-            }
-        }
-    }
-
-    return V;
-}
-
-matrix create_V_RU(int J, int K, int M) {
+matrix create_H_RU(int J, int K, int M) {
     int r = J * M;
     int n = K * M;
     int *A = (int *) malloc(n * J * sizeof(int));
@@ -258,18 +228,40 @@ matrix create_V_RU(int J, int K, int M) {
     int i, j;
 
     for (i = 0; i < n * J; i++) {
-        A[i] = (A[i] - 1) / J + 1;
+        A[i] = (A[i] - 1) / J;
     }
 
     matrix V = create_zero_matrix(J * M, K);
 
-    for (j = 0; j < K; j++ ) {
+    for (j = 0; j < K; j++) {
         for (i = 0; i < J * M; i++) {
-            V.body[i][j] = A[i + j * K];
+            V.body[i][j] = A[i + j * J * M];
         }
     }
 
-    return V;
+    int rw[r];
+
+
+    for (i = 0; i < V.rows; i++) {
+        rw[i] = 0;
+        for (j = 0; j < V.columns; j++) {
+            rw[i] += V.body[i][j];
+        }
+    }
+
+    matrix H = create_zero_matrix(r, n);
+
+    for (i = 0; i < r; i++) {
+        for (j = 0; j < K; j++) {
+            H.body[i][V.body[i][j]] = 1;
+        }
+    }
+
+    free(A);
+    free_matrix(V);
+
+    print_matrix(H);
+    return H;
 }
 
 int get_max_element(int *array, int size) {
@@ -285,42 +277,24 @@ int get_max_element(int *array, int size) {
     return result;
 }
 
-matrix create_H_rand(int type, int J, int K, int M) {
+matrix create_H_rand(code_type type, int J, int K, int M) {
     /**/
 
     int r = J * M;
     int n = K * M;
     matrix result_V;
     switch (type) {
-        case 0:
+        case Gallager:
             return create_H_Gallager(J, K, M);
             break;
-        case 1:
-            result_V = create_V_RU(J, K, M);
+        case RU_code:
+            return create_H_RU(J, K, M);
             break;
     }
 
-    matrix H = create_zero_matrix(r, n);
 
-    int rw[result_V.rows];
-    int cw[H.columns];
-    int i, j;
+    //print_matrix(result_V);
 
-
-    for (i = 0; i < result_V.rows; i++) {
-        rw[i] = 0;
-        for (j = 0; j < result_V.columns; j++) {
-            rw[i] += result_V.body[i][j];
-        }
-    }
-
-    for (int i = 0; i < r; i++) {
-        for (j = 0; j < rw[i]; j++) {
-            H.body[i][result_V.body[i][j]] = 1;
-        }
-    }
-
-    return H;
 }
 
 columns_metadata create_columns_metadata(int* check_set, int n, int k) {

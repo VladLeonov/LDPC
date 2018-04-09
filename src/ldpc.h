@@ -3,6 +3,11 @@
 #ifndef LDPC
 #define LDPC
 
+typedef enum code_type {
+    Gallager = 0,
+    RU_code = 1
+} code_type;
+
 typedef struct{
 	int check_size, information_size;
 	int *check_set;
@@ -18,10 +23,10 @@ typedef struct{
 
 matrix encode(ldpc ldpc_object, matrix message, char use_non_zero_data);
 matrix count_syndrome(ldpc ldpc_object, matrix codedword, char use_non_zero_data);
-ldpc create_ldpc(int J, int K, int M);
+ldpc create_ldpc(code_type type, int J, int K, int M);
 void free_ldpc(ldpc ldpc_object);
 void print_ldpc(ldpc ldpc_object);
-matrix create_H_rand(int type, int J, int K, int M);
+matrix create_H_rand(code_type type, int J, int K, int M);
 columns_metadata create_columns_metadata(int* information_set, int n, int k);
 
 #endif

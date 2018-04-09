@@ -26,6 +26,7 @@ float min(float value1, float value2) {
     }
 }
 
+//CHECK METHOD gauss_elimination
 int* gauss_elimination(matrix G) {
 	int k = G.rows;
 	int n = G.columns;
@@ -172,7 +173,7 @@ int get_indexes_of_common_elements(int *arr_a, int *arr_b, int *result, int len_
 }
 
 float log_exp(float x) {
-    float T = 19.07; 
+    float T = 19.07;
     x = max(min(x, T), -T);
     return log((exp(x) - 1) / (exp(x) + 1));
 }
@@ -190,17 +191,17 @@ float* map_sp(float y[], int length) {
         }
     }
     synd %= 2;
-    
+
     for (i = 0; i < length; i++) {
         hard[i] = (hard[i] + synd) % 2;
     }
-    
+
     float alogpy[length], sum_alogpy = 0;
     for (i = 0; i < length; i++) {
         alogpy[i] = log_exp(abs(y[i]));
         sum_alogpy += alogpy[i];
     }
-    
+
     float *soft_out = (float*) malloc(length * sizeof(float));
     for (i = 0; i < length; i++) {
     	soft_out[i] = (2 * hard[i] - 1) * log_exp(alogpy[i] - sum_alogpy);
@@ -225,7 +226,7 @@ char check_syndrome(int *hard, int r, non_zero_data V) {
 
 matrix  get_hard_from_soft(float soft[], int length) {
     matrix result = create_zero_matrix(1, length);
-    
+
     int i;
     for (i = 0; i < length; i++) {
         if (soft[i] < 0) {
@@ -301,7 +302,7 @@ int decode_belief_propogandation(ldpc ldpc_object, float *y, matrix *hard_soluti
     int L_element = 0;
     int index_C = 0;
     int k;
-    
+
     while ((iter < MAXITER) && (sum_syndrome(syndrome) != 0)) {
         //H columns processing
         float sum_Z;
@@ -315,7 +316,7 @@ int decode_belief_propogandation(ldpc ldpc_object, float *y, matrix *hard_soluti
                 L[index_C][i] = y[i] + sum_Z - Z[index_C][i];
             }
         }
-        
+
         //H rows processing
 		float a, b;
 		int index_C;
@@ -328,7 +329,7 @@ int decode_belief_propogandation(ldpc ldpc_object, float *y, matrix *hard_soluti
 		        	if (V.element_data[j][k] != i) {
 			        	L_element = L[j][V.element_data[j][k]];
 			            a *= sign(L_element);
-			            b += log_tahn(L_element);	
+			            b += log_tahn(L_element);
 					}
 		        }
 		        Z[j][i] = max(min(a * log_tahn(b), 19.07), -19.07);
@@ -339,19 +340,19 @@ int decode_belief_propogandation(ldpc ldpc_object, float *y, matrix *hard_soluti
         for (i = 0; i < n; i++) {
             soft[i] = y[i] + sum_array(n, Z, i, r);
         }
-        
+
         free_matrix(hard);
         hard = get_hard_from_soft(soft, n);
         free_matrix(syndrome);
         syndrome = count_syndrome(ldpc_object, hard, use_non_zero_data);
         iter++;
     }
-    
+
     hard_solution->body = hard.body;
     hard_solution->columns = hard.columns;
     hard_solution->rows = hard.rows;
-    
+
     free_matrix(syndrome);
-    
+
     return iter;
 }
