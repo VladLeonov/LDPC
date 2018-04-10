@@ -8,5 +8,6 @@ typedef struct{
 } SNR_interval;
 
 matrix create_random_message(int length);
+float* normalize_vector(matrix M, float shift, float factor);
 
 #endif

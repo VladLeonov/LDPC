@@ -10,3 +10,15 @@ matrix create_random_message(int length) {
     }
     return message;
 }
+
+float* normalize_vector(matrix M, float shift, float factor) {
+	float *result = NULL;
+	if (!is_void_matrix(M)) {
+		result = (float*) malloc(M.columns * sizeof(float));
+		int i;
+		for (i = 0; i < M.columns; i++) {
+			result[i] = M.body[0][i] * factor + shift;
+		}
+	}
+	return result;
+}
