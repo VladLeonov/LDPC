@@ -59,4 +59,10 @@ float randn() {
 	return X1;
 }
 
+void add_noise(float *message, int length, float sigma) {
+	int i;
+	for (i = 0; i < length; i++) {
+		message[i] += sigma * randn();
+	}
+}
 
