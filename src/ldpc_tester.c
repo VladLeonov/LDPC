@@ -3,6 +3,11 @@
 #include <stdlib.h>
 #include <math.h>
 
+#include "math.h"
+
+#define TRUE !0
+#define FALSE 0
+
 matrix create_random_message(int length) {
     int i;
     matrix message = create_zero_matrix(1, length);
@@ -66,3 +71,45 @@ void add_noise(float *message, int length, float sigma) {
 	}
 }
 
+void decoding_simulation(ldpc ldpc_object, SNR_interval SNRs, FILE* output_file) {
+	int NEXP = 10000;
+    int NERR = 100;
+	float PER;
+	
+    int k = ldpc_object.k, n = ldpc_object.n;
+    float R = (float) k / (float) n;
+    float *sigma_values = gen_sigma_values(SNRs, R);
+
+	float SNR;
+	matrix U, X;
+	float *y;
+	int i;
+	matrix *hard_solution = (matrix*)malloc(sizeof(matrix));
+    for (SNR = SNRs.min, i = 0; SNR <= SNRs.max; SNR += SNRs.step, i++) {
+        PER = 0;
+        for (i = 0; i < NEXP; i++) {
+        	
+            U = create_random_message(k);
+            X = encode(ldpc_object, U, TRUE);
+            y = normalize_vector(X, 1, -2);
+            add_noise(y, k, sigma_values[i]);
+            decode_belief_propogandation(ldpc_object, y, hard_solution, TRUE);
+            
+            if (compare_matrices(U, *hard_solution) == FALSE) {
+            	PER += 1.0;
+			}
+
+			free_matrix(U);
+			free_matrix(X);
+			free(y);
+			free_matrix(*hard_solution);
+
+            if (PER > NERR) {
+                break;
+            }
+        }
+        PER /= i;
+        fprintf(output_file, "%f %f\n", SNR, PER);
+    }
+    free(hard_solution);
+}
