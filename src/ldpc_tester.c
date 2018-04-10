@@ -93,7 +93,7 @@ void decoding_simulation(ldpc ldpc_object, SNR_interval SNRs, FILE* output_file)
             X = encode(ldpc_object, U, TRUE);
             y = normalize_vector(X, 1, -2);
             add_noise(y, k, sigma_values[i]);
-            decode_belief_propogandation(ldpc_object, y, hard_solution, TRUE);
+            flooding(ldpc_object, y, hard_solution);
             
             if (compare_matrices(U, *hard_solution) == FALSE) {
             	PER += 1.0;
