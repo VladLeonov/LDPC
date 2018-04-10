@@ -104,7 +104,8 @@ void decoding_simulation(ldpc ldpc_object, SNR_interval SNRs, FILE* output_file)
 			free(y);
 			free_matrix(*hard_solution);
 
-            if (PER > NERR) {
+            if (PER >= NERR) {
+            	i++;
                 break;
             }
         }
