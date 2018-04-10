@@ -115,7 +115,7 @@ matrix create_void_matrix() {
 
 
 int is_void_matrix(matrix M) {
-    return ((M.rows > 0) && (M.columns > 0));
+    return !((M.rows > 0) && (M.columns > 0));
 }
 
 
