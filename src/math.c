@@ -1,7 +1,7 @@
-#include "matrix.h"
+#include "math.h"
 
 #include "ldpc.h"
-#include "math.h"
+#include "matrix.h"
 
 #include <stdlib.h>
 #include <math.h>
@@ -209,12 +209,12 @@ float* map_sp(float y[], int length) {
     return soft_out;
 }
 
-char check_syndrome(int *hard, int r, non_zero_data V) {
+char check_syndrome(matrix hard, int r, non_zero_data V) {
 	int i, j, syn;
     for (i = 0; i < r; i++) {
     	syn = 0;
     	for (j = 0; j < V.element_length[i]; j++) {
-    		syn += hard[V.element_data[i][j]];
+    		syn += hard.body[0][V.element_data[i][j]];
 		}
         syn %= 2;
         if (syn > 0) {
@@ -224,7 +224,22 @@ char check_syndrome(int *hard, int r, non_zero_data V) {
     return TRUE;
 }
 
-int flooding(float *soft, int *hard, ldpc ldpc_object) {
+matrix get_hard_from_soft(float soft[], int length) {
+    matrix result = create_zero_matrix(1, length);
+
+    int i;
+    for (i = 0; i < length; i++) {
+        if (soft[i] < 0) {
+            result.body[0][i] = 1;
+        } else {
+            result.body[0][i] = 0;
+        }
+    }
+
+    return result;
+}
+
+int flooding(ldpc ldpc_object, float *soft, matrix *hard_solution) {
 	int i, j;
     int n = ldpc_object.H.columns;
     int r = ldpc_object.H.rows; // number of parity checks
@@ -249,13 +264,10 @@ int flooding(float *soft, int *hard, ldpc ldpc_object) {
     
     int soft_out[n];
 	for (i = 0; i < n; i++) {
-        if (soft[i] < 0) {
-            hard[i] = 1;
-        } else {
-            hard[i] = 0;
-        }
         soft_out[i] = soft[i];
     }
+    
+    matrix hard = get_hard_from_soft(soft, n);
 
     if (check_syndrome(hard, r, V) == TRUE) {
         return 0;
@@ -297,35 +309,18 @@ int flooding(float *soft, int *hard, ldpc ldpc_object) {
 			}
         }
 
-        for (i = 0; i < n; i++) {
-	        if (soft_out[i] < 0) {
-	            hard[i] = 1;
-	        } else {
-	            hard[i] = 0;
-	        }
-	    }
+        hard = get_hard_from_soft(soft, n);
     
         if (check_syndrome(hard, r, V) == TRUE) {
             return steps;
         }
     }
+    
+    hard_solution->body = hard.body;
+    hard_solution->columns = hard.columns;
+    hard_solution->rows = hard.rows;
 
     return -MAXITER;	
-}
-
-matrix  get_hard_from_soft(float soft[], int length) {
-    matrix result = create_zero_matrix(1, length);
-
-    int i;
-    for (i = 0; i < length; i++) {
-        if (soft[i] < 0) {
-            result.body[0][i] = 1;
-        } else {
-            result.body[0][i] = 0;
-        }
-    }
-
-    return result;
 }
 
 float log_tahn(float value) {
