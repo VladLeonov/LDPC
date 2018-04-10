@@ -10,5 +10,6 @@ typedef struct{
 matrix create_random_message(int length);
 float* normalize_vector(matrix M, float shift, float factor);
 float* gen_sigma_values(SNR_interval SNR, float R);
+float randn();
 
 #endif
