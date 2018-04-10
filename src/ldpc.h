@@ -21,6 +21,10 @@ typedef struct{
 	non_zero_data C, V;
 } ldpc;
 
+typedef struct{
+	float min, max, step;
+} SNR_interval;
+
 matrix encode(ldpc ldpc_object, matrix message, char use_non_zero_data);
 matrix count_syndrome(ldpc ldpc_object, matrix codedword, char use_non_zero_data);
 ldpc create_ldpc(code_type type, int J, int K, int M);
