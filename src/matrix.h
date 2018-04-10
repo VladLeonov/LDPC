@@ -30,4 +30,6 @@ matrix copy_matrix(matrix matrix_object);
 matrix copy_matrix_part(matrix old_matrix_object, int rows, int columns);
 
 non_zero_data get_non_zero_column_data(matrix matrix_object);
+
+char* compare_matrices(matrix matrix1, matrix matrix2);
 #endif

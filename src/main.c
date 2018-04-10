@@ -57,6 +57,8 @@ int main() {
 		printf(encoded_message.body[0][i] == hard[i] ? ". " : "- ");
 	}
 
+	//printf("%s\n", compare_matrices(create_unit_matrix(2), create_zero_matrix(2, 2)));
+    print_matrix(create_random_message(24));
     system("pause");
 
     free_ldpc(ldpc_object);

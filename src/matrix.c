@@ -209,3 +209,20 @@ non_zero_data get_non_zero_column_data(matrix matrix_object) {
 
     return result;
 }
+
+char* compare_matrices(matrix matrix1, matrix matrix2) {
+    if ((matrix1.columns != matrix2.columns) || (matrix1.rows != matrix2.rows)) {
+        return "false";
+    } else {
+        int i, j;
+        for (i = 0; i < matrix1.rows; i++) {
+            for (j = 0; j < matrix1.columns; j++) {
+                if (matrix1.body[i][j] != matrix2.body[i][j]) {
+                    return "false";
+                }
+            }
+        }
+    }
+
+    return "true";
+}

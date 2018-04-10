@@ -28,5 +28,6 @@ void free_ldpc(ldpc ldpc_object);
 void print_ldpc(ldpc ldpc_object);
 matrix create_H_rand(code_type type, int J, int K, int M);
 columns_metadata create_columns_metadata(int* information_set, int n, int k);
+matrix create_random_message(int length);
 
 #endif
