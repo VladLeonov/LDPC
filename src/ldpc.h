@@ -21,10 +21,6 @@ typedef struct{
 	non_zero_data C, V;
 } ldpc;
 
-typedef struct{
-	float min, max, step;
-} SNR_interval;
-
 matrix encode(ldpc ldpc_object, matrix message, char use_non_zero_data);
 matrix count_syndrome(ldpc ldpc_object, matrix codedword, char use_non_zero_data);
 ldpc create_ldpc(code_type type, int J, int K, int M);
@@ -32,6 +28,5 @@ void free_ldpc(ldpc ldpc_object);
 void print_ldpc(ldpc ldpc_object);
 matrix create_H_rand(code_type type, int J, int K, int M);
 columns_metadata create_columns_metadata(int* information_set, int n, int k);
-matrix create_random_message(int length);
 
 #endif
