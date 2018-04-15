@@ -26,7 +26,6 @@ float min(float value1, float value2) {
     }
 }
 
-//CHECK METHOD gauss_elimination
 int* gauss_elimination(matrix G) {
 	int k = G.rows;
 	int n = G.columns;
@@ -47,7 +46,6 @@ int* gauss_elimination(matrix G) {
                 G.body[j] = G.body[j + 1];
             }
             k--;
-            G.rows--;
 
             information_set[k] = -1;
 
@@ -94,6 +92,9 @@ int* gauss_elimination(matrix G) {
 
         column_number++;  // keep the same row, another column
     }
+    for (i = k; i < G.rows; i++) {
+    	G.body[i] = calloc(G.columns, sizeof(int));
+	}
     return information_set;
 }
 
@@ -270,6 +271,9 @@ int flooding(ldpc ldpc_object, float *soft, matrix *hard_solution) {
     matrix hard = get_hard_from_soft(soft, n);
 
     if (check_syndrome(hard, r, V) == TRUE) {
+    	hard_solution->body = hard.body;
+    	hard_solution->columns = hard.columns;
+    	hard_solution->rows = hard.rows;
         return 0;
     } 
 
@@ -312,6 +316,9 @@ int flooding(ldpc ldpc_object, float *soft, matrix *hard_solution) {
         hard = get_hard_from_soft(soft, n);
     
         if (check_syndrome(hard, r, V) == TRUE) {
+        	hard_solution->body = hard.body;
+    		hard_solution->columns = hard.columns;
+    		hard_solution->rows = hard.rows;
             return steps;
         }
     }

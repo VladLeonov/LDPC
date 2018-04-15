@@ -83,19 +83,20 @@ void decoding_simulation(ldpc ldpc_object, SNR_interval SNRs, FILE* output_file)
 	float SNR;
 	matrix U, X;
 	float *y;
-	int i;
+	int i, j;
 	matrix *hard_solution = (matrix*)malloc(sizeof(matrix));
     for (SNR = SNRs.min, i = 0; SNR <= SNRs.max; SNR += SNRs.step, i++) {
+    	printf("SNR = %f\n", SNR);
         PER = 0;
-        for (i = 0; i < NEXP; i++) {
-        	
+        for (j = 0; j < NEXP; j++) {
+        	if (j % 100 == 0) printf("%d%%\n", j / 100);
             U = create_random_message(k);
             X = encode(ldpc_object, U, TRUE);
             y = normalize_vector(X, 1, -2);
-            add_noise(y, k, sigma_values[i]);
+            add_noise(y, n, sigma_values[i]);
             flooding(ldpc_object, y, hard_solution);
             
-            if (compare_matrices(U, *hard_solution) == FALSE) {
+            if (compare_matrices(X, *hard_solution) == FALSE) {
             	PER += 1.0;
 			}
 
@@ -105,11 +106,11 @@ void decoding_simulation(ldpc ldpc_object, SNR_interval SNRs, FILE* output_file)
 			free_matrix(*hard_solution);
 
             if (PER >= NERR) {
-            	i++;
+            	j++;
                 break;
             }
         }
-        PER /= i;
+        PER /= j;
         fprintf(output_file, "%f %f\n", SNR, PER);
     }
     free(hard_solution);
