@@ -11,16 +11,16 @@
 
 int main() {
 
-    int J = 9, K = 18, M = 3;
+    int J = 3, K = 6, M = 3;//4, 8, 32
     ldpc ldpc_object = create_ldpc(RU_code, J, K, M);
-    
-    SNR_interval SNR = {1., 10., 0.5};//{3.8, 3.9, 0.005};
+
+    SNR_interval SNR = {3.8, 3.9, 0.005};//{3.8, 3.9, 0.005};
     FILE *file = fopen("decoding_simulation.txt", "w");
     decoding_simulation(ldpc_object, SNR, file);
     fclose(file);
 
     //int message_size = M * (K - J) + J - 1;
-    
+
     system("pause");
     free_ldpc(ldpc_object);
 

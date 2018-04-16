@@ -43,24 +43,24 @@ float randn() {
 	float U1, U2, W, mult;
 	static float X1, X2;
 	static int call = 0;
-	
+
 	if (call == 1) {
 		call = !call;
 		return X2;
 	}
-	
+
 	do {
 		U1 = -1 + ((float) rand () / RAND_MAX) * 2;
 		U2 = -1 + ((float) rand () / RAND_MAX) * 2;
 		W = pow (U1, 2) + pow (U2, 2);
 	} while ((W >= 1) || (W == 0));
-	
+
 	mult = sqrt ((-2 * log (W)) / W);
 	X1 = U1 * mult;
 	X2 = U2 * mult;
-	
+
 	call = !call;
-	
+
 	return X1;
 }
 
@@ -75,7 +75,7 @@ void decoding_simulation(ldpc ldpc_object, SNR_interval SNRs, FILE* output_file)
 	int NEXP = 10000;
     int NERR = 100;
 	float PER;
-	
+
     int k = ldpc_object.k, n = ldpc_object.n;
     float R = (float) k / (float) n;
     float *sigma_values = gen_sigma_values(SNRs, R);
@@ -93,7 +93,7 @@ void decoding_simulation(ldpc ldpc_object, SNR_interval SNRs, FILE* output_file)
             y = normalize_vector(X, 1, -2);
             add_noise(y, n, sigma_values[i]);
             flooding(ldpc_object, y, hard_solution);
-            
+
             if (compare_matrices(X, *hard_solution) == FALSE) {
             	PER += 1.0;
 			}

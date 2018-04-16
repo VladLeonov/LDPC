@@ -226,7 +226,7 @@ matrix create_V_RU(int J, int K, int M) {
 }
 
 int get_max_element(int *array, int size) {
-    int result = (int) -pow(2, sizeof(int) * 8);
+    int result = (int) pow(2, sizeof(int) * 8);
     int i;
 
     for (i = 0; i < size; i++) {

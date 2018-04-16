@@ -246,7 +246,7 @@ int flooding(ldpc ldpc_object, float *soft, matrix *hard_solution) {
     int r = ldpc_object.H.rows; // number of parity checks
     non_zero_data V = ldpc_object.V;
     non_zero_data C = ldpc_object.C;
-    
+
     int rw[r];
     for (i = 0; i < r; i++) {
     	rw[i] = V.element_length[i];
@@ -255,19 +255,19 @@ int flooding(ldpc ldpc_object, float *soft, matrix *hard_solution) {
     for (i = 0; i < n; i++) {
     	cw[i] = C.element_length[i];
     }
-    
+
     float Z[r][n];  // current LLRS
     for (i = 0; i < r; i++) {
     	for (j = 0; j < n; j++) {
-	    	Z[r][n] = 0;
+	    	Z[i][j] = 0;
 	    }
     }
-    
-    int soft_out[n];
+
+    float soft_out[n];
 	for (i = 0; i < n; i++) {
         soft_out[i] = soft[i];
     }
-    
+
     matrix hard = get_hard_from_soft(soft, n);
 
     if (check_syndrome(hard, r, V) == TRUE) {
@@ -275,7 +275,7 @@ int flooding(ldpc ldpc_object, float *soft, matrix *hard_solution) {
     	hard_solution->columns = hard.columns;
     	hard_solution->rows = hard.rows;
         return 0;
-    } 
+    }
 
     for (i = 0; i < r; i++) {
     	for (j = 0; j < rw[i]; j++) {
@@ -288,12 +288,12 @@ int flooding(ldpc ldpc_object, float *soft, matrix *hard_solution) {
         // loop over checks
         float* soft_buffer;
         float y[n];
-        for (i = 0; i < r; i++) { 
+        for (i = 0; i < r; i++) {
         	for (j = 0; j < rw[i]; j++) {
 	    		y[j] = Z[i][V.element_data[i][j]];
 	    	}
 	    	soft_buffer = map_sp(y, rw[i]);
-	    	
+
 	        for (j = 0; j < rw[i]; j++) {
 	    		Z[i][V.element_data[i][j]] = soft_buffer[j];
 	    	}
@@ -313,8 +313,8 @@ int flooding(ldpc ldpc_object, float *soft, matrix *hard_solution) {
 			}
         }
 
-        hard = get_hard_from_soft(soft, n);
-    
+        hard = get_hard_from_soft(soft_out, n);
+
         if (check_syndrome(hard, r, V) == TRUE) {
         	hard_solution->body = hard.body;
     		hard_solution->columns = hard.columns;
@@ -322,12 +322,12 @@ int flooding(ldpc ldpc_object, float *soft, matrix *hard_solution) {
             return steps;
         }
     }
-    
+
     hard_solution->body = hard.body;
     hard_solution->columns = hard.columns;
     hard_solution->rows = hard.rows;
 
-    return -MAXITER;	
+    return -MAXITER;
 }
 
 float log_tahn(float value) {
