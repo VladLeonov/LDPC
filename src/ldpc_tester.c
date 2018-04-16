@@ -64,17 +64,24 @@ float randn() {
 	return X1;
 }
 
-void add_noise(float *message, int length, float sigma) {
+int add_noise(float *message, int length, float sigma) {
 	int i;
+	float delta;
+	int changes = 0;
 	for (i = 0; i < length; i++) {
-		message[i] += sigma * randn();
+		delta = sigma * randn();
+		if ((message[i] + delta) * message[i] < 0) {
+			changes++;
+		}
+		message[i] += delta;
 	}
+	return changes;
 }
 
 void decoding_simulation(ldpc ldpc_object, SNR_interval SNRs, FILE* output_file) {
 	int NEXP = 10000;
     int NERR = 100;
-	float PER;
+	float PER, change_counter, changes_counter;
 	
     int k = ldpc_object.k, n = ldpc_object.n;
     float R = (float) k / (float) n;
@@ -84,18 +91,32 @@ void decoding_simulation(ldpc ldpc_object, SNR_interval SNRs, FILE* output_file)
 	matrix U, X;
 	float *y;
 	int i, j;
+	int changes;
 	matrix *hard_solution = (matrix*)malloc(sizeof(matrix));
     for (SNR = SNRs.min, i = 0; SNR <= SNRs.max; SNR += SNRs.step, i++) {
+    	printf("\nSNR = %f\n\n", SNR);
         PER = 0;
+        change_counter = 0;
+        changes_counter = 0;
         for (j = 0; j < NEXP; j++) {
             U = create_random_message(k);
             X = encode(ldpc_object, U, TRUE);
             y = normalize_vector(X, 1, -2);
-            add_noise(y, n, sigma_values[i]);
+            changes = add_noise(y, n, sigma_values[i]);
+            if (changes > 0) {
+            	change_counter += 1.0;
+            	changes_counter += changes;
+			}
             flooding(ldpc_object, y, hard_solution);
+            //decode_belief_propogandation(ldpc_object, y, hard_solution, TRUE);
+            
+            if ((j % 100 == 0) && (j > 0)) {
+				printf("%02d%% iterations\n", j / 100);
+			}
             
             if (compare_matrices(X, *hard_solution) == FALSE) {
             	PER += 1.0;
+            	printf("%02d%% errors\n", (int) PER);
 			}
 
 			free_matrix(U);
@@ -109,7 +130,9 @@ void decoding_simulation(ldpc ldpc_object, SNR_interval SNRs, FILE* output_file)
             }
         }
         PER /= j;
-        fprintf(output_file, "%f %f\n", SNR, PER);
+        change_counter /= j;
+        changes_counter /= j;
+        fprintf(output_file, "%f %f %f %f\n", SNR, PER, change_counter, changes_counter);
     }
     free(hard_solution);
 }
