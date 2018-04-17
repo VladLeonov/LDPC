@@ -174,8 +174,7 @@ int get_indexes_of_common_elements(int *arr_a, int *arr_b, int *result, int len_
 }
 
 float log_exp(float x) {
-    float T = 19.07;
-    x = max(min(x, T), -T);
+    x = max(min(x, 2.), 0.01);
     return log((exp(x) - 1) / (exp(x) + 1));
 }
 
@@ -199,7 +198,7 @@ float* map_sp(float y[], int length) {
 
     float alogpy[length], sum_alogpy = 0;
     for (i = 0; i < length; i++) {
-        alogpy[i] = log_exp(abs(y[i]));
+        alogpy[i] = log_exp(fabs(y[i]));
         sum_alogpy += alogpy[i];
     }
 
@@ -246,7 +245,7 @@ int flooding(ldpc ldpc_object, float *soft, matrix *hard_solution) {
     int r = ldpc_object.H.rows; // number of parity checks
     non_zero_data V = ldpc_object.V;
     non_zero_data C = ldpc_object.C;
-
+    
     int rw[r];
     for (i = 0; i < r; i++) {
     	rw[i] = V.element_length[i];
@@ -255,19 +254,19 @@ int flooding(ldpc ldpc_object, float *soft, matrix *hard_solution) {
     for (i = 0; i < n; i++) {
     	cw[i] = C.element_length[i];
     }
-
+    
     float Z[r][n];  // current LLRS
     for (i = 0; i < r; i++) {
     	for (j = 0; j < n; j++) {
 	    	Z[i][j] = 0;
 	    }
     }
-
+    
     float soft_out[n];
 	for (i = 0; i < n; i++) {
         soft_out[i] = soft[i];
     }
-
+    
     matrix hard = get_hard_from_soft(soft, n);
 
     if (check_syndrome(hard, r, V) == TRUE) {
@@ -275,7 +274,7 @@ int flooding(ldpc ldpc_object, float *soft, matrix *hard_solution) {
     	hard_solution->columns = hard.columns;
     	hard_solution->rows = hard.rows;
         return 0;
-    }
+    } 
 
     for (i = 0; i < r; i++) {
     	for (j = 0; j < rw[i]; j++) {
@@ -284,22 +283,23 @@ int flooding(ldpc ldpc_object, float *soft, matrix *hard_solution) {
     }
 
 	int steps;
-    for (steps = 0; steps < MAXITER; steps++) {
+    for (steps = 1; steps <= MAXITER; steps++) {
         // loop over checks
         float* soft_buffer;
         float y[n];
-        for (i = 0; i < r; i++) {
+        for (i = 0; i < r; i++) { 
         	for (j = 0; j < rw[i]; j++) {
 	    		y[j] = Z[i][V.element_data[i][j]];
 	    	}
 	    	soft_buffer = map_sp(y, rw[i]);
-
+	    	
 	        for (j = 0; j < rw[i]; j++) {
 	    		Z[i][V.element_data[i][j]] = soft_buffer[j];
 	    	}
 	    	free(soft_buffer);
         }
 
+		char is_bad = TRUE;//to delete
         // symbol nodes
         for (i = 0; i < n; i++) {
             // prob domain
@@ -307,14 +307,22 @@ int flooding(ldpc ldpc_object, float *soft, matrix *hard_solution) {
             for (j = 0; j < cw[i]; j++) {
             	sum_Z += Z[C.element_data[i][j]][i];
             }
+            if (soft_out[i] != (soft[i] + sum_Z)) is_bad = FALSE;//to delete
             soft_out[i] = soft[i] + sum_Z;
             for (j = 0; j < cw[i]; j++) {
 				Z[C.element_data[i][j]][i] = soft_out[i] - Z[C.element_data[i][j]][i];
 			}
         }
+        
+        printf("Is bad = %s\n", is_bad == TRUE ? "TRUE" : "FALSE");//to delete
+        printf("Iter = %d\n", steps);
+        for (i = 0; i < n; i++) {
+            printf("%.2f ", soft_out[i]);
+        }
+        printf("\n\n");
 
         hard = get_hard_from_soft(soft_out, n);
-
+    
         if (check_syndrome(hard, r, V) == TRUE) {
         	hard_solution->body = hard.body;
     		hard_solution->columns = hard.columns;
@@ -322,16 +330,16 @@ int flooding(ldpc ldpc_object, float *soft, matrix *hard_solution) {
             return steps;
         }
     }
-
+    
     hard_solution->body = hard.body;
     hard_solution->columns = hard.columns;
     hard_solution->rows = hard.rows;
 
-    return -MAXITER;
+    return -MAXITER;	
 }
 
 float log_tahn(float value) {
-    float t = exp(abs(value));
+    float t = exp(fabs(value));
     return log((t + 1)/(t - 1));
 }
 
@@ -390,7 +398,7 @@ int decode_belief_propogandation(ldpc ldpc_object, float *y, matrix *hard_soluti
 
     matrix syndrome = count_syndrome(ldpc_object, hard, use_non_zero_data);
     int iter = 0;
-    int L_element = 0;
+    float L_element = 0;
     int index_C = 0;
     int k;
 
