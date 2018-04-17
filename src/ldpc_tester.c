@@ -81,7 +81,7 @@ int add_noise(float *message, int length, float sigma) {
 void decoding_simulation(ldpc ldpc_object, SNR_interval SNRs, FILE* output_file) {
 	int NEXP = 10000;
     int NERR = 100;
-	float PER, change_counter, changes_counter;
+	float PER, change_counter, changes_counter, fixed_errors;
 	
     int k = ldpc_object.k, n = ldpc_object.n;
     float R = (float) k / (float) n;
@@ -91,17 +91,20 @@ void decoding_simulation(ldpc ldpc_object, SNR_interval SNRs, FILE* output_file)
 	matrix U, X;
 	float *y;
 	int i, j;
-	int changes;
+	int changes, fixes;
 	matrix *hard_solution = (matrix*)malloc(sizeof(matrix));
+	fprintf(output_file, "SNR | percentage of incorrect amended messages | average number of errors in message\n");
     for (SNR = SNRs.min, i = 0; SNR <= SNRs.max; SNR += SNRs.step, i++) {
     	printf("\nSNR = %f\n\n", SNR);
         PER = 0;
         change_counter = 0;
         changes_counter = 0;
+        fixed_errors = 0;
+        fixes = 0;
         for (j = 0; j < NEXP; j++) {
             U = create_random_message(k);
             X = encode(ldpc_object, U, TRUE);
-            y = normalize_vector(X, 1, -2);
+            y = normalize_vector(X, -1, 2);
             changes = add_noise(y, n, sigma_values[i]);
             if (changes > 0) {
             	change_counter += 1.0;
@@ -117,6 +120,11 @@ void decoding_simulation(ldpc ldpc_object, SNR_interval SNRs, FILE* output_file)
             if (compare_matrices(X, *hard_solution) == FALSE) {
             	PER += 1.0;
             	printf("%02d%% errors\n", (int) PER);
+			} else {
+				if (changes > 0) {
+					fixed_errors += changes;
+					fixes++;
+				}
 			}
 
 			free_matrix(U);
@@ -132,7 +140,7 @@ void decoding_simulation(ldpc ldpc_object, SNR_interval SNRs, FILE* output_file)
         PER /= j;
         change_counter /= j;
         changes_counter /= j;
-        fprintf(output_file, "%f %f %f %f\n", SNR, PER, change_counter, changes_counter);
+        fprintf(output_file, "%.1f %22.2f %41.2f %f\n", SNR, PER / change_counter, changes_counter / change_counter, fixed_errors / fixes);
     }
     free(hard_solution);
 }
