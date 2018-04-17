@@ -174,8 +174,7 @@ int get_indexes_of_common_elements(int *arr_a, int *arr_b, int *result, int len_
 }
 
 float log_exp(float x) {
-    float T = 19.07;
-    x = max(min(x, T), -T);
+    x = max(min(x, 2.), 0.01);
     return log((exp(x) - 1) / (exp(x) + 1));
 }
 
@@ -199,7 +198,7 @@ float* map_sp(float y[], int length) {
 
     float alogpy[length], sum_alogpy = 0;
     for (i = 0; i < length; i++) {
-        alogpy[i] = log_exp(abs(y[i]));
+        alogpy[i] = log_exp(fabs(y[i]));
         sum_alogpy += alogpy[i];
     }
 
@@ -259,11 +258,11 @@ int flooding(ldpc ldpc_object, float *soft, matrix *hard_solution) {
     float Z[r][n];  // current LLRS
     for (i = 0; i < r; i++) {
     	for (j = 0; j < n; j++) {
-	    	Z[r][n] = 0;
+	    	Z[i][j] = 0;
 	    }
     }
     
-    int soft_out[n];
+    float soft_out[n];
 	for (i = 0; i < n; i++) {
         soft_out[i] = soft[i];
     }
@@ -284,7 +283,7 @@ int flooding(ldpc ldpc_object, float *soft, matrix *hard_solution) {
     }
 
 	int steps;
-    for (steps = 0; steps < MAXITER; steps++) {
+    for (steps = 1; steps <= MAXITER; steps++) {
         // loop over checks
         float* soft_buffer;
         float y[n];
@@ -313,7 +312,7 @@ int flooding(ldpc ldpc_object, float *soft, matrix *hard_solution) {
 			}
         }
 
-        hard = get_hard_from_soft(soft, n);
+        hard = get_hard_from_soft(soft_out, n);
     
         if (check_syndrome(hard, r, V) == TRUE) {
         	hard_solution->body = hard.body;
