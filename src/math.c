@@ -299,6 +299,7 @@ int flooding(ldpc ldpc_object, float *soft, matrix *hard_solution) {
 	    	free(soft_buffer);
         }
 
+		char is_bad = TRUE;//to delete
         // symbol nodes
         for (i = 0; i < n; i++) {
             // prob domain
@@ -306,11 +307,19 @@ int flooding(ldpc ldpc_object, float *soft, matrix *hard_solution) {
             for (j = 0; j < cw[i]; j++) {
             	sum_Z += Z[C.element_data[i][j]][i];
             }
+            if (soft_out[i] != (soft[i] + sum_Z)) is_bad = FALSE;//to delete
             soft_out[i] = soft[i] + sum_Z;
             for (j = 0; j < cw[i]; j++) {
 				Z[C.element_data[i][j]][i] = soft_out[i] - Z[C.element_data[i][j]][i];
 			}
         }
+        
+        printf("Is bad = %s\n", is_bad == TRUE ? "TRUE" : "FALSE");//to delete
+        printf("Iter = %d\n", steps);
+        for (i = 0; i < n; i++) {
+            printf("%.2f ", soft_out[i]);
+        }
+        printf("\n\n");
 
         hard = get_hard_from_soft(soft_out, n);
     
@@ -330,7 +339,7 @@ int flooding(ldpc ldpc_object, float *soft, matrix *hard_solution) {
 }
 
 float log_tahn(float value) {
-    float t = exp(abs(value));
+    float t = exp(fabs(value));
     return log((t + 1)/(t - 1));
 }
 
@@ -389,7 +398,7 @@ int decode_belief_propogandation(ldpc ldpc_object, float *y, matrix *hard_soluti
 
     matrix syndrome = count_syndrome(ldpc_object, hard, use_non_zero_data);
     int iter = 0;
-    int L_element = 0;
+    float L_element = 0;
     int index_C = 0;
     int k;
 
