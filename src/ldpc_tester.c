@@ -17,16 +17,23 @@ matrix create_random_message(int length) {
     return message;
 }
 
-float* normalize_vector(matrix M, float shift, float factor) {
+float* get_channel_output(matrix M) {
 	float *result = NULL;
 	if (!is_void_matrix(M)) {
 		result = (float*) malloc(M.columns * sizeof(float));
 		int i;
 		for (i = 0; i < M.columns; i++) {
-			result[i] = M.body[0][i] * factor + shift;
+			result[i] = 2 * M.body[0][i] - 1;
 		}
 	}
 	return result;
+}
+
+void normalize_vector(float *message, int length, float square_of_sigma) {
+	int i;
+	for (i = 0; i < length; i++) {
+		message[i] *= -2 / square_of_sigma;
+	}
 }
 
 float* gen_sigma_values(SNR_interval SNR, float R) {
@@ -104,12 +111,13 @@ void decoding_simulation(ldpc ldpc_object, SNR_interval SNRs, FILE* output_file)
         for (j = 0; j < NEXP; j++) {
             U = create_random_message(k);
             X = encode(ldpc_object, U, TRUE);
-            y = normalize_vector(X, -1, 2);
+            y = get_channel_output(X);
             changes = add_noise(y, n, sigma_values[i]);
             if (changes > 0) {
             	change_counter += 1.0;
             	changes_counter += changes;
 			}
+			normalize_vector(y, n, sigma_values[i] * sigma_values[i]);
             flooding(ldpc_object, y, hard_solution);
             //decode_belief_propogandation(ldpc_object, y, hard_solution, TRUE);
             
