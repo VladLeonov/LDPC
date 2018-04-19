@@ -15,8 +15,8 @@ typedef struct{
 } columns_metadata;
 
 typedef struct{
-	matrix G, H;
-	int n, k, r;
+	matrix G, H, systematic_H;
+	int n, k, r, systematic_r;
 	columns_metadata columns_mdata;
 	non_zero_data C, V;
 } ldpc;

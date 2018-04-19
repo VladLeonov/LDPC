@@ -13,7 +13,7 @@
 matrix encode(ldpc ldpc_object, matrix message, char use_non_zero_data) {
     int n = ldpc_object.n;
 	int k = ldpc_object.k;
-	int r = n - k;
+	int r = ldpc_object.r;
     matrix data = copy_matrix_part(message, 1, k);
     matrix codeword = create_zero_matrix(1, n);
 
@@ -29,7 +29,7 @@ matrix encode(ldpc ldpc_object, matrix message, char use_non_zero_data) {
 
 		for (i = 0; i < r; i++) {
 		    for (j = 0; j < k; j++) {
-			    codeword.body[0][check_set[i]] ^= data.body[0][j] * ldpc_object.H.body[i][information_set[j]];
+			    codeword.body[0][check_set[i]] ^= data.body[0][j] * ldpc_object.systematic_H.body[i][information_set[j]];
 		    }
 	    }
 
@@ -80,16 +80,17 @@ matrix count_syndrome(ldpc ldpc_object, matrix codedword, char use_non_zero_data
 ldpc create_ldpc(code_type type, int J, int K, int M) {
 
     matrix H = create_H_rand(type, J, K, M);
-    int* check_set = gauss_elimination(H);
+    matrix H_copy = copy_matrix(H);
+    int* check_set = gauss_elimination(H_copy);
     columns_metadata columns_mdata = create_columns_metadata(check_set, K * M, J * M);
 
     matrix cutted_H;
     switch (type) {
         case Gallager:
-            cutted_H = copy_matrix_part(H, M * J - J + 1, K * M);
+            cutted_H = copy_matrix_part(H_copy, M * J - J + 1, K * M);
             break;
         case RU_code:
-            cutted_H = copy_matrix(H);
+            cutted_H = copy_matrix(H_copy);
             break;
     }
 
@@ -102,6 +103,8 @@ ldpc create_ldpc(code_type type, int J, int K, int M) {
     ldpc_object.n = G.columns;
     ldpc_object.k = G.rows;
     ldpc_object.r = H.rows;
+    ldpc_object.systematic_r = H_copy.rows;
+    ldpc_object.systematic_H = H_copy;
     ldpc_object.C = get_non_zero_column_data(H);
     ldpc_object.V = get_non_zero_column_data(transpose_matrix(H));
 
