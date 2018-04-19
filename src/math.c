@@ -174,7 +174,7 @@ int get_indexes_of_common_elements(int *arr_a, int *arr_b, int *result, int len_
 }
 
 float log_exp(float x) {
-    x = max(min(x, 2.), 0.01);
+    x = max(min(x, 19.07), 0.01);
     return log((exp(x) - 1) / (exp(x) + 1));
 }
 
@@ -299,7 +299,7 @@ int flooding(ldpc ldpc_object, float *soft, matrix *hard_solution) {
 	    	free(soft_buffer);
         }
 
-		char is_bad = TRUE;//to delete
+		//char is_bad = TRUE;//to delete
         // symbol nodes
         for (i = 0; i < n; i++) {
             // prob domain
@@ -307,19 +307,19 @@ int flooding(ldpc ldpc_object, float *soft, matrix *hard_solution) {
             for (j = 0; j < cw[i]; j++) {
             	sum_Z += Z[C.element_data[i][j]][i];
             }
-            if (soft_out[i] != (soft[i] + sum_Z)) is_bad = FALSE;//to delete
+            //if (soft_out[i] != (soft[i] + sum_Z)) is_bad = FALSE;//to delete
             soft_out[i] = soft[i] + sum_Z;
             for (j = 0; j < cw[i]; j++) {
 				Z[C.element_data[i][j]][i] = soft_out[i] - Z[C.element_data[i][j]][i];
 			}
         }
         
-        printf("Is bad = %s\n", is_bad == TRUE ? "TRUE" : "FALSE");//to delete
+        /*printf("Is bad = %s\n", is_bad == TRUE ? "TRUE" : "FALSE");//to delete
         printf("Iter = %d\n", steps);
         for (i = 0; i < n; i++) {
             printf("%.2f ", soft_out[i]);
         }
-        printf("\n\n");
+        printf("\n\n");*/
 
         hard = get_hard_from_soft(soft_out, n);
     
