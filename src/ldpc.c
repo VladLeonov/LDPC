@@ -102,7 +102,7 @@ ldpc create_ldpc(code_type type, int J, int K, int M) {
     ldpc_object.columns_mdata = columns_mdata;
     ldpc_object.n = G.columns;
     ldpc_object.k = G.rows;
-    ldpc_object.r = H.rows;
+    ldpc_object.r = cutted_H.rows;
     ldpc_object.systematic_r = H_copy.rows;
     ldpc_object.systematic_H = H_copy;
     ldpc_object.C = get_non_zero_column_data(H);
