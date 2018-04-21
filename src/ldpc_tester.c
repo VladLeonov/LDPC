@@ -100,7 +100,7 @@ void decoding_simulation(ldpc ldpc_object, SNR_interval SNRs, FILE* output_file)
 	int i, j;
 	int changes, fixes;
 	matrix *hard_solution = (matrix*)malloc(sizeof(matrix));
-	fprintf(output_file, "SNR | percentage of incorrect amended messages | average number of errors in message\n");
+	fprintf(output_file, "SNR | PER for all messages | PER for incorrect messages | average err in message | average fixed err in message\n");
     for (SNR = SNRs.min, i = 0; SNR <= SNRs.max; SNR += SNRs.step, i++) {
     	printf("\nSNR = %f\n\n", SNR);
         PER = 0;
@@ -148,7 +148,7 @@ void decoding_simulation(ldpc ldpc_object, SNR_interval SNRs, FILE* output_file)
         PER /= j;
         change_counter /= j;
         changes_counter /= j;
-        fprintf(output_file, "%.1f %22.2f %41.2f %f\n", SNR, PER / change_counter, changes_counter / change_counter, fixed_errors / fixes);
+        fprintf(output_file, "%.1f %15.4f %24.4f %26.2f %26.2f\n", SNR, PER, PER / change_counter, changes_counter / change_counter, fixed_errors / fixes);
     }
     free(hard_solution);
 }
