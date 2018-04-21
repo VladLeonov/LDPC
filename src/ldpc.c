@@ -10,10 +10,10 @@
 #define TRUE !0
 #define FALSE 0
 
-matrix encode(ldpc ldpc_object, matrix message, char use_non_zero_data) {
+matrix encode(ldpc ldpc_object, matrix message) {
     int n = ldpc_object.n;
 	int k = ldpc_object.k;
-	int r = ldpc_object.r;
+	int r = ldpc_object.systematic_r;
     matrix data = copy_matrix_part(message, 1, k);
     matrix codeword = create_zero_matrix(1, n);
 
@@ -25,15 +25,13 @@ matrix encode(ldpc ldpc_object, matrix message, char use_non_zero_data) {
     	codeword.body[0][information_set[i]] = data.body[0][i];
 	}
 
-	if (use_non_zero_data == FALSE) {
-
-		for (i = 0; i < r; i++) {
-		    for (j = 0; j < k; j++) {
-			    codeword.body[0][check_set[i]] ^= data.body[0][j] * ldpc_object.systematic_H.body[i][information_set[j]];
-		    }
+	for (i = 0; i < r; i++) {
+	    for (j = 0; j < k; j++) {
+		    codeword.body[0][check_set[i]] ^= data.body[0][j] * ldpc_object.systematic_H.body[i][information_set[j]];
 	    }
+	}
 
-	} else {
+	/*} else {
 
 		int* data_indices = (int*)malloc(ldpc_object.columns_mdata.information_size * sizeof(int));
 		int num_indices;
@@ -46,7 +44,7 @@ matrix encode(ldpc ldpc_object, matrix message, char use_non_zero_data) {
 		    }
 	    }
 
-	}
+	}*/
 
 	free_matrix(data);
 
@@ -102,7 +100,7 @@ ldpc create_ldpc(code_type type, int J, int K, int M) {
     ldpc_object.columns_mdata = columns_mdata;
     ldpc_object.n = G.columns;
     ldpc_object.k = G.rows;
-    ldpc_object.r = cutted_H.rows;
+    ldpc_object.r = H.rows;
     ldpc_object.systematic_r = H_copy.rows;
     ldpc_object.systematic_H = H_copy;
     ldpc_object.C = get_non_zero_column_data(H);

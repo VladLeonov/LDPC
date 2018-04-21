@@ -11,13 +11,13 @@
 
 int main() {
 
-    int J = 4, K = 8, M = 6;
+    int J = 4, K = 8, M = 32;
     ldpc ldpc_object = create_ldpc(Gallager, J, K, M);
     //print_ldpc(ldpc_object);
 
     SNR_interval SNR = {1., 9., 1.};
 
-    if (FALSE) {
+    if (TRUE) {
 
     	FILE *file = fopen("decoding_simulation.txt", "w");
     	decoding_simulation(ldpc_object, SNR, file);
@@ -44,7 +44,7 @@ int main() {
 	    print_matrix(U);
 	    printf("\n");
 
-	    X = encode(ldpc_object, U, TRUE);
+	    X = encode(ldpc_object, U);
 	    printf("X:\n");
 	    print_matrix(X);
 	    printf("\n");
@@ -67,6 +67,15 @@ int main() {
 	    printf("Normalized y:\n");
 	    for (i = 0; i < n; i++) {
 	    	printf("%.1f ", y[i]);
+		}
+		printf("\n\n");
+		
+		for (i = 0; i < n; i++) {
+	    	if (((y[i] < 0) ? 1 : 0) == X.body[0][i]) {
+	    		printf(". ");
+			} else {
+				printf("# ");
+			}
 		}
 		printf("\n\n");
 

@@ -21,7 +21,7 @@ typedef struct{
 	non_zero_data C, V;
 } ldpc;
 
-matrix encode(ldpc ldpc_object, matrix message, char use_non_zero_data);
+matrix encode(ldpc ldpc_object, matrix message);
 matrix count_syndrome(ldpc ldpc_object, matrix codedword, char use_non_zero_data);
 ldpc create_ldpc(code_type type, int J, int K, int M);
 void free_ldpc(ldpc ldpc_object);

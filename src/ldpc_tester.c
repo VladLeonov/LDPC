@@ -110,7 +110,7 @@ void decoding_simulation(ldpc ldpc_object, SNR_interval SNRs, FILE* output_file)
         fixes = 0;
         for (j = 0; j < NEXP; j++) {
             U = create_random_message(k);
-            X = encode(ldpc_object, U, TRUE);
+            X = encode(ldpc_object, U);
             y = get_channel_output(X);
             changes = add_noise(y, n, sigma_values[i]);
             if (changes > 0) {
