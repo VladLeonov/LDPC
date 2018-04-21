@@ -15,7 +15,7 @@ int main() {
     ldpc ldpc_object = create_ldpc(Gallager, J, K, M);
     //print_ldpc(ldpc_object);
 
-    SNR_interval SNR = {1., 9., 1.};
+    SNR_interval SNR = {1., 5., 0.5};
 
     if (TRUE) {
 
