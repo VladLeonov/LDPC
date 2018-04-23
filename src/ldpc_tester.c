@@ -8,13 +8,15 @@
 #define TRUE !0
 #define FALSE 0
 
-matrix create_random_message(int length) {
-    int i;
-    matrix message = create_zero_matrix(1, length);
-    for (i = 0; i < length; i++) {
-        message.body[0][i] = rand() % 2;
+matrix create_random_matrix(int rows, int columns) {
+    int i, j;
+    matrix result = create_empty_matrix(rows, columns);
+    for (i = 0; i < rows; i++) {
+    	for (j = 0; j < columns; j++) {
+    		result.body[i][j] = rand() % 2;
+    	}
     }
-    return message;
+    return result;
 }
 
 float* get_channel_output(matrix M) {
@@ -109,7 +111,7 @@ void decoding_simulation(ldpc ldpc_object, SNR_interval SNRs, FILE* output_file)
         fixed_errors = 0;
         fixes = 0;
         for (j = 0; j < NEXP; j++) {
-            U = create_random_message(k);
+            U = create_random_matrix(1, k);
             X = encode(ldpc_object, U);
             y = get_channel_output(X);
             changes = add_noise(y, n, sigma_values[i]);

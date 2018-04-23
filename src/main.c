@@ -43,7 +43,7 @@ int main() {
 		}
 	    printf("\n\n");
 
-	    U = create_random_message(k);
+	    U = create_random_matrix(1, k);
 	    printf("U:\n");
 	    print_matrix(U);
 	    printf("\n");

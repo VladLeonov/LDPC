@@ -11,7 +11,7 @@ typedef struct{
 	float min, max, step;
 } SNR_interval;
 
-matrix create_random_message(int length);
+matrix create_random_matrix(int rows, int columns);
 float* get_channel_output(matrix M);
 void normalize_vector(float *message, int length, float square_of_sigma);
 float* gen_sigma_values(SNR_interval SNR, float R);
