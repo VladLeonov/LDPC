@@ -1,63 +1,109 @@
-#include "ldpc.h"
-
-#include "matrix.h"
-#include "math.h"
-
 #include <stdlib.h>
-#include <stdio.h>
-#include <math.h>
+#include "ldpc_generator.h"
+#include "matrix.h"
+#include "subsidary_math.h"
 
-#define TRUE !0
-#define FALSE 0
-
-matrix encode(ldpc ldpc_object, matrix message) {
-    int n = ldpc_object.n;
-	int k = ldpc_object.k;
-	int r = ldpc_object.systematic_r;
-    matrix data = copy_matrix_part(message, 1, k);
-    matrix codeword = create_zero_matrix(1, n);
-
-    int* check_set = ldpc_object.columns_mdata.check_set;
-    int* information_set = ldpc_object.columns_mdata.information_set;
-
+int* gauss_elimination(matrix G) {
+	int k = G.rows;
+	int n = G.columns;
+    int* information_set = (int*) malloc(k * sizeof(int));
     int i, j;
-    for (i = 0; i < k; i++) {
-    	codeword.body[0][information_set[i]] = data.body[0][i];
+    for (i = 0; i < k; i++){
+        information_set[i] = -1;
+    }
+
+    i = 0;
+    int column_number = 0;
+
+    while (i < k) {
+
+        //throw away all-zero row
+        while (sum_row_elements(G, i) == 0) {
+            for (j = i; j < (k - 1); j++) {
+                G.body[j] = G.body[j + 1];
+            }
+            k--;
+
+            information_set[k] = -1;
+
+            if (i >= k) {
+                break;
+            }
+        }
+
+        if (i >= k) {
+            break;
+        }
+
+        //find 1 in the column
+        int b = 0;
+        j = i - 1;
+
+        while ((b == 0) && (j < k - 1)) {
+            j++;
+            b = G.body[j][column_number];
+        }
+
+        if (b == 1) {
+            information_set[i] = column_number;
+
+               // remove other ones from this column
+               int o, u;
+               for (o = 0; o < k; o++) {
+                   if (o == j) continue;
+
+                   if (G.body[o][column_number]==1) {
+                       for (u = 0; u < n; u++) {
+                           G.body[o][u] ^= G.body[j][u];
+                    }
+                }
+            }
+
+            // replace rows i and j
+            int *buff = G.body[i];
+            G.body[i] = G.body[j];
+            G.body[j] = buff;
+
+            i++;
+        }
+
+        column_number++;  // keep the same row, another column
+    }
+    for (i = k; i < G.rows; i++) {
+    	G.body[i] = calloc(G.columns, sizeof(int));
 	}
-
-	for (i = 0; i < r; i++) {
-	    for (j = 0; j < k; j++) {
-		    codeword.body[0][check_set[i]] ^= data.body[0][j] * ldpc_object.systematic_H.body[i][information_set[j]];
-	    }
-	}
-
-	free_matrix(data);
-
-	return codeword;
+    return information_set;
 }
 
-matrix count_syndrome(ldpc ldpc_object, matrix codedword, char use_non_zero_data) {
+matrix create_G_from_H_matrix(matrix H, columns_metadata columns_mdata) {
+	int i, j;
+	matrix G = create_zero_matrix(H.columns - H.rows, H.columns);
+    matrix P = create_empty_matrix(H.rows, columns_mdata.information_size);
+    for (j = 0; j < columns_mdata.information_size; j++) {
+        for (i = 0; i < H.rows; i++) {
+            P.body[i][j] = H.body[i][columns_mdata.information_set[j]];
+        }
+    }
 
-    matrix syndrome;
-    if (use_non_zero_data == FALSE) {
+    matrix PT = transpose_matrix(P);
+    for (j = 0; j < columns_mdata.check_size; j++) {
+        for (i = 0; i < G.rows; i++) {
+            G.body[i][columns_mdata.check_set[j]] = PT.body[i][j];
+        }
+    }
 
-    	matrix H_transposed = transpose_matrix(ldpc_object.H);
-	    syndrome = multiply_matrices(codedword, H_transposed);
-	    free_matrix(H_transposed);
+    matrix U = create_unit_matrix(G.rows);
+    for (j = 0; j < columns_mdata.information_size; j++) {
+        for (i = 0; i < G.rows; i++) {
+            G.body[i][columns_mdata.information_set[j]] = U.body[i][j];
+        }
+    }
 
-    } else {
+    free_matrix(P);
+    free_matrix(PT);
+    free_matrix(U);
 
-    	syndrome = create_zero_matrix(1, ldpc_object.r);
-    	int i, j;
-    	for (i = 0; i < ldpc_object.r; i++) {
-    		for (j = 0; j < ldpc_object.V.element_length[i]; j++) {
-    			syndrome.body[0][i] ^= codedword.body[0][ldpc_object.V.element_data[i][j]];
-			}
-		}
-
-	}
-
-    return syndrome;
+    return G;
 }
 
 ldpc create_ldpc(code_type type, int J, int K, int M) {
@@ -102,7 +148,6 @@ void free_ldpc(ldpc ldpc_object) {
 	free(ldpc_object.columns_mdata.check_set);
 	free(ldpc_object.columns_mdata.information_set);
 }
-
 
 matrix create_V_Gallager(int J, int K, int M) {
     int r = J * M;
@@ -221,3 +266,28 @@ columns_metadata create_columns_metadata(int* check_set, int n, int k) {
     return columns_mdata;
 }
 
+indices_of_nonzero_elements get_non_zero_column_data(matrix matrix_object) {
+    indices_of_nonzero_elements result;
+    result.element_data = (int **)malloc(matrix_object.columns * sizeof(int *));
+    result.element_length = (int *)malloc(matrix_object.columns * sizeof(int));
+
+    int i, j, num_ones = 0;
+    int buf_column[matrix_object.rows];
+    for (i = 0; i < matrix_object.columns; i++) {
+        for (j = 0; j < matrix_object.rows; j++) {
+            if (matrix_object.body[j][i] != 0) {
+                buf_column[num_ones] = j;
+                num_ones ++;
+            }
+        }
+        result.element_length[i] = num_ones;
+        result.element_data[i] = (int *)malloc(num_ones * sizeof(int));
+
+        for (j = 0; j < num_ones; j++) {
+            result.element_data[i][j] = buf_column[j];
+        }
+        num_ones = 0;
+    }
+
+    return result;
+}

@@ -1,23 +1,13 @@
-#include "ldpc_tester.h"
-
 #include <stdlib.h>
 #include <math.h>
-
-#include "math.h"
+#include "ldpc_tester.h"
+#include "ldpc_generator.h"
+#include "encoder.h"
+#include "decoder.h"
+#include "subsidary_math.h"
 
 #define TRUE !0
 #define FALSE 0
-
-matrix create_random_matrix(int rows, int columns) {
-    int i, j;
-    matrix result = create_empty_matrix(rows, columns);
-    for (i = 0; i < rows; i++) {
-    	for (j = 0; j < columns; j++) {
-    		result.body[i][j] = rand() % 2;
-    	}
-    }
-    return result;
-}
 
 float* get_channel_output(matrix M) {
 	float *result = NULL;
@@ -48,31 +38,6 @@ float* gen_sigma_values(SNR_interval SNR, float R) {
 	return result;
 }
 
-float randn() {
-	float U1, U2, W, mult;
-	static float X1, X2;
-	static int call = 0;
-
-	if (call == 1) {
-		call = !call;
-		return X2;
-	}
-
-	do {
-		U1 = -1 + ((float) rand () / RAND_MAX) * 2;
-		U2 = -1 + ((float) rand () / RAND_MAX) * 2;
-		W = pow (U1, 2) + pow (U2, 2);
-	} while ((W >= 1) || (W == 0));
-
-	mult = sqrt ((-2 * log (W)) / W);
-	X1 = U1 * mult;
-	X2 = U2 * mult;
-
-	call = !call;
-
-	return X1;
-}
-
 int add_noise(float *message, int length, float sigma) {
 	int i;
 	float delta;
@@ -88,6 +53,7 @@ int add_noise(float *message, int length, float sigma) {
 }
 
 void decoding_simulation(ldpc ldpc_object, SNR_interval SNRs, FILE* output_file) {
+
 	int NEXP = 10000;
     int NERR = 100;
 	float PER, change_counter, changes_counter, fixed_errors;
@@ -122,11 +88,11 @@ void decoding_simulation(ldpc ldpc_object, SNR_interval SNRs, FILE* output_file)
 			normalize_message(y, n, sigma_values[i] * sigma_values[i]);
             flooding(ldpc_object, y, hard_solution);
             //decode_belief_propogandation(ldpc_object, y, hard_solution, TRUE);
-            
+
             if ((j % 100 == 0) && (j > 0)) {
 				printf("%02d%% iterations\n", j / 100);
 			}
-            
+
             if (compare_matrices(X, *hard_solution) == FALSE) {
             	PER += 1.0;
             	printf("%02d%% errors\n", (int) PER);
@@ -150,6 +116,9 @@ void decoding_simulation(ldpc ldpc_object, SNR_interval SNRs, FILE* output_file)
         PER /= j;
         change_counter /= j;
         changes_counter /= j;
+        printf("%.1f %15.4f %24.4f %26.2f %26.2f\n", SNR, PER, PER / change_counter, changes_counter / change_counter, fixed_errors / fixes);
+
+
         fprintf(output_file, "%.1f %15.4f %24.4f %26.2f %26.2f\n", SNR, PER, PER / change_counter, changes_counter / change_counter, fixed_errors / fixes);
     }
     free(hard_solution);

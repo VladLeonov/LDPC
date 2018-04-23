@@ -1,12 +1,37 @@
 #include "matrix.h"
-
-#include <malloc.h>
-#include <time.h>
-#include <stdlib.h>
-#include <stdio.h>
+#include "stdlib.h"
 
 #define TRUE !0
 #define FALSE 0
+
+int sum_row_elements(matrix G, int row_index) {
+    int i;
+    int sum = 0;
+    for (i = 0; i < G.columns; i++) {
+        sum += G.body[row_index][i];
+    }
+    return sum;
+}
+
+float sum_coloumn_elements(int coloumns, float array[][coloumns], int coloumn_index, int rows) {
+    int i;
+    float result = 0.0;
+    for (int i = 0; i < rows; i++) {
+        result += array[i][coloumn_index];
+    }
+    return result;
+}
+
+matrix create_random_matrix(int rows, int columns) {
+    int i, j;
+    matrix result = create_empty_matrix(rows, columns);
+    for (i = 0; i < rows; i++) {
+    	for (j = 0; j < columns; j++) {
+    		result.body[i][j] = rand() % 2;
+    	}
+    }
+    return result;
+}
 
 matrix create_empty_matrix(int rows, int columns) {
     matrix M;
@@ -135,37 +160,11 @@ matrix copy_matrix_part(matrix old_matrix_object, int rows, int columns) {
 	return new_matrix_object;
 }
 
-indices_of_nonzero_elements get_non_zero_column_data(matrix matrix_object) {
-    indices_of_nonzero_elements result;
-    result.element_data = (int **)malloc(matrix_object.columns * sizeof(int *));
-    result.element_length = (int *)malloc(matrix_object.columns * sizeof(int));
-
-    int i, j, num_ones = 0;
-    int buf_column[matrix_object.rows];
-    for (i = 0; i < matrix_object.columns; i++) {
-        for (j = 0; j < matrix_object.rows; j++) {
-            if (matrix_object.body[j][i] != 0) {
-                buf_column[num_ones] = j;
-                num_ones ++;
-            }
-        }
-        result.element_length[i] = num_ones;
-        result.element_data[i] = (int *)malloc(num_ones * sizeof(int));
-
-        for (j = 0; j < num_ones; j++) {
-            result.element_data[i][j] = buf_column[j];
-        }
-        num_ones = 0;
-    }
-
-    return result;
-}
-
 char compare_matrices(matrix matrix1, matrix matrix2) {
     if ((matrix1.columns != matrix2.columns) || (matrix1.rows != matrix2.rows)) {
         return FALSE;
     }
-    
+
     int i, j;
     for (i = 0; i < matrix1.rows; i++) {
         for (j = 0; j < matrix1.columns; j++) {

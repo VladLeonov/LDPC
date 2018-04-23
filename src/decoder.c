@@ -1,166 +1,12 @@
-#include "math.h"
-
-#include "ldpc.h"
-#include "matrix.h"
-
-#include <stdlib.h>
 #include <math.h>
+#include <stdlib.h>
+#include "decoder.h"
+#include "matrix.h"
+#include "subsidary_math.h"
 
 #define TRUE !0
 #define FALSE 0
 #define MAXITER 50
-
-int* gauss_elimination(matrix G) {
-	int k = G.rows;
-	int n = G.columns;
-    int* information_set = (int*) malloc(k * sizeof(int));
-    int i, j;
-    for (i = 0; i < k; i++){
-        information_set[i] = -1;
-    }
-
-    i = 0;
-    int column_number = 0;
-
-    while (i < k) {
-
-        //throw away all-zero row
-        while (sum_row_elements(G, i) == 0) {
-            for (j = i; j < (k - 1); j++) {
-                G.body[j] = G.body[j + 1];
-            }
-            k--;
-
-            information_set[k] = -1;
-
-            if (i >= k) {
-                break;
-            }
-        }
-
-        if (i >= k) {
-            break;
-        }
-
-        //find 1 in the column
-        int b = 0;
-        j = i - 1;
-
-        while ((b == 0) && (j < k - 1)) {
-            j++;
-            b = G.body[j][column_number];
-        }
-
-        if (b == 1) {
-            information_set[i] = column_number;
-
-               // remove other ones from this column
-               int o, u;
-               for (o = 0; o < k; o++) {
-                   if (o == j) continue;
-
-                   if (G.body[o][column_number]==1) {
-                       for (u = 0; u < n; u++) {
-                           G.body[o][u] ^= G.body[j][u];
-                    }
-                }
-            }
-
-            // replace rows i and j
-            int *buff = G.body[i];
-            G.body[i] = G.body[j];
-            G.body[j] = buff;
-
-            i++;
-        }
-
-        column_number++;  // keep the same row, another column
-    }
-    for (i = k; i < G.rows; i++) {
-    	G.body[i] = calloc(G.columns, sizeof(int));
-	}
-    return information_set;
-}
-
-int sum_row_elements(matrix G, int row_index) {
-    int i;
-    int sum = 0;
-    for (i = 0; i < G.columns; i++) {
-        sum += G.body[row_index][i];
-    }
-    return sum;
-}
-
-void fill_with_permutation(int *x, int n) {
-	int i, j, temp;
-    for (i = 0; i < n; i++) {
-        x[i] = i;
-    }
-    for (i = n-1; i > 0; i--) {
-        j = rand() % (i+1);
-        temp = x[j];
-        x[j] = x[i];
-        x[i] = temp;
-    }
-}
-
-matrix create_G_from_H_matrix(matrix H, columns_metadata columns_mdata) {
-	int i, j;
-	matrix G = create_zero_matrix(H.columns - H.rows, H.columns);
-    matrix P = create_empty_matrix(H.rows, columns_mdata.information_size);
-    for (j = 0; j < columns_mdata.information_size; j++) {
-        for (i = 0; i < H.rows; i++) {
-            P.body[i][j] = H.body[i][columns_mdata.information_set[j]];
-        }
-    }
-
-    matrix PT = transpose_matrix(P);
-    for (j = 0; j < columns_mdata.check_size; j++) {
-        for (i = 0; i < G.rows; i++) {
-            G.body[i][columns_mdata.check_set[j]] = PT.body[i][j];
-        }
-    }
-
-    matrix U = create_unit_matrix(G.rows);
-    for (j = 0; j < columns_mdata.information_size; j++) {
-        for (i = 0; i < G.rows; i++) {
-            G.body[i][columns_mdata.information_set[j]] = U.body[i][j];
-        }
-    }
-
-    free_matrix(P);
-    free_matrix(PT);
-    free_matrix(U);
-
-    return G;
-}
-
-int get_indexes_of_common_elements(int *arr_a, int *arr_b, int *result, int len_a, int len_b) {
-    int i, j, result_length;
-    j = 0;
-    result_length = 0;
-
-    for (i = 0; i < len_a; i++) {
-        for (j = 0; j < len_b; j++) {
-            if (arr_a[i] == arr_b[j]) {
-                result[result_length] = i;
-                result_length++;
-                break;
-            } else if (arr_a[i] < arr_b[j]) {
-                break;
-            } else {
-                continue;
-            }
-        }
-    }
-
-    return result_length;
-}
-
-float log_exp(float x) {
-    x = fmaxf(fminf(x, 19.07), 0.01);
-    return log((exp(x) - 1) / (exp(x) + 1));
-}
 
 float* map_sp(float y[], int length) {
     // LLR domain
@@ -229,7 +75,7 @@ int flooding(ldpc ldpc_object, float *soft, matrix *hard_solution) {
     int r = ldpc_object.H.rows; // number of parity checks
     indices_of_nonzero_elements V = ldpc_object.V;
     indices_of_nonzero_elements C = ldpc_object.C;
-    
+
     int rw[r];
     for (i = 0; i < r; i++) {
     	rw[i] = V.element_length[i];
@@ -238,19 +84,19 @@ int flooding(ldpc ldpc_object, float *soft, matrix *hard_solution) {
     for (i = 0; i < n; i++) {
     	cw[i] = C.element_length[i];
     }
-    
+
     float Z[r][n];  // current LLRS
     for (i = 0; i < r; i++) {
     	for (j = 0; j < n; j++) {
 	    	Z[i][j] = 0;
 	    }
     }
-    
+
     float soft_out[n];
 	for (i = 0; i < n; i++) {
         soft_out[i] = soft[i];
     }
-    
+
     matrix hard = get_hard_from_soft(soft, n);
 
     if (check_syndrome(hard, r, V) == TRUE) {
@@ -258,7 +104,7 @@ int flooding(ldpc ldpc_object, float *soft, matrix *hard_solution) {
     	hard_solution->columns = hard.columns;
     	hard_solution->rows = hard.rows;
         return 0;
-    } 
+    }
 
     for (i = 0; i < r; i++) {
     	for (j = 0; j < rw[i]; j++) {
@@ -271,12 +117,12 @@ int flooding(ldpc ldpc_object, float *soft, matrix *hard_solution) {
         // loop over checks
         float* soft_buffer;
         float y[n];
-        for (i = 0; i < r; i++) { 
+        for (i = 0; i < r; i++) {
         	for (j = 0; j < rw[i]; j++) {
 	    		y[j] = Z[i][V.element_data[i][j]];
 	    	}
 	    	soft_buffer = map_sp(y, rw[i]);
-	    	
+
 	        for (j = 0; j < rw[i]; j++) {
 	    		Z[i][V.element_data[i][j]] = soft_buffer[j];
 	    	}
@@ -297,7 +143,7 @@ int flooding(ldpc ldpc_object, float *soft, matrix *hard_solution) {
         }
 
         hard = get_hard_from_soft(soft_out, n);
-    
+
         if (check_syndrome(hard, r, V) == TRUE) {
         	hard_solution->body = hard.body;
     		hard_solution->columns = hard.columns;
@@ -305,36 +151,12 @@ int flooding(ldpc ldpc_object, float *soft, matrix *hard_solution) {
             return steps;
         }
     }
-    
+
     hard_solution->body = hard.body;
     hard_solution->columns = hard.columns;
     hard_solution->rows = hard.rows;
 
-    return -MAXITER;	
-}
-
-float log_tahn(float value) {
-    float t = exp(fabs(value));
-    return log((t + 1)/(t - 1));
-}
-
-float sum_coloumn_elements(int coloumns, float array[][coloumns], int coloumn_index, int rows) {
-    int i;
-    float result = 0.0;
-    for (int i = 0; i < rows; i++) {
-        result += array[i][coloumn_index];
-    }
-    return result;
-}
-
-int sign(float value) {
-    if (value > 0) {
-        return 1;
-    } else if (value < 0) {
-        return -1;
-    } else {
-        return 0;
-    }
+    return -MAXITER;
 }
 
 int decode_belief_propogandation(ldpc ldpc_object, float *y, matrix *hard_solution, char use_non_zero_data) {
@@ -419,4 +241,28 @@ int decode_belief_propogandation(ldpc ldpc_object, float *y, matrix *hard_soluti
     free_matrix(syndrome);
 
     return iter;
+}
+
+matrix count_syndrome(ldpc ldpc_object, matrix codedword, char use_non_zero_data) {
+
+    matrix syndrome;
+    if (use_non_zero_data == FALSE) {
+
+    	matrix H_transposed = transpose_matrix(ldpc_object.H);
+	    syndrome = multiply_matrices(codedword, H_transposed);
+	    free_matrix(H_transposed);
+
+    } else {
+
+    	syndrome = create_zero_matrix(1, ldpc_object.r);
+    	int i, j;
+    	for (i = 0; i < ldpc_object.r; i++) {
+    		for (j = 0; j < ldpc_object.V.element_length[i]; j++) {
+    			syndrome.body[0][i] ^= codedword.body[0][ldpc_object.V.element_data[i][j]];
+			}
+		}
+
+	}
+
+    return syndrome;
 }

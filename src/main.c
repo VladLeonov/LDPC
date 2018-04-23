@@ -1,7 +1,9 @@
-#include "ldpc.h"
 #include "matrix.h"
-#include "math.h"
+#include "encoder.h"
+#include "decoder.h"
+#include "ldpc_generator.h"
 #include "ldpc_tester.h"
+#include  "subsidary_math.h"
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -73,7 +75,7 @@ int main() {
 	    	printf("%.1f ", y[i]);
 		}
 		printf("\n\n");
-		
+
 		for (i = 0; i < n; i++) {
 	    	if (((y[i] < 0) ? 1 : 0) == X.body[0][i]) {
 	    		printf(". ");
