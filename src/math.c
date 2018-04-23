@@ -10,22 +10,6 @@
 #define FALSE 0
 #define MAXITER 50
 
-float max(float value1, float value2) {
-    if (value1 > value2) {
-        return value1;
-    } else {
-        return value2;
-    }
-}
-
-float min(float value1, float value2) {
-    if (value1 > value2) {
-        return value2;
-    } else {
-        return value1;
-    }
-}
-
 int* gauss_elimination(matrix G) {
 	int k = G.rows;
 	int n = G.columns;
@@ -174,7 +158,7 @@ int get_indexes_of_common_elements(int *arr_a, int *arr_b, int *result, int len_
 }
 
 float log_exp(float x) {
-    x = max(min(x, 19.07), 0.01);
+    x = fmaxf(fminf(x, 19.07), 0.01);
     return log((exp(x) - 1) / (exp(x) + 1));
 }
 
@@ -412,7 +396,7 @@ int decode_belief_propogandation(ldpc ldpc_object, float *y, matrix *hard_soluti
 			            b += log_tahn(L_element);
 					}
 		        }
-		        Z[j][i] = max(min(a * log_tahn(b), 19.07), -19.07);
+		        Z[j][i] = fmaxf(fminf(a * log_tahn(b), 19.07), -19.07);
 		    }
 		}
 
