@@ -31,21 +31,6 @@ matrix encode(ldpc ldpc_object, matrix message) {
 	    }
 	}
 
-	/*} else {
-
-		int* data_indices = (int*)malloc(ldpc_object.columns_mdata.information_size * sizeof(int));
-		int num_indices;
-		for (i = 0; i < r; i++) {
-			num_indices = get_indexes_of_common_elements(information_set, ldpc_object.V.element_data[i], data_indices,
-			                                             ldpc_object.columns_mdata.information_size, ldpc_object.V.element_length[i]);
-
-		    for (j = 0; j < num_indices; j++) {
-			    codeword.body[0][check_set[i]] ^= data.body[0][data_indices[j]];
-		    }
-	    }
-
-	}*/
-
 	free_matrix(data);
 
 	return codeword;
@@ -118,65 +103,6 @@ void free_ldpc(ldpc ldpc_object) {
 	free(ldpc_object.columns_mdata.information_set);
 }
 
-void print_ldpc(ldpc ldpc_object) {
-    int i = 0;
-    int j = 0;
-
-    printf("k = ");
-    printf("%d\n\n", ldpc_object.k);
-
-    printf("r = ");
-    printf("%d\n\n", ldpc_object.r);
-
-    printf("n = ");
-    printf("%d\n\n", ldpc_object.n);
-
-    printf("G =\n");
-    print_matrix(ldpc_object.G);
-    printf("\n");
-
-    printf("H =\n");
-    print_matrix(ldpc_object.H);
-    printf("\n");
-
-    columns_metadata columns_mdata = ldpc_object.columns_mdata;
-
-    printf("Check set =\n");
-    for (i = 0; i < columns_mdata.check_size; i++) {
-        printf("%d ", columns_mdata.check_set[i]);
-    }
-    printf("\n\n");
-
-    printf("Information set =\n");
-    for (i = 0; i < columns_mdata.information_size; i++) {
-        printf("%d ", columns_mdata.information_set[i]);
-    }
-    printf("\n\n");
-
-    printf("C =\n");
-    for (i = 0; i < ldpc_object.H.columns; i++) {
-        for (j = 0; j < ldpc_object.C.element_length[i]; j++) {
-            printf("%d ", ldpc_object.C.element_data[i][j]);
-        }
-        if (ldpc_object.C.element_length[i] == 0) {
-        	printf("-");
-		}
-        printf("\n");
-    }
-
-    printf("\n");
-
-    printf("V =\n");
-    for (i = 0; i < ldpc_object.H.rows; i++) {
-        for (j = 0; j < ldpc_object.V.element_length[i]; j++) {
-            printf("%d ", ldpc_object.V.element_data[i][j]);
-        }
-        if (ldpc_object.V.element_length[i] == 0) {
-        	printf("-");
-		}
-        printf("\n");
-    }
-}
 
 matrix create_V_Gallager(int J, int K, int M) {
     int r = J * M;
@@ -226,18 +152,6 @@ matrix create_V_RU(int J, int K, int M) {
     return V;
 }
 
-int get_max_element(int *array, int size) {
-    int result = (int) pow(2, sizeof(int) * 8);
-    int i;
-
-    for (i = 0; i < size; i++) {
-        if (result < array[i]) {
-            result = array[i];
-        }
-    }
-
-    return result;
-}
 
 matrix create_H_rand(code_type type, int J, int K, int M) {
     int r = J * M;

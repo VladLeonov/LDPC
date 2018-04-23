@@ -25,7 +25,6 @@ matrix encode(ldpc ldpc_object, matrix message);
 matrix count_syndrome(ldpc ldpc_object, matrix codedword, char use_non_zero_data);
 ldpc create_ldpc(code_type type, int J, int K, int M);
 void free_ldpc(ldpc ldpc_object);
-void print_ldpc(ldpc ldpc_object);
 matrix create_H_rand(code_type type, int J, int K, int M);
 columns_metadata create_columns_metadata(int* information_set, int n, int k);
 

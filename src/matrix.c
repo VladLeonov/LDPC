@@ -44,20 +44,6 @@ matrix create_unit_matrix(int rows) {
 }
 
 
-matrix create_sparse_matrix(int rows, int columns) {
-    srand(time(NULL));
-    matrix M = create_zero_matrix(rows, columns);
-    int i;
-    for (i = 0; i < rows; i++) {
-        M.body[i][rand() % columns] = 1;
-    }
-    for (i = 0; i < columns; i++) {
-        M.body[rand() % rows][i] = 1;
-    }
-    return M;
-}
-
-
 matrix multiply_matrices(matrix M1, matrix M2) {
     if (M1.columns != M2.rows) {
         return create_void_matrix();
@@ -87,24 +73,6 @@ matrix transpose_matrix(matrix M) {
 }
 
 
-matrix combine_matrices(matrix M1, matrix M2) {
-    if (M1.rows != M2.rows) {
-        return create_void_matrix();
-    }
-    matrix M = create_empty_matrix(M1.rows, M1.columns + M2.columns);
-    int i, j;
-    for (i = 0; i < M1.rows; i++) {
-        for (j = 0; j < M1.columns; j++) {
-            M.body[i][j] = M1.body[i][j];
-        }
-        for (j = 0; j < M2.columns; j++) {
-            M.body[i][j + M1.columns] = M2.body[i][j];
-        }
-    }
-    return M;
-}
-
-
 matrix create_void_matrix() {
     matrix M;
     M.body = NULL;
@@ -128,26 +96,6 @@ void free_matrix(matrix M) {
     M = create_void_matrix();
 }
 
-void print_matrix(matrix M) {
-    int i, j;
-    for (i = 0; i < M.rows; i++) {
-        for (j = 0; j < M.columns; j++) {
-            printf("%d ", M.body[i][j]);
-        }
-        printf("\n");
-    }
-}
-
-matrix array_to_matrix(int rows, int columns, int array[rows][columns]) {
-    matrix new_matrix = create_empty_matrix(rows, columns);
-    int i, j;
-    for (i = 0; i < rows; i++) {
-        for (j = 0; j < columns; j++) {
-            new_matrix.body[i][j] = array[i][j];
-        }
-    }
-    return new_matrix;
-}
 
 matrix copy_matrix(matrix matrix_object){
     matrix new_matrix = create_empty_matrix(matrix_object.rows, matrix_object.columns);
