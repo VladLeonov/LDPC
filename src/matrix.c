@@ -16,7 +16,7 @@ int sum_row_elements(matrix G, int row_index) {
 float sum_coloumn_elements(int coloumns, float array[][coloumns], int coloumn_index, int rows) {
     int i;
     float result = 0.0;
-    for (int i = 0; i < rows; i++) {
+    for (i = 0; i < rows; i++) {
         result += array[i][coloumn_index];
     }
     return result;

@@ -189,7 +189,7 @@ matrix create_V_RU(int J, int K, int M) {
     matrix V = create_zero_matrix(J * M, K);
 
     for (j = 0; j < K; j++) {
-        for (i = 0; i < J * M; i++) {
+        for (i = 0; i < r; i++) {
             V.body[i][j] = A[i + j * J * M];
         }
     }
@@ -235,7 +235,7 @@ matrix create_H_rand(code_type type, int J, int K, int M) {
 columns_metadata create_columns_metadata(int* check_set, int n, int k) {
 	int R[n];
     int information_size = n;
-    int i, j;
+    int i;
     for (i = 0; i < n; i++) {
         R[i] = 1;
     }

@@ -116,8 +116,6 @@ void decoding_simulation(ldpc ldpc_object, SNR_interval SNRs, FILE* output_file)
         PER /= j;
         change_counter /= j;
         changes_counter /= j;
-        printf("%.1f %15.4f %24.4f %26.2f %26.2f\n", SNR, PER, PER / change_counter, changes_counter / change_counter, fixed_errors / fixes);
-
 
         fprintf(output_file, "%.1f %15.4f %24.4f %26.2f %26.2f\n", SNR, PER, PER / change_counter, changes_counter / change_counter, fixed_errors / fixes);
     }

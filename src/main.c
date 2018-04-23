@@ -23,7 +23,7 @@ int main() {
 
     SNR_interval SNR = {1., 5., 0.5};
 
-    if (FALSE) {
+    if (TRUE) {
 
     	FILE *file = fopen("decoding_simulation.txt", "w");
     	decoding_simulation(ldpc_object, SNR, file);
