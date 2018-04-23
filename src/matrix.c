@@ -135,8 +135,8 @@ matrix copy_matrix_part(matrix old_matrix_object, int rows, int columns) {
 	return new_matrix_object;
 }
 
-non_zero_data get_non_zero_column_data(matrix matrix_object) {
-    non_zero_data result;
+indices_of_nonzero_elements get_non_zero_column_data(matrix matrix_object) {
+    indices_of_nonzero_elements result;
     result.element_data = (int **)malloc(matrix_object.columns * sizeof(int *));
     result.element_length = (int *)malloc(matrix_object.columns * sizeof(int));
 

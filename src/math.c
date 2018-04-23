@@ -209,7 +209,7 @@ float* map_sp(float y[], int length) {
     return soft_out;
 }
 
-char check_syndrome(matrix hard, int r, non_zero_data V) {
+char check_syndrome(matrix hard, int r, indices_of_nonzero_elements V) {
 	int i, j, syn;
     for (i = 0; i < r; i++) {
     	syn = 0;
@@ -243,8 +243,8 @@ int flooding(ldpc ldpc_object, float *soft, matrix *hard_solution) {
 	int i, j;
     int n = ldpc_object.H.columns;
     int r = ldpc_object.H.rows; // number of parity checks
-    non_zero_data V = ldpc_object.V;
-    non_zero_data C = ldpc_object.C;
+    indices_of_nonzero_elements V = ldpc_object.V;
+    indices_of_nonzero_elements C = ldpc_object.C;
     
     int rw[r];
     for (i = 0; i < r; i++) {
@@ -359,8 +359,8 @@ int decode_belief_propogandation(ldpc ldpc_object, float *y, matrix *hard_soluti
     int n = H.columns;
     float Z[r][n];
     float L[r][n];
-    non_zero_data C = ldpc_object.C;
-    non_zero_data V = ldpc_object.V;
+    indices_of_nonzero_elements C = ldpc_object.C;
+    indices_of_nonzero_elements V = ldpc_object.V;
 
     int i, j;
     for (i = 0; i < r; i++) {

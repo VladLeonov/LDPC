@@ -18,7 +18,7 @@ typedef struct{
 	matrix G, H, systematic_H;
 	int n, k, r, systematic_r;
 	columns_metadata columns_mdata;
-	non_zero_data C, V;
+	indices_of_nonzero_elements C, V;
 } ldpc;
 
 matrix encode(ldpc ldpc_object, matrix message);
