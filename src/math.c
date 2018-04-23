@@ -343,16 +343,6 @@ float sum_array(int coloumns, float array[][coloumns], int coloumn_index, int ro
     return result;
 }
 
-int sum_syndrome(matrix syndrome) {
-    int result = 0;
-    int i = 0;
-    for (int i = 0; i < syndrome.columns; i++) {
-        result += syndrome.body[0][i];
-    }
-
-    return result;
-}
-
 int sign(float value) {
     if (value > 0) {
         return 1;
@@ -393,7 +383,7 @@ int decode_belief_propogandation(ldpc ldpc_object, float *y, matrix *hard_soluti
     int index_C = 0;
     int k;
 
-    while ((iter < MAXITER) && (sum_syndrome(syndrome) != 0)) {
+    while ((iter < MAXITER) && (sum_rows(syndrome, 0) != 0)) {
         //H columns processing
         float sum_Z;
         for (i = 0; i < n; i++) {
