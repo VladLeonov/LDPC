@@ -334,7 +334,7 @@ float log_tahn(float value) {
     return log((t + 1)/(t - 1));
 }
 
-float sum_array(int coloumns, float array[][coloumns], int coloumn_index, int rows) {
+float sum_coloumn_elements(int coloumns, float array[][coloumns], int coloumn_index, int rows) {
     int i;
     float result = 0.0;
     for (int i = 0; i < rows; i++) {
@@ -418,7 +418,7 @@ int decode_belief_propogandation(ldpc ldpc_object, float *y, matrix *hard_soluti
 
         //result forming
         for (i = 0; i < n; i++) {
-            soft[i] = y[i] + sum_array(n, Z, i, r);
+            soft[i] = y[i] + sum_coloumn_elements(n, Z, i, r);
         }
 
         free_matrix(hard);
