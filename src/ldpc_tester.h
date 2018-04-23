@@ -13,7 +13,7 @@ typedef struct{
 
 matrix create_random_matrix(int rows, int columns);
 float* get_channel_output(matrix M);
-void normalize_vector(float *message, int length, float square_of_sigma);
+void normalize_message(float *message, int length, float square_of_sigma);
 float* gen_sigma_values(SNR_interval SNR, float R);
 float randn();
 int add_noise(float *message, int length, float sigma);

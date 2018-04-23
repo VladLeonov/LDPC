@@ -31,7 +31,7 @@ float* get_channel_output(matrix M) {
 	return result;
 }
 
-void normalize_vector(float *message, int length, float square_of_sigma) {
+void normalize_message(float *message, int length, float square_of_sigma) {
 	int i;
 	for (i = 0; i < length; i++) {
 		message[i] *= -2 / square_of_sigma;
@@ -119,7 +119,7 @@ void decoding_simulation(ldpc ldpc_object, SNR_interval SNRs, FILE* output_file)
             	change_counter += 1.0;
             	changes_counter += changes;
 			}
-			normalize_vector(y, n, sigma_values[i] * sigma_values[i]);
+			normalize_message(y, n, sigma_values[i] * sigma_values[i]);
             flooding(ldpc_object, y, hard_solution);
             //decode_belief_propogandation(ldpc_object, y, hard_solution, TRUE);
             

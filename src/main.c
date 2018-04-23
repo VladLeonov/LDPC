@@ -67,7 +67,7 @@ int main() {
 		}
 		printf("\n\n");
 
-	    normalize_vector(y, n, sigma_values[sigma_index] * sigma_values[sigma_index]);
+	    normalize_message(y, n, sigma_values[sigma_index] * sigma_values[sigma_index]);
 	    printf("Normalized y:\n");
 	    for (i = 0; i < n; i++) {
 	    	printf("%.1f ", y[i]);
