@@ -41,7 +41,7 @@ int* gauss_elimination(matrix G) {
     while (i < k) {
 
         //throw away all-zero row
-        while (sum_rows(G, i) == 0) {
+        while (sum_row_elements(G, i) == 0) {
             for (j = i; j < (k - 1); j++) {
                 G.body[j] = G.body[j + 1];
             }
@@ -98,7 +98,7 @@ int* gauss_elimination(matrix G) {
     return information_set;
 }
 
-int sum_rows(matrix G, int row_index) {
+int sum_row_elements(matrix G, int row_index) {
     int i;
     int sum = 0;
     for (i = 0; i < G.columns; i++) {
@@ -383,7 +383,7 @@ int decode_belief_propogandation(ldpc ldpc_object, float *y, matrix *hard_soluti
     int index_C = 0;
     int k;
 
-    while ((iter < MAXITER) && (sum_rows(syndrome, 0) != 0)) {
+    while ((iter < MAXITER) && (sum_row_elements(syndrome, 0) != 0)) {
         //H columns processing
         float sum_Z;
         for (i = 0; i < n; i++) {
