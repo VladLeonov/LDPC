@@ -5,9 +5,13 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <math.h>
 
 #define TRUE !0
 #define FALSE 0
+
+void print_matrix(matrix M);
+void print_ldpc(ldpc ldpc_object);
 
 int main() {
 
@@ -17,7 +21,7 @@ int main() {
 
     SNR_interval SNR = {1., 5., 0.5};
 
-    if (TRUE) {
+    if (FALSE) {
 
     	FILE *file = fopen("decoding_simulation.txt", "w");
     	decoding_simulation(ldpc_object, SNR, file);
@@ -80,7 +84,6 @@ int main() {
 		printf("\n\n");
 
 	    printf("Iterations = %d\n", flooding(ldpc_object, y, hard_solution));
-	    //printf("Iterations = %d\n", decode_belief_propogandation(ldpc_object, y, hard_solution, TRUE));
 	    printf("Hard solution:\n");
 		print_matrix(*hard_solution);
 	    printf("\n");
@@ -99,10 +102,78 @@ int main() {
 	    printf("\n");
 	}
 
-    //int message_size = M * (K - J) + J - 1;
-
     system("pause");
     free_ldpc(ldpc_object);
 
     return 0;
+}
+
+void print_matrix(matrix M) {
+    int i, j;
+    for (i = 0; i < M.rows; i++) {
+        for (j = 0; j < M.columns; j++) {
+            printf("%d ", M.body[i][j]);
+        }
+        printf("\n");
+    }
+}
+
+void print_ldpc(ldpc ldpc_object) {
+    int i = 0;
+    int j = 0;
+
+    printf("k = ");
+    printf("%d\n\n", ldpc_object.k);
+
+    printf("r = ");
+    printf("%d\n\n", ldpc_object.r);
+
+    printf("n = ");
+    printf("%d\n\n", ldpc_object.n);
+
+    printf("G =\n");
+    print_matrix(ldpc_object.G);
+    printf("\n");
+
+    printf("H =\n");
+    print_matrix(ldpc_object.H);
+    printf("\n");
+
+    columns_metadata columns_mdata = ldpc_object.columns_mdata;
+
+    printf("Check set =\n");
+    for (i = 0; i < columns_mdata.check_size; i++) {
+        printf("%d ", columns_mdata.check_set[i]);
+    }
+    printf("\n\n");
+
+    printf("Information set =\n");
+    for (i = 0; i < columns_mdata.information_size; i++) {
+        printf("%d ", columns_mdata.information_set[i]);
+    }
+    printf("\n\n");
+
+    printf("C =\n");
+    for (i = 0; i < ldpc_object.H.columns; i++) {
+        for (j = 0; j < ldpc_object.C.element_length[i]; j++) {
+            printf("%d ", ldpc_object.C.element_data[i][j]);
+        }
+        if (ldpc_object.C.element_length[i] == 0) {
+        	printf("-");
+		}
+        printf("\n");
+    }
+
+    printf("\n");
+
+    printf("V =\n");
+    for (i = 0; i < ldpc_object.H.rows; i++) {
+        for (j = 0; j < ldpc_object.V.element_length[i]; j++) {
+            printf("%d ", ldpc_object.V.element_data[i][j]);
+        }
+        if (ldpc_object.V.element_length[i] == 0) {
+        	printf("-");
+		}
+        printf("\n");
+    }
 }
