@@ -1,6 +1,7 @@
 #include "matrix.h"
 #include "ldpc_generator.h"
 
+
 #ifndef ENCODER_H_INCLUDED
 #define ENCODER_H_INCLUDED
 

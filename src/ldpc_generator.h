@@ -1,5 +1,6 @@
 #include "matrix.h"
 
+
 #ifndef LDPC_GENERATOR_H_INCLUDED
 #define LDPC_GENERATOR_H_INCLUDED
 
@@ -9,21 +10,28 @@ typedef enum {
 } code_type;
 
 typedef struct {
-    int check_size, information_size;
+    int check_size;
+    int information_size;
     int *check_set;
     int *information_set;
 } columns_metadata;
 
-typedef struct{
+typedef struct {
     int **element_data;
     int *element_length;
 } indices_of_nonzero_elements;
 
 typedef struct {
-    matrix G, H, systematic_H;
-    int n, k, r, systematic_r;
+    matrix G;
+    matrix H;
+    matrix systematic_H;
+    int n;
+    int k;
+    int r;
+    int systematic_r;
     columns_metadata columns_mdata;
-    indices_of_nonzero_elements C, V;
+    indices_of_nonzero_elements C;
+    indices_of_nonzero_elements V;
 } ldpc;
 
 ldpc create_ldpc();

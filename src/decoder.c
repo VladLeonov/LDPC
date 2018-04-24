@@ -1,17 +1,22 @@
 #include <math.h>
 #include <stdlib.h>
+
 #include "decoder.h"
 #include "matrix.h"
 #include "subsidary_math.h"
+
 
 #define TRUE !0
 #define FALSE 0
 #define MAXITER 50
 
+
 float* map_sp(float y[], int length) {
     // LLR domain
-    int hard[length], synd = 0;
-    int i;
+    int hard[length];
+    int synd = 0;
+    int i = 0;
+
     for (i = 0; i < length; i++) {
         if (y[i] < 0) {
             hard[i] = 1;
@@ -26,38 +31,48 @@ float* map_sp(float y[], int length) {
         hard[i] = (hard[i] + synd) % 2;
     }
 
-    float alogpy[length], sum_alogpy = 0;
+    float alogpy[length];
+    float sum_alogpy = 0;
+
     for (i = 0; i < length; i++) {
         alogpy[i] = log_exp(fabs(y[i]));
         sum_alogpy += alogpy[i];
     }
 
     float *soft_out = (float*) malloc(length * sizeof(float));
+
     for (i = 0; i < length; i++) {
     	soft_out[i] = (2 * hard[i] - 1) * log_exp(alogpy[i] - sum_alogpy);
 	}
+
     return soft_out;
 }
 
+
 char check_syndrome(matrix hard, int r, indices_of_nonzero_elements V) {
-	int i, j, syn;
+	int i = 0, j = 0;
+
     for (i = 0; i < r; i++) {
-    	syn = 0;
+    	int syn = 0;
+
     	for (j = 0; j < V.element_length[i]; j++) {
     		syn += hard.body[0][V.element_data[i][j]];
 		}
         syn %= 2;
+
         if (syn > 0) {
             return FALSE;
         }
     }
+
     return TRUE;
 }
 
+
 matrix get_hard_from_soft(float soft[], int length) {
     matrix result = create_zero_matrix(1, length);
+    int i = 0;
 
-    int i;
     for (i = 0; i < length; i++) {
         if (soft[i] < 0) {
             result.body[0][i] = 1;
@@ -69,8 +84,9 @@ matrix get_hard_from_soft(float soft[], int length) {
     return result;
 }
 
+
 int flooding(ldpc ldpc_object, float *soft, matrix *hard_solution) {
-	int i, j;
+	int i = 0, j = 0;
     int n = ldpc_object.H.columns;
     int r = ldpc_object.H.rows; // number of parity checks
     indices_of_nonzero_elements V = ldpc_object.V;
@@ -80,6 +96,7 @@ int flooding(ldpc ldpc_object, float *soft, matrix *hard_solution) {
     for (i = 0; i < r; i++) {
     	rw[i] = V.element_length[i];
     }
+
     int cw[n];
     for (i = 0; i < n; i++) {
     	cw[i] = C.element_length[i];
@@ -112,7 +129,7 @@ int flooding(ldpc ldpc_object, float *soft, matrix *hard_solution) {
     	}
     }
 
-	int steps;
+	int steps = 0;
     for (steps = 1; steps <= MAXITER; steps++) {
         // loop over checks
         float* soft_buffer;
@@ -122,7 +139,6 @@ int flooding(ldpc ldpc_object, float *soft, matrix *hard_solution) {
 	    		y[j] = Z[i][V.element_data[i][j]];
 	    	}
 	    	soft_buffer = map_sp(y, rw[i]);
-
 	        for (j = 0; j < rw[i]; j++) {
 	    		Z[i][V.element_data[i][j]] = soft_buffer[j];
 	    	}
@@ -159,16 +175,15 @@ int flooding(ldpc ldpc_object, float *soft, matrix *hard_solution) {
     return -MAXITER;
 }
 
+
 int decode_belief_propogandation(ldpc ldpc_object, float *y, matrix *hard_solution, char use_non_zero_data) {
     matrix H = ldpc_object.H;
     int r = H.rows;
     int n = H.columns;
     float Z[r][n];
     float L[r][n];
-    indices_of_nonzero_elements C = ldpc_object.C;
-    indices_of_nonzero_elements V = ldpc_object.V;
+    int i = 0, j = 0;
 
-    int i, j;
     for (i = 0; i < r; i++) {
         for (j = 0; j < n; j++) {
             Z[i][j] = 0;
@@ -187,7 +202,9 @@ int decode_belief_propogandation(ldpc ldpc_object, float *y, matrix *hard_soluti
     int iter = 0;
     float L_element = 0;
     int index_C = 0;
-    int k;
+    int k = 0;
+    indices_of_nonzero_elements C = ldpc_object.C;
+    indices_of_nonzero_elements V = ldpc_object.V;
 
     while ((iter < MAXITER) && (calculate_sum_row_elements(syndrome, 0) != 0)) {
         //H columns processing
@@ -240,28 +257,25 @@ int decode_belief_propogandation(ldpc ldpc_object, float *y, matrix *hard_soluti
 
     free_matrix(syndrome);
 
-    return iter;
+    return (iter == MAXITER) ? -MAXITER : iter;
 }
 
-matrix count_syndrome(ldpc ldpc_object, matrix codedword, char use_non_zero_data) {
 
+matrix count_syndrome(ldpc ldpc_object, matrix codeword, char use_non_zero_data) {
     matrix syndrome;
+
     if (use_non_zero_data == FALSE) {
-
     	matrix H_transposed = transpose_matrix(ldpc_object.H);
-	    syndrome = multiply_matrices(codedword, H_transposed);
+	    syndrome = multiply_matrices(codeword, H_transposed);
 	    free_matrix(H_transposed);
-
     } else {
-
     	syndrome = create_zero_matrix(1, ldpc_object.r);
     	int i, j;
     	for (i = 0; i < ldpc_object.r; i++) {
     		for (j = 0; j < ldpc_object.V.element_length[i]; j++) {
-    			syndrome.body[0][i] ^= codedword.body[0][ldpc_object.V.element_data[i][j]];
+    			syndrome.body[0][i] ^= codeword.body[0][ldpc_object.V.element_data[i][j]];
 			}
 		}
-
 	}
 
     return syndrome;
