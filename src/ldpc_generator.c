@@ -106,49 +106,6 @@ matrix create_G_from_H_matrix(matrix H, columns_metadata columns_mdata) {
     return G;
 }
 
-ldpc create_ldpc(code_type type, int J, int K, int M) {
-
-    matrix H = create_H_rand(type, J, K, M);
-    matrix H_copy = copy_matrix(H);
-    int* check_set = perform_gauss_elimination(H_copy);
-    columns_metadata columns_mdata = create_columns_metadata(check_set, K * M, J * M);
-
-    matrix cutted_H;
-    switch (type) {
-        case Gallager:
-            cutted_H = copy_matrix_part(H_copy, M * J - J + 1, K * M);
-            break;
-        case RU_code:
-            cutted_H = copy_matrix(H_copy);
-            break;
-    }
-
-    matrix G = create_G_from_H_matrix(cutted_H, columns_mdata);
-
-    ldpc ldpc_object;
-    ldpc_object.G = G;
-    ldpc_object.H = H;
-    ldpc_object.columns_mdata = columns_mdata;
-    ldpc_object.n = G.columns;
-    ldpc_object.k = G.rows;
-    ldpc_object.r = H.rows;
-    ldpc_object.systematic_r = H_copy.rows;
-    ldpc_object.systematic_H = H_copy;
-    ldpc_object.C = get_non_zero_column_data(H);
-    ldpc_object.V = get_non_zero_column_data(transpose_matrix(H));
-
-    free_matrix(cutted_H);
-
-    return ldpc_object;
-}
-
-void free_ldpc(ldpc ldpc_object) {
-    free_matrix(ldpc_object.G);
-    free_matrix(ldpc_object.H);
-	free(ldpc_object.columns_mdata.check_set);
-	free(ldpc_object.columns_mdata.information_set);
-}
-
 matrix create_V_Gallager(int J, int K, int M) {
     int r = J * M;
     int n = K * M;
@@ -264,6 +221,49 @@ columns_metadata create_columns_metadata(int* check_set, int n, int k) {
     columns_mdata.check_size = n - information_size;
 
     return columns_mdata;
+}
+
+ldpc create_ldpc(code_type type, int J, int K, int M) {
+
+    matrix H = create_H_rand(type, J, K, M);
+    matrix H_copy = copy_matrix(H);
+    int* check_set = perform_gauss_elimination(H_copy);
+    columns_metadata columns_mdata = create_columns_metadata(check_set, K * M, J * M);
+
+    matrix cutted_H;
+    switch (type) {
+        case Gallager:
+            cutted_H = copy_matrix_part(H_copy, M * J - J + 1, K * M);
+            break;
+        case RU_code:
+            cutted_H = copy_matrix(H_copy);
+            break;
+    }
+
+    matrix G = create_G_from_H_matrix(cutted_H, columns_mdata);
+
+    ldpc ldpc_object;
+    ldpc_object.G = G;
+    ldpc_object.H = H;
+    ldpc_object.columns_mdata = columns_mdata;
+    ldpc_object.n = G.columns;
+    ldpc_object.k = G.rows;
+    ldpc_object.r = H.rows;
+    ldpc_object.systematic_r = H_copy.rows;
+    ldpc_object.systematic_H = H_copy;
+    ldpc_object.C = get_non_zero_column_data(H);
+    ldpc_object.V = get_non_zero_column_data(transpose_matrix(H));
+
+    free_matrix(cutted_H);
+
+    return ldpc_object;
+}
+
+void free_ldpc(ldpc ldpc_object) {
+    free_matrix(ldpc_object.G);
+    free_matrix(ldpc_object.H);
+	free(ldpc_object.columns_mdata.check_set);
+	free(ldpc_object.columns_mdata.information_set);
 }
 
 indices_of_nonzero_elements get_non_zero_column_data(matrix matrix_object) {

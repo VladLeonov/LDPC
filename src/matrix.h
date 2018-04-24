@@ -14,7 +14,7 @@ matrix create_zero_matrix(int rows, int columns);
 matrix create_unit_matrix(int rows);
 matrix multiply_matrices(matrix M1, matrix M2);
 matrix transpose_matrix(matrix M);
-matrix create_void_matrix();
+//matrix create_void_matrix();
 int is_void_matrix(matrix M);
 void free_matrix(matrix M);
 matrix copy_matrix(matrix matrix_object);

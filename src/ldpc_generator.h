@@ -26,14 +26,14 @@ typedef struct {
     indices_of_nonzero_elements C, V;
 } ldpc;
 
-int* perform_gauss_elimination();
-matrix create_G_from_H_matrix();
+//int* perform_gauss_elimination();
+//matrix create_G_from_H_matrix();
 ldpc create_ldpc();
 void free_ldpc();
-matrix create_V_Gallager();
-matrix create_V_RU();
-matrix create_H_rand();
-columns_metadata create_columns_metadata();
+//matrix create_V_Gallager();
+//matrix create_V_RU();
+//matrix create_H_rand();
+//columns_metadata create_columns_metadata();
 indices_of_nonzero_elements get_non_zero_column_data();
 
 #endif // LDPC_GENERATOR_H_INCLUDED

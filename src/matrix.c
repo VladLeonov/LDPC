@@ -67,6 +67,13 @@ matrix create_unit_matrix(int rows) {
     return M;
 }
 
+matrix create_void_matrix() {
+    matrix M;
+    M.body = NULL;
+    M.rows = 0;
+    M.columns = 0;
+    return M;
+}
 
 matrix multiply_matrices(matrix M1, matrix M2) {
     if (M1.columns != M2.rows) {
@@ -94,15 +101,6 @@ matrix transpose_matrix(matrix M) {
         }
     }
     return MT;
-}
-
-
-matrix create_void_matrix() {
-    matrix M;
-    M.body = NULL;
-    M.rows = 0;
-    M.columns = 0;
-    return M;
 }
 
 
