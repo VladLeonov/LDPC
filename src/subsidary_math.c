@@ -1,12 +1,21 @@
 #include <math.h>
+#include <stdlib.h>
+
 #include "subsidary_math.h"
-#include "stdlib.h"
+
+
+#define TRUE !0
+#define FALSE 0
+
 
 void fill_with_permutation(int *x, int n) {
-	int i, j, temp;
+	int i = 0, j = 0;
+	int temp = 0;
+	
     for (i = 0; i < n; i++) {
         x[i] = i;
     }
+    
     for (i = n-1; i > 0; i--) {
         j = rand() % (i+1);
         temp = x[j];
@@ -15,10 +24,11 @@ void fill_with_permutation(int *x, int n) {
     }
 }
 
-int get_indexes_of_common_elements(int *arr_a, int *arr_b, int *result, int len_a, int len_b) {
-    int i, j, result_length;
-    j = 0;
-    result_length = 0;
+
+int get_indexes_of_common_elements(int *arr_a, int *arr_b, int *result,
+                                   int len_a, int len_b) {
+    int i = 0, j = 0;
+	int result_length = 0;
 
     for (i = 0; i < len_a; i++) {
         for (j = 0; j < len_b; j++) {
@@ -62,20 +72,24 @@ int sign(float value) {
 
 
 float randn() {
-	float U1, U2, W, mult;
-	static float X1, X2;
-	static int call = 0;
+	static float X1 = 0, X2 = 0;
+	static char call = FALSE;
 
-	if (call == 1) {
+	if (call == TRUE) {
 		call = !call;
 		return X2;
 	}
+
+    float U1 = 0, U2 = 0;
+    float W = 0;
 
 	do {
 		U1 = -1 + ((float) rand () / RAND_MAX) * 2;
 		U2 = -1 + ((float) rand () / RAND_MAX) * 2;
 		W = pow (U1, 2) + pow (U2, 2);
 	} while ((W >= 1) || (W == 0));
+	
+	float mult = 0;
 
 	mult = sqrt ((-2 * log (W)) / W);
 	X1 = U1 * mult;
