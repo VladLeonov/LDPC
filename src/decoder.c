@@ -11,7 +11,7 @@
 #define MAXITER 50
 
 
-float* map_sp(float y[], int length) {
+float* max_posteriori_probability(float y[], int length) {
     // LLR domain
     int hard[length];
     int synd = 0;
@@ -31,18 +31,18 @@ float* map_sp(float y[], int length) {
         hard[i] = (hard[i] + synd) % 2;
     }
 
-    float alogpy[length];
-    float sum_alogpy = 0;
+    float abs_log_prob_y[length];
+    float sum_abs_log_prob_y = 0;
 
     for (i = 0; i < length; i++) {
-        alogpy[i] = log_exp(fabs(y[i]));
-        sum_alogpy += alogpy[i];
+        abs_log_prob_y[i] = log_exp(fabs(y[i]));
+        sum_abs_log_prob_y += abs_log_prob_y[i];
     }
 
     float *soft_out = (float*) malloc(length * sizeof(float));
 
     for (i = 0; i < length; i++) {
-    	soft_out[i] = (2 * hard[i] - 1) * log_exp(alogpy[i] - sum_alogpy);
+    	soft_out[i] = (2 * hard[i] - 1) * log_exp(abs_log_prob_y[i] - sum_abs_log_prob_y);
 	}
 
     return soft_out;
@@ -138,7 +138,7 @@ int flooding(ldpc ldpc_object, float *soft, matrix *hard_solution) {
         	for (j = 0; j < rw[i]; j++) {
 	    		y[j] = Z[i][V.element_data[i][j]];
 	    	}
-	    	soft_buffer = map_sp(y, rw[i]);
+	    	soft_buffer = max_posteriori_probability(y, rw[i]);
 	        for (j = 0; j < rw[i]; j++) {
 	    		Z[i][V.element_data[i][j]] = soft_buffer[j];
 	    	}
