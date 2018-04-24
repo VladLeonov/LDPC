@@ -37,15 +37,18 @@ int get_indexes_of_common_elements(int *arr_a, int *arr_b, int *result, int len_
     return result_length;
 }
 
+
 float log_exp(float x) {
     x = fmaxf(fminf(x, 19.07), 0.01);
     return log((exp(x) - 1) / (exp(x) + 1));
 }
 
+
 float log_tahn(float value) {
     float t = exp(fabs(value));
     return log((t + 1)/(t - 1));
 }
+
 
 int sign(float value) {
     if (value > 0) {
@@ -56,6 +59,7 @@ int sign(float value) {
         return 0;
     }
 }
+
 
 float randn() {
 	float U1, U2, W, mult;

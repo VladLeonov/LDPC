@@ -3,8 +3,7 @@
 
 #define TRUE !0
 #define FALSE 0
-
-int sum_row_elements(matrix G, int row_index) {
+int calculate_sum_row_elements(matrix G, int row_index) {
     int i;
     int sum = 0;
     for (i = 0; i < G.columns; i++) {
@@ -13,7 +12,7 @@ int sum_row_elements(matrix G, int row_index) {
     return sum;
 }
 
-float sum_coloumn_elements(int coloumns, float array[][coloumns], int coloumn_index, int rows) {
+float calculate_sum_coloumn_elements(int coloumns, float array[][coloumns], int coloumn_index, int rows) {
     int i;
     float result = 0.0;
     for (i = 0; i < rows; i++) {

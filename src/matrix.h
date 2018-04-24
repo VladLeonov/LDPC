@@ -6,8 +6,8 @@ typedef struct {
     int rows, columns;
 } matrix;
 
-int sum_row_elements(matrix G, int row_index);
-float sum_coloumn_elements(int coloumns, float array[][coloumns], int coloumn_index, int rows);
+int calculate_sum_row_elements(matrix G, int row_index);
+float calculate_sum_coloumn_elements(int coloumns, float array[][coloumns], int coloumn_index, int rows);
 matrix create_random_matrix(int rows, int columns);
 matrix create_empty_matrix(int rows, int columns);
 matrix create_zero_matrix(int rows, int columns);

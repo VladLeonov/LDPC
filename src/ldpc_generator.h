@@ -26,7 +26,7 @@ typedef struct {
     indices_of_nonzero_elements C, V;
 } ldpc;
 
-int* gauss_elimination();
+int* perform_gauss_elimination();
 matrix create_G_from_H_matrix();
 ldpc create_ldpc();
 void free_ldpc();

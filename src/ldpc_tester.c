@@ -52,7 +52,7 @@ int add_noise(float *message, int length, float sigma) {
 	return changes;
 }
 
-void decoding_simulation(ldpc ldpc_object, SNR_interval SNRs, FILE* output_file) {
+void simulate_decoding(ldpc ldpc_object, SNR_interval SNRs, FILE* output_file) {
 
 	int NEXP = 10000;
     int NERR = 100;
@@ -78,7 +78,7 @@ void decoding_simulation(ldpc ldpc_object, SNR_interval SNRs, FILE* output_file)
         fixes = 0;
         for (j = 0; j < NEXP; j++) {
             U = create_random_matrix(1, k);
-            X = encode(ldpc_object, U);
+            X = encode_message(ldpc_object, U);
             y = get_channel_output(X);
             changes = add_noise(y, n, sigma_values[i]);
             if (changes > 0) {

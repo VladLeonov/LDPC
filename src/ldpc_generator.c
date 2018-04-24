@@ -3,7 +3,7 @@
 #include "matrix.h"
 #include "subsidary_math.h"
 
-int* gauss_elimination(matrix G) {
+int* perform_gauss_elimination(matrix G) {
 	int k = G.rows;
 	int n = G.columns;
     int* information_set = (int*) malloc(k * sizeof(int));
@@ -18,7 +18,7 @@ int* gauss_elimination(matrix G) {
     while (i < k) {
 
         //throw away all-zero row
-        while (sum_row_elements(G, i) == 0) {
+        while (calculate_sum_row_elements(G, i) == 0) {
             for (j = i; j < (k - 1); j++) {
                 G.body[j] = G.body[j + 1];
             }
@@ -110,7 +110,7 @@ ldpc create_ldpc(code_type type, int J, int K, int M) {
 
     matrix H = create_H_rand(type, J, K, M);
     matrix H_copy = copy_matrix(H);
-    int* check_set = gauss_elimination(H_copy);
+    int* check_set = perform_gauss_elimination(H_copy);
     columns_metadata columns_mdata = create_columns_metadata(check_set, K * M, J * M);
 
     matrix cutted_H;

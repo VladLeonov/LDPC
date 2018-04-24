@@ -189,7 +189,7 @@ int decode_belief_propogandation(ldpc ldpc_object, float *y, matrix *hard_soluti
     int index_C = 0;
     int k;
 
-    while ((iter < MAXITER) && (sum_row_elements(syndrome, 0) != 0)) {
+    while ((iter < MAXITER) && (calculate_sum_row_elements(syndrome, 0) != 0)) {
         //H columns processing
         float sum_Z;
         for (i = 0; i < n; i++) {
@@ -224,7 +224,7 @@ int decode_belief_propogandation(ldpc ldpc_object, float *y, matrix *hard_soluti
 
         //result forming
         for (i = 0; i < n; i++) {
-            soft[i] = y[i] + sum_coloumn_elements(n, Z, i, r);
+            soft[i] = y[i] + calculate_sum_coloumn_elements(n, Z, i, r);
         }
 
         free_matrix(hard);

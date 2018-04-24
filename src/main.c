@@ -26,7 +26,7 @@ int main() {
     if (TRUE) {
 
     	FILE *file = fopen("decoding_simulation.txt", "w");
-    	decoding_simulation(ldpc_object, SNR, file);
+    	simulate_decoding(ldpc_object, SNR, file);
     	fclose(file);
 
 	} else {
@@ -50,7 +50,7 @@ int main() {
 	    print_matrix(U);
 	    printf("\n");
 
-	    X = encode(ldpc_object, U);
+	    X = encode_message(ldpc_object, U);
 	    printf("X:\n");
 	    print_matrix(X);
 	    printf("\n");

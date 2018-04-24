@@ -4,6 +4,6 @@
 #ifndef ENCODER_H_INCLUDED
 #define ENCODER_H_INCLUDED
 
-matrix encode(ldpc ldpc_object, matrix message);
+matrix encode_message(ldpc ldpc_object, matrix message);
 
 #endif // ENCODER_H_INCLUDED
