@@ -17,7 +17,7 @@ void print_ldpc(ldpc ldpc_object);
 
 int main() {
 
-    int J = 4, K = 8, M = 32;
+    int J = 4, K = 8, M = 8;
     ldpc ldpc_object = create_ldpc(Gallager, J, K, M);
     //print_ldpc(ldpc_object);
 
