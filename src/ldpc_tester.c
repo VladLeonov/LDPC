@@ -1,3 +1,15 @@
+/**
+    LDPC
+    ldpc_tester.c
+    Purpose: Simulates the transmission of a message on the AWGN channel
+	in order to obtain the dependence of the error probability when decoding
+	the message from the signal-to-noise ratio.
+
+    @author Leonov V.R.
+    @version 24.04.18
+*/
+
+
 #include <stdlib.h>
 #include <math.h>
 
