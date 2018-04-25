@@ -1,3 +1,14 @@
+/**
+    LDPC
+    matrix.c
+    Purpose: Ñontains subsidary operations with matrices
+	for using by other methods.
+
+    @author Leonov V.R.
+    @version 24.04.18
+*/
+
+
 #include <stdlib.h>
 
 #include "matrix.h"
@@ -7,6 +18,7 @@
 #define FALSE 0
 
 
+//Calculates the sum of all elements of a matrix row.
 int calculate_sum_row_elements(matrix G, int row_index) {
     int i = 0;
     int sum = 0;
@@ -19,6 +31,7 @@ int calculate_sum_row_elements(matrix G, int row_index) {
 }
 
 
+//Calculates the sum of all elements of a two-dimensional array coloumn.
 float calculate_sum_coloumn_elements(int coloumns, float array[][coloumns],
                                      int coloumn_index, int rows) {
     int i = 0;
@@ -32,6 +45,7 @@ float calculate_sum_coloumn_elements(int coloumns, float array[][coloumns],
 }
 
 
+//Creates matrix that randomly filled with zeros and ones.
 matrix create_random_matrix(int rows, int columns) {
     int i = 0, j = 0;
     matrix M = create_empty_matrix(rows, columns);
@@ -46,6 +60,7 @@ matrix create_random_matrix(int rows, int columns) {
 }
 
 
+//Creates matrix with uninitialized elements.
 matrix create_empty_matrix(int rows, int columns) {
     matrix M;
     M.rows = rows;
@@ -62,6 +77,7 @@ matrix create_empty_matrix(int rows, int columns) {
 }
 
 
+//Creates zero matrix.
 matrix create_zero_matrix(int rows, int columns) {
     matrix M;
     M.rows = rows;
@@ -78,6 +94,7 @@ matrix create_zero_matrix(int rows, int columns) {
 }
 
 
+//Creates unit matrix.
 matrix create_unit_matrix(int rows) {
     matrix M = create_zero_matrix(rows, rows);
     int i = 0;
@@ -89,6 +106,8 @@ matrix create_unit_matrix(int rows) {
     return M;
 }
 
+
+//Creates matrix without elements.
 matrix create_void_matrix() {
     matrix M;
     M.body = NULL;
@@ -98,6 +117,8 @@ matrix create_void_matrix() {
     return M;
 }
 
+
+//Multiplies two matrices.
 matrix multiply_matrices(matrix M1, matrix M2) {
     if (M1.columns != M2.rows) return create_void_matrix();
     
@@ -116,6 +137,7 @@ matrix multiply_matrices(matrix M1, matrix M2) {
 }
 
 
+//Transposes matrix.
 matrix transpose_matrix(matrix M) {
     matrix MT = create_empty_matrix(M.columns, M.rows);
     int i = 0, j = 0;
@@ -130,11 +152,13 @@ matrix transpose_matrix(matrix M) {
 }
 
 
+//Ñhecks whether the matrix contains elements.
 int is_void_matrix(matrix M) {
     return !((M.rows > 0) && (M.columns > 0));
 }
 
 
+//Frees the memory occupied by the matrix, makes it an void matrix.
 void free_matrix(matrix M) {
     int i = 0;
     
@@ -147,6 +171,7 @@ void free_matrix(matrix M) {
 }
 
 
+//Makes copy of matrix.
 matrix copy_matrix(matrix M){
     matrix copy_M = create_empty_matrix(M.rows, M.columns);
     int i = 0, j = 0;
@@ -161,6 +186,7 @@ matrix copy_matrix(matrix M){
 }
 
 
+//Makes copy of matrix part.
 matrix copy_matrix_part(matrix M, int rows, int columns) {
 	int num_rows_to_copy = 0, num_columns_to_copy = 0;
 
@@ -189,6 +215,7 @@ matrix copy_matrix_part(matrix M, int rows, int columns) {
 }
 
 
+//Compares two matrices.
 char compare_matrices(matrix M1, matrix M2) {
     if ((M1.columns != M2.columns) || (M1.rows != M2.rows)) return FALSE;
 
