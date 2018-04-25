@@ -1,3 +1,14 @@
+/**
+    LDPC
+    subsidary_math.c
+    Purpose: Ñontains subsidary mathematical operations 
+	for using by other methods.
+
+    @author Leonov V.R.
+    @version 24.04.18
+*/
+
+
 #include <math.h>
 #include <stdlib.h>
 
@@ -8,6 +19,7 @@
 #define FALSE 0
 
 
+//Fills int array with random permutation.
 void fill_with_permutation(int *x, int n) {
 	int i = 0, j = 0;
 	int temp = 0;
@@ -25,6 +37,8 @@ void fill_with_permutation(int *x, int n) {
 }
 
 
+//Finds common elements of two arrays 
+//and returns their indexes in the first array.
 int get_indexes_of_common_elements(int *arr_a, int *arr_b, int *result,
                                    int len_a, int len_b) {
     int i = 0, j = 0;
@@ -48,18 +62,21 @@ int get_indexes_of_common_elements(int *arr_a, int *arr_b, int *result,
 }
 
 
+//Calculate log((exp(x) - 1) / (exp(x) + 1)).
 float log_exp(float x) {
     x = fmaxf(fminf(x, 19.07), 0.01);
     return log((exp(x) - 1) / (exp(x) + 1));
 }
 
 
+//Calculate log((exp(x) + 1) / (exp(x) - 1)).
 float log_tahn(float value) {
     float t = exp(fabs(value));
     return log((t + 1)/(t - 1));
 }
 
 
+//Determines the sign of a value.
 int sign(float value) {
     if (value > 0) {
         return 1;
@@ -71,6 +88,7 @@ int sign(float value) {
 }
 
 
+//Generates a random number from the normal distribution.
 float randn() {
 	static float X1 = 0, X2 = 0;
 	static char call = FALSE;

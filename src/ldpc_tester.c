@@ -1,3 +1,15 @@
+/**
+    LDPC
+    ldpc_tester.c
+    Purpose: Simulates the transmission of a message on the AWGN channel
+	in order to obtain the dependence of the error probability when decoding
+	the message from the signal-to-noise ratio.
+
+    @author Leonov V.R.
+    @version 24.04.18
+*/
+
+
 #include <stdlib.h>
 #include <math.h>
 
@@ -12,6 +24,7 @@
 #define FALSE 0
 
 
+// Forms channel output from encoded message.
 float* get_channel_output(matrix M) {
 	float *channel_output = NULL;
 	
@@ -29,6 +42,7 @@ float* get_channel_output(matrix M) {
 }
 
 
+//Calculates sigma value for each SRN value in interval.
 void normalize_message(float *message, int length, float square_of_sigma) {
 	int i = 0;
 	
@@ -38,6 +52,7 @@ void normalize_message(float *message, int length, float square_of_sigma) {
 }
 
 
+//Adds additive white Gaussian noise to message.
 float* gen_sigma_values(SNR_interval SNRs, float R) {
 	int array_size = (int) roundf((SNRs.max - SNRs.min) / SNRs.step + 1);
 	float *sigma_values = (float*) malloc(array_size * sizeof(float));
@@ -52,6 +67,7 @@ float* gen_sigma_values(SNR_interval SNRs, float R) {
 }
 
 
+//Adds additive white Gaussian noise to message.
 int add_noise(float *message, int length, float sigma) {
 	int i = 0;
 	float delta = 0;
@@ -67,6 +83,8 @@ int add_noise(float *message, int length, float sigma) {
 }
 
 
+//Simulates the transmission of a message on the AWGN channel with encoding and decoding,
+//write the simulation results (code characteristics) in a file.
 void simulate_decoding(ldpc ldpc_object, SNR_interval SNRs,
                        FILE* output_file) {
     int k = ldpc_object.k, n = ldpc_object.n;
