@@ -10,7 +10,9 @@
 #define FALSE 0
 #define MAXITER 50
 
-
+/**
+    Counts max posteriory probability of each code symbol
+*/
 float* max_posteriori_probability(float y[], int length) {
     // LLR domain
     int hard[length];
@@ -48,7 +50,9 @@ float* max_posteriori_probability(float y[], int length) {
     return soft_out;
 }
 
-
+/**
+    Checks parity of the sum of bits of the syndrome
+*/
 char check_syndrome(matrix hard, int r, indices_of_nonzero_elements V) {
 	int i = 0, j = 0;
 
@@ -68,7 +72,10 @@ char check_syndrome(matrix hard, int r, indices_of_nonzero_elements V) {
     return TRUE;
 }
 
-
+/**
+    Convert soft solutions of message's bits values
+    to hard solutions
+*/
 matrix get_hard_from_soft(float soft[], int length) {
     matrix result = create_zero_matrix(1, length);
     int i = 0;
@@ -84,7 +91,9 @@ matrix get_hard_from_soft(float soft[], int length) {
     return result;
 }
 
-
+/**
+    Decodes accepted sequence by belief propogandation method
+*/
 int flooding(ldpc ldpc_object, float *soft, matrix *hard_solution) {
 	int i = 0, j = 0;
     int n = ldpc_object.H.columns;
@@ -175,7 +184,9 @@ int flooding(ldpc ldpc_object, float *soft, matrix *hard_solution) {
     return -MAXITER;
 }
 
-
+/**
+    Decodes accepted sequence by belief propogandation method
+*/
 int decode_belief_propogandation(ldpc ldpc_object, float *y, matrix *hard_solution, char use_non_zero_data) {
     matrix H = ldpc_object.H;
     int r = H.rows;
@@ -260,7 +271,10 @@ int decode_belief_propogandation(ldpc ldpc_object, float *y, matrix *hard_soluti
     return (iter == MAXITER) ? -MAXITER : iter;
 }
 
-
+/**
+    Counts syndrome for codeword which is result
+    of coding message by LDPC code
+*/
 matrix count_syndrome(ldpc ldpc_object, matrix codeword, char use_non_zero_data) {
     matrix syndrome;
 

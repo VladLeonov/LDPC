@@ -4,7 +4,9 @@
 #include "matrix.h"
 #include "subsidary_math.h"
 
-
+/**
+    Transform linearly dependent rows to zero rows
+*/
 int* perform_gauss_elimination(matrix G) {
 	int k = G.rows;
 	int n = G.columns;
@@ -73,7 +75,9 @@ int* perform_gauss_elimination(matrix G) {
     return information_set;
 }
 
-
+/**
+    Creates G matrix from H matrix
+*/
 matrix create_G_from_H_matrix(matrix H, columns_metadata columns_mdata) {
     matrix P = create_empty_matrix(H.rows, columns_mdata.information_size);
     int i = 0, j = 0;
@@ -107,7 +111,9 @@ matrix create_G_from_H_matrix(matrix H, columns_metadata columns_mdata) {
     return G;
 }
 
-
+/**
+    Prepares data for creation H matrix of Gallager's code
+*/
 matrix create_V_Gallager(int J, int K, int M) {
     int r = J * M;
     int n = K * M;
@@ -135,7 +141,9 @@ matrix create_V_Gallager(int J, int K, int M) {
     return V;
 }
 
-
+/**
+    Prepares data for creation H matrix of RU code
+*/
 matrix create_V_RU(int J, int K, int M) {
     int r = J * M;
     int n = K * M;
@@ -160,7 +168,9 @@ matrix create_V_RU(int J, int K, int M) {
     return V;
 }
 
-
+/**
+    Creates random H matrix
+*/
 matrix create_H_rand(code_type type, int J, int K, int M) {
     int r = J * M;
     int n = K * M;
@@ -202,6 +212,9 @@ matrix create_H_rand(code_type type, int J, int K, int M) {
 }
 
 
+/**
+    Collects data about information and check columns
+*/
 columns_metadata create_columns_metadata(int* check_set, int n, int k) {
 	int R[n];
     int information_size = n;
@@ -240,7 +253,9 @@ columns_metadata create_columns_metadata(int* check_set, int n, int k) {
     return columns_mdata;
 }
 
-
+/**
+    Creates LDPC code structure
+*/
 ldpc create_ldpc(code_type type, int J, int K, int M) {
     matrix H = create_H_rand(type, J, K, M);
     matrix H_copy = copy_matrix(H);
@@ -280,7 +295,9 @@ ldpc create_ldpc(code_type type, int J, int K, int M) {
     return ldpc_object;
 }
 
-
+/**
+    Destroys LDPC code structure
+*/
 void free_ldpc(ldpc ldpc_object) {
     free_matrix(ldpc_object.G);
     free_matrix(ldpc_object.H);
@@ -288,7 +305,9 @@ void free_ldpc(ldpc ldpc_object) {
 	free(ldpc_object.columns_mdata.information_set);
 }
 
-
+/**
+    Gets data about indices of nonero elements of H matrix
+*/
 indices_of_nonzero_elements get_non_zero_column_data(matrix matrix_object) {
     indices_of_nonzero_elements non_zero_column_data;
     non_zero_column_data.element_data = (int **)malloc(matrix_object.columns * sizeof(int *));

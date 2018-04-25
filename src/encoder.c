@@ -1,6 +1,8 @@
 #include "encoder.h"
 
-
+/**
+    Encodes message by LDPC code
+*/
 matrix encode_message(ldpc ldpc_object, matrix message) {
     int n = ldpc_object.n;
 	int k = ldpc_object.k;
