@@ -15,6 +15,11 @@ typedef enum {
     BLUE = -RED
 } vertex_color;
 
+typedef struct {
+	int length;
+    int number;
+} length_and_number;
+
 graph get_tanner_graph_from_ldpc(ldpc ldpc_object);
 void remove_edge_from_graph(graph graph_object, int vertex_index);
 
