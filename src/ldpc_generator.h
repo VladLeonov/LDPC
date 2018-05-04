@@ -1,9 +1,3 @@
-#include "matrix.h"
-
-
-#ifndef LDPC_GENERATOR_H_INCLUDED
-#define LDPC_GENERATOR_H_INCLUDED
-
 /**
     LDPC
     ldpc_generator.h
@@ -13,6 +7,12 @@
     @author Danilyuk K.S.
     @version 25.04.2018
 */
+
+#include "matrix.h"
+
+#ifndef LDPC_GENERATOR_H_INCLUDED
+#define LDPC_GENERATOR_H_INCLUDED
+
 
 /**
     Enumeration contains types of LDPC codes

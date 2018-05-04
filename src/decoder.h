@@ -1,10 +1,3 @@
-#include "matrix.h"
-#include "ldpc_generator.h"
-
-
-#ifndef DECODER_H_INCLUDED
-#define DECODER_H_INCLUDED
-
 /**
     LDPC
     encoder.h
@@ -15,6 +8,14 @@
     @author Danilyuk K.S.
     @version 25.04.2018
 */
+
+#include "matrix.h"
+#include "ldpc_generator.h"
+
+
+#ifndef DECODER_H_INCLUDED
+#define DECODER_H_INCLUDED
+
 
 /**
     Decodes accepted sequence by belief propogandation method
