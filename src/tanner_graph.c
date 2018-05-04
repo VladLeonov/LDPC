@@ -76,5 +76,29 @@ void remove_edge_from_graph(graph graph_object, int vertex_index) {
 length_and_number find_shortest_paths_between_vertices(graph graph_object, 
 													   int vertex_index1,
 													   int vertex_index2) {
-	//TODO
+	length_and_number shortest_paths = {1, 1}; //TODO don't be a stub
+	return shortest_paths;
+}
+
+
+length_and_number find_shortest_cycles_in_graph(graph graph_object) {
+	length_and_number shortest_cycles = {INT_MAX, 0};
+	length_and_number shortest_paths;
+	int vertex_index1, vertex_index2;
+	
+	for (vertex_index1 = 0; graph_object.degree_of_vertices[vertex_index1] > 0; vertex_index1++) {
+		
+		vertex_index2 = graph_object.adjacency_list[vertex_index1][0];
+		remove_edge_from_graph(graph_object, vertex_index1);
+		shortest_paths = find_shortest_paths_between_vertices(graph_object, vertex_index1, vertex_index2);
+		
+		if (shortest_paths.length < shortest_cycles.length) {
+			shortest_cycles = shortest_paths;
+		} else if (shortest_paths.length == shortest_cycles.length) {
+			shortest_cycles.number += shortest_paths.number;
+		}
+	}
+	
+	shortest_cycles.length++;
+	return shortest_cycles;
 }

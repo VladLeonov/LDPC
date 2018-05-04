@@ -25,5 +25,6 @@ void remove_edge_from_graph(graph graph_object, int vertex_index);
 length_and_number find_shortest_paths_between_vertices(graph graph_object, 
 													   int vertex_index1,
 													   int vertex_index2);
+length_and_number find_shortest_cycles_in_graph(graph graph_object);
 
 #endif // TANNER_GRAPH_CORRECT_VERSION_H_INCLUDED
