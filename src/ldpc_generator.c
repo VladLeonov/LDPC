@@ -334,3 +334,56 @@ indices_of_nonzero_elements get_non_zero_column_data(matrix matrix_object) {
 
     return non_zero_column_data;
 }
+
+int get_max_weight(matrix weight_matrix) {
+    int i = 0;
+    int j = 0;
+    int max = -1;
+    for (i = 0; i < weight_matrix.rows; i++) {
+        for (j = 0; j < weight_matrix.columns; j++) {
+            if (max < weight_matrix.body[i][j]) {
+                max = weight_matrix.body[i][j];
+            }
+        }
+    }
+
+    return max;
+}
+
+weight_number_pair* get_weight_number_pairs(matrix weight_matrix, int *num_of_weights_ptr) {
+    int max_weight = -1;
+    int i = 0;
+    int j = 0;
+    max_weight = get_max_weight(weight_matrix);
+    int *weight_number_array = (int*)malloc(sizeof(int) * (max_weight + 1));
+
+    for (i = 0; i < (max_weight + 1); i++) {
+        weight_number_array[i] = 0;
+    }
+
+    for (i = 0; i < weight_matrix.rows; i++) {
+        for (j = 0; j < weight_matrix.columns; j++) {
+            weight_number_array[weight_matrix.body[i][j]]++;
+        }
+    }
+
+    *num_of_weights_ptr = 0;
+    for (i = 1; i < (max_weight + 1); i++) {
+        if (weight_number_array[i] != 0) {
+            *num_of_weights_ptr += 1;
+        }
+    }
+
+   weight_number_pair *w_n_pair_array = (weight_number_pair*)malloc(sizeof(weight_number_pair) * *num_of_weights_ptr);
+    int pair_index = 0;
+    for (i = max_weight; i > 0; i--) {
+
+        if (weight_number_array[i] != 0) {
+            w_n_pair_array[pair_index].weight = i;
+            w_n_pair_array[pair_index].number = weight_number_array[i];
+            pair_index++;
+        }
+    }
+
+    return w_n_pair_array;
+}

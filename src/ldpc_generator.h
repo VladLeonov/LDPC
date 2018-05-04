@@ -60,6 +60,13 @@ typedef struct {
                                         //columns in each row
 } ldpc;
 
+typedef struct {
+
+    int weight;
+    int number;
+
+} weight_number_pair;
+
 /**
     Creates LDPC code structure
 
@@ -83,5 +90,7 @@ void free_ldpc(ldpc ldpc_object);
     @return structure contaning data about nonero elements
 */
 indices_of_nonzero_elements get_non_zero_column_data(matrix matrix_object);
+
+ weight_number_pair* get_weight_number_pairs(matrix weight_matrix, int *num_of_weights_ptr);
 
 #endif // LDPC_GENERATOR_H_INCLUDED
