@@ -71,3 +71,10 @@ void remove_edge_from_graph(graph graph_object, int vertex_index) {
 		(int*) realloc(graph_object.adjacency_list[other_vertex_index], 
 		graph_object.degree_of_vertices[other_vertex_index] * sizeof(int));
 }
+
+
+length_and_number find_shortest_paths_between_vertices(graph graph_object, 
+													   int vertex_index1,
+													   int vertex_index2) {
+	//TODO
+}
