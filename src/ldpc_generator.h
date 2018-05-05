@@ -92,6 +92,6 @@ void free_ldpc(ldpc ldpc_object);
 indices_of_nonzero_elements get_non_zero_column_data(matrix matrix_object);
 
  weight_number_pair* get_weight_number_pairs(matrix weight_matrix, int *num_of_weights_ptr);
- int get_polynomial_matrix(matrix weight_matrix, int submatrix_size, int num_of_weights, weight_number_pair *w_n_pairs);
+ void get_polynomial_matrix(matrix weight_matrix, int submatrix_size, int num_of_weights, weight_number_pair *w_n_pairs, int ***polynomial_matrix);
 
 #endif // LDPC_GENERATOR_H_INCLUDED

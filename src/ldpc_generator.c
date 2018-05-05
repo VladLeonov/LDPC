@@ -460,7 +460,7 @@ int* get_distances_array(int *possible_distances_array, int num_of_distances, in
     return distances_array;
 }
 
-int get_polynomial_matrix(matrix weight_matrix, int submatrix_size, int num_of_weights, weight_number_pair *w_n_pairs) {
+void get_polynomial_matrix(matrix weight_matrix, int submatrix_size, int num_of_weights, weight_number_pair *w_n_pairs, int ***polynomial_matrix) {
 
     //submatrix_size = 67
     int *possible_distances_array = (int*)malloc(sizeof(int) * (submatrix_size - 1));
@@ -473,9 +473,6 @@ int get_polynomial_matrix(matrix weight_matrix, int submatrix_size, int num_of_w
     for (i = 0; i < submatrix_size; i++) {
         possible_distances_array[i] = i + 1;
     }
-
-    int polynomial_matrix[weight_matrix.rows][weight_matrix.columns][submatrix_size];   //MAKE DYNAMICAL
-
 
     for (i = 0; i < weight_matrix.rows; i++) {
         for (j = 0; j < weight_matrix.columns; j++) {
@@ -515,13 +512,10 @@ int get_polynomial_matrix(matrix weight_matrix, int submatrix_size, int num_of_w
                                     w_n_pairs[i].weight,
                                     current_distances_array,
                                     submatrix_size);
-                        printf("polynomial_row:\n");
                         int m = 0;
                         for (m = 0; m < submatrix_size; m++) {
                             polynomial_matrix[k][l][m] = buf[m];
-                            printf("%i ", polynomial_matrix[k][l][m]);
                         }
-                        printf("\n");
                         polynom_generated = TRUE;
                         l++;
                         break;
@@ -534,16 +528,6 @@ int get_polynomial_matrix(matrix weight_matrix, int submatrix_size, int num_of_w
                     break;
                 }
             }
-        }
-    }
-
-    printf("polynomial_matrix:\n");
-    for (i = 0; i < weight_matrix.rows; i++) {
-        for (j = 0; j < weight_matrix.columns; j++) {
-            for (k = 0; k < submatrix_size; k++) {
-                printf("%i ", polynomial_matrix[i][j][k]);
-            }
-            printf("\n");
         }
     }
 
