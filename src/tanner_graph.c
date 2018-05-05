@@ -3,6 +3,10 @@
 #include "tanner_graph.h"
 
 
+#define TRUE !0
+#define FALSE 0
+
+
 graph get_tanner_graph_from_ldpc(ldpc ldpc_object) {
 	int n = ldpc_object.n;
 	int r = ldpc_object.r;
@@ -76,7 +80,83 @@ void remove_edge_from_graph(graph graph_object, int vertex_index) {
 length_and_number find_shortest_paths_between_vertices(graph graph_object, 
 													   int vertex_index1,
 													   int vertex_index2) {
-	length_and_number shortest_paths = {1, 1}; //TODO don't be a stub
+	int V = graph_object.number_of_vertices;
+	vertex_color colors[V];
+	
+	int i, j;
+	for (i = 0; i < V; i++) {
+		colors[i] = WHITE;
+	}
+	colors[vertex_index1] = RED;
+	colors[vertex_index2] = BLUE;
+	
+	int last_red_vertices[V], last_blue_vertices[V];
+	last_red_vertices[0] = vertex_index1;
+	last_blue_vertices[0] = vertex_index2;
+	int num_last_red_vertices = 1, num_last_blue_vertices = 1;
+	
+	int last_vertices_buffer[V];
+	int num_last_vertices_buffer;
+	
+	char is_cycle_found = FALSE;
+	int current_vertex, neighbor_vertex;
+	length_and_number shortest_paths = {INT_MAX, 0};
+	int path_length = 0;
+	
+	while ((is_cycle_found == FALSE) && (num_last_red_vertices > 0)) {
+		num_last_vertices_buffer = 0;
+		path_length++;
+		
+		for (i = 0; i < num_last_red_vertices; i++) {
+			current_vertex = last_red_vertices[i];
+			
+			for (j = 0; j < graph_object.degree_of_vertices[current_vertex]; j++) {
+				neighbor_vertex = graph_object.adjacency_list[current_vertex][j];
+				
+				if (colors[neighbor_vertex] == WHITE) {
+					colors[neighbor_vertex] = RED;
+					last_vertices_buffer[num_last_vertices_buffer++] = neighbor_vertex;
+				} else if (colors[neighbor_vertex] == BLUE) {
+					is_cycle_found = TRUE;
+					shortest_paths.length = path_length;
+					shortest_paths.number++;
+				}
+			}
+		}
+		
+		for (i = 0; i < num_last_vertices_buffer; i++) {
+			last_red_vertices[i] = last_vertices_buffer[i];
+		}
+		num_last_red_vertices = num_last_vertices_buffer;
+		
+		if (is_cycle_found == TRUE) continue;
+		
+		num_last_vertices_buffer = 0;
+		path_length++;
+		
+		for (i = 0; i < num_last_blue_vertices; i++) {
+			current_vertex = last_blue_vertices[i];
+			
+			for (j = 0; j < graph_object.degree_of_vertices[current_vertex]; j++) {
+				neighbor_vertex = graph_object.adjacency_list[current_vertex][j];
+				
+				if (colors[neighbor_vertex] == WHITE) {
+					colors[neighbor_vertex] = BLUE;
+					last_vertices_buffer[num_last_vertices_buffer++] = neighbor_vertex;
+				} else if (colors[neighbor_vertex] == RED) {
+					is_cycle_found = TRUE;
+					shortest_paths.length = path_length;
+					shortest_paths.number++;
+				}
+			}
+		}
+		
+		for (i = 0; i < num_last_vertices_buffer; i++) {
+			last_blue_vertices[i] = last_vertices_buffer[i];
+		}
+		num_last_blue_vertices = num_last_vertices_buffer;
+	}
+	
 	return shortest_paths;
 }
 
