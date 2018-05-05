@@ -1,8 +1,12 @@
 #include <stdlib.h>
+#include <time.h>
 
 #include "ldpc_generator.h"
 #include "matrix.h"
 #include "subsidary_math.h"
+
+#define TRUE !0
+#define FALSE 0
 
 /**
     Transform linearly dependent rows to zero rows
@@ -385,5 +389,185 @@ weight_number_pair* get_weight_number_pairs(matrix weight_matrix, int *num_of_we
         }
     }
 
+    free(weight_number_array);
+
     return w_n_pair_array;
+}
+
+int* generate_polynom_use_distances(int weight, int *distances, int submatrix_size) {
+
+    int *polynom = (int*)malloc(submatrix_size * sizeof(int));
+    int i = 0;
+
+    for (i = 0; i < submatrix_size; i++) {
+        polynom[i] = 0;
+    }
+    int index = 0;
+    polynom[index] = 1;
+
+    for (i = 0; i < weight - 1; i++) {
+        index += distances[i];
+        polynom[index] = 1;
+    }
+
+    return polynom;
+}
+
+int* get_distances_array(int *possible_distances_array, int num_of_distances, int weight, int submatrix_size) {
+
+    int *distances_array = (int*)malloc(weight * sizeof(int)); //MAKE DYNAMICAL
+    srand(time(NULL));
+    int i = 0;
+    int j = 0;
+    for (i = 0; i < weight; i++) {
+        distances_array[i] = 0;
+    }
+
+    int distance_is_used = TRUE;
+
+    while (distance_is_used) {
+        distances_array[0] = possible_distances_array[(rand() % num_of_distances)];
+        for (i = 1; i < weight - 1; i++) {
+            int distance_not_unique = TRUE;
+            while (distance_not_unique) {
+                distance_not_unique = FALSE;
+                distances_array[i] = possible_distances_array[(rand() % num_of_distances)];
+                for (j = 0; j < i; j++) {
+                    if (distances_array[i] == distances_array[j]) {
+                        distance_not_unique = TRUE;
+                        break;
+                    }
+                }
+            }
+        }
+
+        int last = submatrix_size;
+        for (i = 0; i < (weight - 1); i++) {
+            last -= distances_array[i];
+        }
+
+        distance_is_used = TRUE;
+
+        for (i = 0; i < num_of_distances; i++) {
+            if (last == possible_distances_array[i]) {
+                distance_is_used = FALSE;
+                distances_array[weight - 1] = last;
+                break;
+            }
+        }
+    }
+
+    return distances_array;
+}
+
+int get_polynomial_matrix(matrix weight_matrix, int submatrix_size, int num_of_weights, weight_number_pair *w_n_pairs) {
+
+    //submatrix_size = 67
+    int *possible_distances_array = (int*)malloc(sizeof(int) * (submatrix_size - 1));
+    int num_of_distances = submatrix_size - 1;
+    int i = 0;
+    int j = 0;
+    int k = 0;
+    int l = 0;
+
+    for (i = 0; i < submatrix_size; i++) {
+        possible_distances_array[i] = i + 1;
+    }
+
+    int polynomial_matrix[weight_matrix.rows][weight_matrix.columns][submatrix_size];   //MAKE DYNAMICAL
+
+
+    for (i = 0; i < weight_matrix.rows; i++) {
+        for (j = 0; j < weight_matrix.columns; j++) {
+            for (k = 0; k < submatrix_size; k++) {
+                polynomial_matrix[i][j][k] = 0;
+            }
+        }
+    }
+
+    int *current_distances_array;
+    for (i = 0; i < num_of_weights; i++) {
+        k = 0;
+        l = 0;
+        for (j = 0; j < w_n_pairs[i].number; j++) {
+            int m = 0;
+            //MAGIC get distances array
+            current_distances_array = get_distances_array(
+                                        possible_distances_array,
+                                        num_of_distances,
+                                        w_n_pairs[i].weight,
+                                        submatrix_size);
+
+            //delete used distances from array
+            num_of_distances = delete_distances_from_array(
+                                possible_distances_array,
+                                num_of_distances,
+                                current_distances_array,
+                                w_n_pairs[i].weight);
+
+            //searching for place for polynomial
+            int polynom_generated = FALSE;
+            for (; k < weight_matrix.rows; k++) {
+                for (; l < weight_matrix.columns; l++) {
+                    if (weight_matrix.body[k][l] == w_n_pairs[i].weight) {
+                        //generate polynomial using distances
+                        int *buf = generate_polynom_use_distances(
+                                    w_n_pairs[i].weight,
+                                    current_distances_array,
+                                    submatrix_size);
+                        printf("polynomial_row:\n");
+                        int m = 0;
+                        for (m = 0; m < submatrix_size; m++) {
+                            polynomial_matrix[k][l][m] = buf[m];
+                            printf("%i ", polynomial_matrix[k][l][m]);
+                        }
+                        printf("\n");
+                        polynom_generated = TRUE;
+                        l++;
+                        break;
+                    }
+                }
+                if (l == weight_matrix.columns) {
+                    l = 0;
+                }
+                if (polynom_generated) {
+                    break;
+                }
+            }
+        }
+    }
+
+    printf("polynomial_matrix:\n");
+    for (i = 0; i < weight_matrix.rows; i++) {
+        for (j = 0; j < weight_matrix.columns; j++) {
+            for (k = 0; k < submatrix_size; k++) {
+                printf("%i ", polynomial_matrix[i][j][k]);
+            }
+            printf("\n");
+        }
+    }
+
+    return polynomial_matrix;
+}
+
+int delete_distances_from_array(int *possible_distances_array, int num_of_possible_distances, int *distances_array, int weight) {
+    int i = 0;
+    int j = 0;
+    int buf = 0;
+    int last_index = num_of_possible_distances - 1;
+    for (i = 0; i < num_of_possible_distances; i++) {
+        for (j = 0; j < weight; j++) {
+            if (possible_distances_array[i] == distances_array[j]) {
+                buf = possible_distances_array[i];
+                possible_distances_array[i] = possible_distances_array[last_index];
+                possible_distances_array[last_index] = buf;
+                last_index--;
+                num_of_possible_distances--;
+            }
+        }
+    }
+
+    (int*)realloc(possible_distances_array, sizeof(int) * num_of_possible_distances);
+
+    return num_of_possible_distances;
 }
