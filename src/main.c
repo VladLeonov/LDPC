@@ -21,7 +21,7 @@ void print_graph(graph G);
 
 
 int main() {
-    int J = 2, K = 2, M = 2;
+    int J = 2, K = 4, M = 3;
     ldpc ldpc_object = create_ldpc(Gallager, J, K, M);
     
     printf("H =\n");
@@ -126,8 +126,8 @@ void print_ldpc(ldpc ldpc_object) {
 void print_graph(graph G) {
 	int i, j;
 	for (i = 0; i < G.number_of_vertices; i++) {
-		printf("%d(%d) - ", i, G.degree_of_vertices[i]);
-        for (j = 0; j < G.degree_of_vertices[i]; j++) {
+		printf("%d(%d) - ", i, G.degrees_of_vertices[i]);
+        for (j = 0; j < G.degrees_of_vertices[i]; j++) {
             printf("%d ", G.adjacency_list[i][j]);
         }
         printf("\n");
