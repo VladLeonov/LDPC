@@ -1,8 +1,20 @@
+/**
+    LDPC
+    tanner_graph.c
+    Purpose: Builds a Tanner graph based on the LDPC object 
+	and finds the number and length of the shortest cycles in it.
+
+    @author Leonov V.R.
+    @version 05.05.18
+*/
+
+
 #include <stdlib.h>
 
 #include "tanner_graph.h"
 
 
+//Builds a Tanner graph based on the LDPC object.
 graph get_tanner_graph_from_ldpc(ldpc ldpc_object) {
 	int n = ldpc_object.n;
 	int r = ldpc_object.r;
@@ -44,6 +56,8 @@ graph get_tanner_graph_from_ldpc(ldpc ldpc_object) {
 }
 
 
+//Removes edge from graph by one of vertices.
+//The second vertex will be taken from adjacency list.
 void remove_edge_from_graph(graph graph_object, int vertex_index) {
 	int* degrees_of_vertices = graph_object.degrees_of_vertices;
 	int** adjacency_list = graph_object.adjacency_list;
@@ -77,6 +91,7 @@ void remove_edge_from_graph(graph graph_object, int vertex_index) {
 }
 
 
+//Performs one iteration of graph coloring.
 int perform_iteration_of_graph_colorization(graph graph_object, 
 											int* last_vertices,
 											int* num_last_vertices,
@@ -117,6 +132,8 @@ int perform_iteration_of_graph_colorization(graph graph_object,
 }
 
 
+//Find shortest paths between two vertices in graph 
+//and returns information about them.
 length_and_number find_shortest_paths_between_vertices(graph graph_object, 
 													   int vertex_index1,
 													   int vertex_index2) {
@@ -171,6 +188,7 @@ length_and_number find_shortest_paths_between_vertices(graph graph_object,
 }
 
 
+//Find shortest cycles in graph and returns information about them.
 length_and_number find_shortest_cycles_in_graph(graph graph_object) {
 	length_and_number shortest_cycles = {INT_MAX, 0};
 	length_and_number shortest_paths;
