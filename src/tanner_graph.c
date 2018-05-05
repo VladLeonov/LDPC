@@ -3,10 +3,6 @@
 #include "tanner_graph.h"
 
 
-#define TRUE !0
-#define FALSE 0
-
-
 graph get_tanner_graph_from_ldpc(ldpc ldpc_object) {
 	int n = ldpc_object.n;
 	int r = ldpc_object.r;
