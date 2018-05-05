@@ -460,6 +460,28 @@ int* get_distances_array(int *possible_distances_array, int num_of_distances, in
     return distances_array;
 }
 
+int delete_distances_from_array(int *possible_distances_array, int num_of_possible_distances, int *distances_array, int weight) {
+    int i = 0;
+    int j = 0;
+    int buf = 0;
+    int last_index = num_of_possible_distances - 1;
+    for (i = 0; i < num_of_possible_distances; i++) {
+        for (j = 0; j < weight; j++) {
+            if (possible_distances_array[i] == distances_array[j]) {
+                buf = possible_distances_array[i];
+                possible_distances_array[i] = possible_distances_array[last_index];
+                possible_distances_array[last_index] = buf;
+                last_index--;
+                num_of_possible_distances--;
+            }
+        }
+    }
+
+    (int*)realloc(possible_distances_array, sizeof(int) * num_of_possible_distances);
+
+    return num_of_possible_distances;
+}
+
 void get_polynomial_matrix(matrix weight_matrix, int submatrix_size, int num_of_weights, weight_number_pair *w_n_pairs, int ***polynomial_matrix) {
 
     //submatrix_size = 67
@@ -487,7 +509,6 @@ void get_polynomial_matrix(matrix weight_matrix, int submatrix_size, int num_of_
         k = 0;
         l = 0;
         for (j = 0; j < w_n_pairs[i].number; j++) {
-            int m = 0;
             //MAGIC get distances array
             current_distances_array = get_distances_array(
                                         possible_distances_array,
@@ -516,6 +537,7 @@ void get_polynomial_matrix(matrix weight_matrix, int submatrix_size, int num_of_
                         for (m = 0; m < submatrix_size; m++) {
                             polynomial_matrix[k][l][m] = buf[m];
                         }
+                        free(buf);
                         polynom_generated = TRUE;
                         l++;
                         break;
@@ -531,27 +553,5 @@ void get_polynomial_matrix(matrix weight_matrix, int submatrix_size, int num_of_
         }
     }
 
-    return polynomial_matrix;
-}
-
-int delete_distances_from_array(int *possible_distances_array, int num_of_possible_distances, int *distances_array, int weight) {
-    int i = 0;
-    int j = 0;
-    int buf = 0;
-    int last_index = num_of_possible_distances - 1;
-    for (i = 0; i < num_of_possible_distances; i++) {
-        for (j = 0; j < weight; j++) {
-            if (possible_distances_array[i] == distances_array[j]) {
-                buf = possible_distances_array[i];
-                possible_distances_array[i] = possible_distances_array[last_index];
-                possible_distances_array[last_index] = buf;
-                last_index--;
-                num_of_possible_distances--;
-            }
-        }
-    }
-
-    (int*)realloc(possible_distances_array, sizeof(int) * num_of_possible_distances);
-
-    return num_of_possible_distances;
+    free(possible_distances_array);
 }
