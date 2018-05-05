@@ -550,6 +550,7 @@ void get_polynomial_matrix(matrix weight_matrix, int submatrix_size, int num_of_
                     break;
                 }
             }
+            free(current_distances_array);
         }
     }
 
