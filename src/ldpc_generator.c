@@ -555,3 +555,45 @@ void get_polynomial_matrix(matrix weight_matrix, const int submatrix_size, int n
     }
     free(possible_distances_array);
 }
+
+void get_polynomial_matrix_with_shift(int ***polynomial_matrix, matrix weight_matrix, const int submatrix_size) {
+
+	int i = 0;
+	int j = 0;
+	int k = 0;
+	int l = 0;
+
+	for (i = 1; i < weight_matrix.rows; i++) {
+		for (j = 0; j < weight_matrix.columns; j++) {
+			int shift = 0;
+			int position_exists = TRUE;
+
+			while (position_exists) {
+				shift++;
+				position_exists = FALSE;
+				for (k = 0; k < i; k++) {
+					for (l = 0; l < submatrix_size; l++) {
+						if ((polynomial_matrix[i][j][l] == 1) && (polynomial_matrix[k][j][(l + shift) % submatrix_size] == 1)) {
+
+							position_exists = TRUE;
+							break;
+						}
+					}
+					if (position_exists) {
+						break;
+					}
+				}
+			}
+
+			int polynom_copy[submatrix_size];
+
+			for (l = 0; l < submatrix_size; l++) {
+				polynom_copy[(l + shift) % submatrix_size] = polynomial_matrix[i][j][l];
+			}
+
+			for (l = 0; l < submatrix_size; l++) {
+				polynomial_matrix[i][j][l] = polynom_copy[l];
+			}
+		}
+	}
+}
