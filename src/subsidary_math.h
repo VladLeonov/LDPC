@@ -54,4 +54,23 @@ int sign(float value);
 */
 float randn();
 
+/**
+    Creates three-dimensional array filled with zeros.
+
+    @param x Array size by the first dimension.
+    @param y Array size by the second dimension.
+    @param z Array size by the third dimension.
+    @return Array pointer.
+*/
+int*** create_three_dimensional_array(int x, int y, int z);
+
+/**
+    Frees the memory occupied by the three-dimensional array.
+
+	@param array Array pointer.
+    @param x Array size by the first dimension.
+    @param y Array size by the second dimension.
+*/
+void free_three_dimensional_array(int*** array, int x, int y);
+
 #endif // SUBSIDARY_MATH_H_INCLUDED
