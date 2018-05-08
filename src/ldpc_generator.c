@@ -597,3 +597,25 @@ void get_polynomial_matrix_with_shift(int ***polynomial_matrix, matrix weight_ma
 		}
 	}
 }
+
+matrix create_H_matrix_use_polynomial_matrix_with_shifts(const int ***polynomial_matrix, matrix weight_matrix, int submatrix_size) {
+
+	matrix H_matrix = create_empty_matrix(weight_matrix.rows * submatrix_size, weight_matrix.columns * submatrix_size);
+	int i = 0;
+	int j = 0;
+	int k = 0;
+	int l = 0;
+
+	for (i = 0; i < weight_matrix.rows; i++) {
+		for (j = 0; j < weight_matrix.columns; j++) {
+			int *polynomial = polynomial_matrix[i][j];
+			for (k = 0; k < submatrix_size; k++) {
+				for (l = 0; l < submatrix_size; l++) {
+					H_matrix.body[i * submatrix_size + k][j * submatrix_size + l] = polynomial[((l - k) + submatrix_size) % submatrix_size];
+				}
+			}
+		}
+	}
+
+	return H_matrix;
+}
