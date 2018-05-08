@@ -258,94 +258,8 @@ columns_metadata create_columns_metadata(int* check_set, int n, int k) {
 }
 
 /**
-    Creates LDPC code structure
+    Gets max weight from weight matrix
 */
-ldpc create_ldpc(code_type type, int J, int K, int M, matrix weight_matrix) {
-	matrix H;
-    if (type != NEW_CODE) {
-        H = create_H_rand(type, J, K, M);
-    } else {
-    	H = create_H_matrix_of_new_code(weight_matrix, M);
-	}
-	
-	matrix H_copy = copy_matrix(H);
-    int* check_set = perform_gauss_elimination(H_copy);
-    columns_metadata columns_mdata = create_columns_metadata(check_set, K * M, J * M);
-        
-    matrix cutted_H;
-    switch (type)
-    {
-        case GALLAGER:
-            cutted_H = copy_matrix_part(H_copy, M * J - J + 1, K * M);
-            break;
-        case RU_CODE:
-            cutted_H = copy_matrix(H_copy);
-            break;
-        case NEW_CODE:
-        	cutted_H = copy_matrix(H_copy);
-        default:
-            cutted_H = create_random_matrix(J * M, K * M);
-    }
-
-    matrix G = create_G_from_H_matrix(cutted_H, columns_mdata);
-    
-    ldpc ldpc_object;
-    ldpc_object.G = G;
-    ldpc_object.H = H;
-    ldpc_object.columns_mdata = columns_mdata;
-    ldpc_object.n = G.columns;
-    ldpc_object.k = G.rows;
-    ldpc_object.r = H.rows;
-    ldpc_object.systematic_r = cutted_H.rows;
-    ldpc_object.systematic_H = H_copy;
-    ldpc_object.C = get_non_zero_column_data(H);
-    ldpc_object.V = get_non_zero_column_data(transpose_matrix(H));
-    
-    free_matrix(cutted_H);
-
-    return ldpc_object;
-}
-
-/**
-    Destroys LDPC code structure
-*/
-void free_ldpc(ldpc ldpc_object) {
-    free_matrix(ldpc_object.G);
-    free_matrix(ldpc_object.H);
-	free(ldpc_object.columns_mdata.check_set);
-	free(ldpc_object.columns_mdata.information_set);
-}
-
-/**
-    Gets data about indices of nonero elements of H matrix
-*/
-indices_of_nonzero_elements get_non_zero_column_data(matrix matrix_object) {
-    indices_of_nonzero_elements non_zero_column_data;
-    non_zero_column_data.element_data = (int **)malloc(matrix_object.columns * sizeof(int *));
-    non_zero_column_data.element_length = (int *)malloc(matrix_object.columns * sizeof(int));
-    int buf_column[matrix_object.rows];
-    int i, j;
-
-    for (i = 0; i < matrix_object.columns; i++) {
-        int num_ones = 0;
-        for (j = 0; j < matrix_object.rows; j++) {
-            if (matrix_object.body[j][i] != 0) {
-                buf_column[num_ones] = j;
-                num_ones++;
-            }
-        }
-
-        non_zero_column_data.element_length[i] = num_ones;
-        non_zero_column_data.element_data[i] = (int *)malloc(num_ones * sizeof(int));
-
-        for (j = 0; j < num_ones; j++) {
-            non_zero_column_data.element_data[i][j] = buf_column[j];
-        }
-    }
-
-    return non_zero_column_data;
-}
-
 int get_max_weight(matrix weight_matrix) {
     int i = 0;
     int j = 0;
@@ -361,6 +275,9 @@ int get_max_weight(matrix weight_matrix) {
     return max;
 }
 
+/**
+    Gets array of pairs "weight-number"
+*/
 weight_number_pair* get_weight_number_pairs(matrix weight_matrix, int *num_of_weights_ptr) {
     int max_weight = -1;
     int i = 0;
@@ -401,6 +318,9 @@ weight_number_pair* get_weight_number_pairs(matrix weight_matrix, int *num_of_we
     return w_n_pair_array;
 }
 
+/**
+    Generates polynomial using array of distances between ones
+*/
 int* generate_polynom_use_distances(int weight, int *distances, int submatrix_size) {
 
     int *polynom = NULL;
@@ -421,6 +341,9 @@ int* generate_polynom_use_distances(int weight, int *distances, int submatrix_si
     return polynom;
 }
 
+/**
+    Gets array of distances between ones
+*/
 int* get_distances_array(int *possible_distances_array, int num_of_distances, int weight, int submatrix_size) {
 
     int *distances_array = (int*)malloc(weight * sizeof(int));
@@ -465,6 +388,9 @@ int* get_distances_array(int *possible_distances_array, int num_of_distances, in
     return distances_array;
 }
 
+/**
+    Deletes distances from array of possible distances
+*/
 int* delete_distances_from_array(int *possible_distances_array, int *num_of_possible_distances, int *distances_array, int weight) {
     int i = 0;
     int j = 0;
@@ -486,6 +412,9 @@ int* delete_distances_from_array(int *possible_distances_array, int *num_of_poss
     return possible_distances_array;
 }
 
+/**
+    Gets polynomial matrix
+*/
 void get_polynomial_matrix(matrix weight_matrix, int submatrix_size, int num_of_weights, weight_number_pair *w_n_pairs, int ***polynomial_matrix) {
 
     int *possible_distances_array = (int*)malloc(sizeof(int) * (submatrix_size - 1));
@@ -564,6 +493,9 @@ void get_polynomial_matrix(matrix weight_matrix, int submatrix_size, int num_of_
     free(possible_distances_array);
 }
 
+/**
+    Adds shifts to polynomial matrix
+*/
 void get_polynomial_matrix_with_shift(int ***polynomial_matrix, matrix weight_matrix, int submatrix_size) {
 
 	int i = 0;
@@ -606,6 +538,9 @@ void get_polynomial_matrix_with_shift(int ***polynomial_matrix, matrix weight_ma
 	}
 }
 
+/**
+    Creates H matrix using polynomial matrix with shifts
+*/
 matrix create_H_matrix_use_polynomial_matrix_with_shifts(int ***polynomial_matrix, matrix weight_matrix, int submatrix_size) {
 
 	matrix H_matrix = create_empty_matrix(weight_matrix.rows * submatrix_size, weight_matrix.columns * submatrix_size);
@@ -628,6 +563,9 @@ matrix create_H_matrix_use_polynomial_matrix_with_shifts(int ***polynomial_matri
 	return H_matrix;
 }
 
+/**
+    Creates H matrix of NEW_CODE type
+*/
 matrix create_H_matrix_of_new_code(matrix weight_matrix, int submatrix_size) {
 
     int ***polynomial_matrix = create_three_dimensional_array(weight_matrix.rows, weight_matrix.columns, submatrix_size);
@@ -639,4 +577,94 @@ matrix create_H_matrix_of_new_code(matrix weight_matrix, int submatrix_size) {
     free_three_dimensional_array(polynomial_matrix, weight_matrix.rows, weight_matrix.columns);
 
     return H;
+}
+
+
+/**
+    Creates LDPC code structure
+*/
+ldpc create_ldpc(code_type type, int J, int K, int M, matrix weight_matrix) {
+	matrix H;
+    if (type != NEW_CODE) {
+        H = create_H_rand(type, J, K, M);
+    } else {
+    	H = create_H_matrix_of_new_code(weight_matrix, M);
+	}
+
+	matrix H_copy = copy_matrix(H);
+    int* check_set = perform_gauss_elimination(H_copy);
+    columns_metadata columns_mdata = create_columns_metadata(check_set, K * M, J * M);
+
+    matrix cutted_H;
+    switch (type)
+    {
+        case GALLAGER:
+            cutted_H = copy_matrix_part(H_copy, M * J - J + 1, K * M);
+            break;
+        case RU_CODE:
+            cutted_H = copy_matrix(H_copy);
+            break;
+        case NEW_CODE:
+        	cutted_H = copy_matrix(H_copy);
+        default:
+            cutted_H = create_random_matrix(J * M, K * M);
+    }
+
+    matrix G = create_G_from_H_matrix(cutted_H, columns_mdata);
+
+    free_matrix(cutted_H);
+
+    ldpc ldpc_object;
+    ldpc_object.G = G;
+    ldpc_object.H = H;
+    ldpc_object.columns_mdata = columns_mdata;
+    ldpc_object.n = G.columns;
+    ldpc_object.k = G.rows;
+    ldpc_object.r = H.rows;
+    ldpc_object.systematic_r = cutted_H.rows;
+    ldpc_object.systematic_H = H_copy;
+    ldpc_object.C = get_non_zero_column_data(H);
+    ldpc_object.V = get_non_zero_column_data(transpose_matrix(H));
+
+    return ldpc_object;
+}
+
+/**
+    Destroys LDPC code structure
+*/
+void free_ldpc(ldpc ldpc_object) {
+    free_matrix(ldpc_object.G);
+    free_matrix(ldpc_object.H);
+	free(ldpc_object.columns_mdata.check_set);
+	free(ldpc_object.columns_mdata.information_set);
+}
+
+/**
+    Gets data about indices of nonero elements of H matrix
+*/
+indices_of_nonzero_elements get_non_zero_column_data(matrix matrix_object) {
+    indices_of_nonzero_elements non_zero_column_data;
+    non_zero_column_data.element_data = (int **)malloc(matrix_object.columns * sizeof(int *));
+    non_zero_column_data.element_length = (int *)malloc(matrix_object.columns * sizeof(int));
+    int buf_column[matrix_object.rows];
+    int i, j;
+
+    for (i = 0; i < matrix_object.columns; i++) {
+        int num_ones = 0;
+        for (j = 0; j < matrix_object.rows; j++) {
+            if (matrix_object.body[j][i] != 0) {
+                buf_column[num_ones] = j;
+                num_ones++;
+            }
+        }
+
+        non_zero_column_data.element_length[i] = num_ones;
+        non_zero_column_data.element_data[i] = (int *)malloc(num_ones * sizeof(int));
+
+        for (j = 0; j < num_ones; j++) {
+            non_zero_column_data.element_data[i][j] = buf_column[j];
+        }
+    }
+
+    return non_zero_column_data;
 }
