@@ -77,6 +77,7 @@ int main() {
         }
     }
 
+    print_matrix(create_H_matrix_use_polynomial_matrix_with_shifts(polynomial_matrix, weight_matrix, SUBMATRIX_SIZE));
     free(w_n_pairs);
 
     /*if (TRUE) {
