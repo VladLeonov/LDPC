@@ -262,12 +262,17 @@ columns_metadata create_columns_metadata(int* check_set, int n, int k) {
     Creates LDPC code structure
 */
 ldpc create_ldpc(code_type type, int J, int K, int M, matrix weight_matrix) {
+	matrix H;
+    matrix H_copy;
+    int* check_set;
+    columns_metadata columns_mdata;
+    matrix G;
+        
     if (type != New_ldpc_code) {
-        matrix H = create_H_rand(type, J, K, M);
-        matrix H_copy = copy_matrix(H);
-        int* check_set = perform_gauss_elimination(H_copy);
-        columns_metadata columns_mdata =
-                create_columns_metadata(check_set, K * M, J * M);
+        H = create_H_rand(type, J, K, M);
+        H_copy = copy_matrix(H);
+        check_set = perform_gauss_elimination(H_copy);
+        columns_mdata = create_columns_metadata(check_set, K * M, J * M);
         matrix cutted_H;
 
         switch (type)
@@ -283,44 +288,31 @@ ldpc create_ldpc(code_type type, int J, int K, int M, matrix weight_matrix) {
         }
 
         matrix G = create_G_from_H_matrix(cutted_H, columns_mdata);
-
-        ldpc ldpc_object;
-        ldpc_object.G = G;
-        ldpc_object.H = H;
-        ldpc_object.columns_mdata = columns_mdata;
-        ldpc_object.n = G.columns;
-        ldpc_object.k = G.rows;
-        ldpc_object.r = H.rows;
-        ldpc_object.systematic_r = H_copy.rows;
-        ldpc_object.systematic_H = H_copy;
-        ldpc_object.C = get_non_zero_column_data(H);
-        ldpc_object.V = get_non_zero_column_data(transpose_matrix(H));
-
+        
         free_matrix(cutted_H);
-
-        return ldpc_object;
+        
     } else {
-        matrix H = create_H_matrix_of_new_code(weight_matrix, M);
-        matrix H_copy = copy_matrix(H);
-        int* check_set = perform_gauss_elimination(H_copy);
-        columns_metadata columns_mdata =
-                create_columns_metadata(check_set, weight_matrix.columns * M, weight_matrix.rows * M);
-        matrix G = create_G_from_H_matrix(H, columns_mdata);
-
-        ldpc ldpc_object;
-        ldpc_object.G = G;
-        ldpc_object.H = H;
-        ldpc_object.columns_mdata = columns_mdata;
-        ldpc_object.n = G.columns;
-        ldpc_object.k = G.rows;
-        ldpc_object.r = H.rows;
-        ldpc_object.systematic_r = H_copy.rows;
-        ldpc_object.systematic_H = H_copy;
-        ldpc_object.C = get_non_zero_column_data(H);
-        ldpc_object.V = get_non_zero_column_data(transpose_matrix(H));
-
-        return ldpc_object;
+    	
+        H = create_H_matrix_of_new_code(weight_matrix, M);
+        H_copy = copy_matrix(H);
+        check_set = perform_gauss_elimination(H_copy);
+        columns_mdata = create_columns_metadata(check_set, weight_matrix.columns * M, weight_matrix.rows * M);
+        G = create_G_from_H_matrix(H_copy, columns_mdata);     
     }
+    
+    ldpc ldpc_object;
+    ldpc_object.G = G;
+    ldpc_object.H = H;
+    ldpc_object.columns_mdata = columns_mdata;
+    ldpc_object.n = G.columns;
+    ldpc_object.k = G.rows;
+    ldpc_object.r = H.rows;
+    ldpc_object.systematic_r = H_copy.rows;
+    ldpc_object.systematic_H = H_copy;
+    ldpc_object.C = get_non_zero_column_data(H);
+    ldpc_object.V = get_non_zero_column_data(transpose_matrix(H));
+
+    return ldpc_object;
 }
 
 /**
