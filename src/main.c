@@ -30,7 +30,7 @@ int main() {
 	int array[2][4] = {{3,2,3,2}, {0,3,2,3}};
     matrix weight_matrix = array_to_matrix(J, K, array);
 
-    int ***polynomial_matrix = (int***)malloc(sizeof(int**) * weight_matrix.rows);
+    /*int ***polynomial_matrix = (int***)malloc(sizeof(int**) * weight_matrix.rows);
     for (i = 0; i < weight_matrix.rows; i++) {
         polynomial_matrix[i] = (int**)malloc(sizeof(int*) * weight_matrix.columns);
         for (j = 0; j < weight_matrix.columns; j++) {
@@ -47,7 +47,11 @@ int main() {
 	get_polynomial_matrix_with_shift(polynomial_matrix, weight_matrix, SUBMATRIX_SIZE);
     matrix H = create_H_matrix_use_polynomial_matrix_with_shifts(polynomial_matrix, weight_matrix, SUBMATRIX_SIZE);
     free(w_n_pairs);
+    */
 
+    ldpc ldpc_object = create_ldpc(New_ldpc_code, 0, 0, SUBMATRIX_SIZE, weight_matrix);
+    print_ldpc(ldpc_object);
+    free_ldpc(ldpc_object);
     system("pause");
 
     return 0;
