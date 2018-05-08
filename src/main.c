@@ -21,14 +21,11 @@ void print_graph(graph G);
 
 
 int main() {
-    int J = 4, K = 8, M = 8;
+    int J = 2, K = 4, M = 67;
     const int SUBMATRIX_SIZE = 67;
-    //ldpc ldpc_object = create_ldpc(Gallager, J, K, M);
     int i = 0;
     int j = 0;
     int k = 0;
-    //print_ldpc(ldpc_object);
-    //SNR_interval SNR = {1., 5., 0.5};
 
     matrix weight_matrix = create_zero_matrix(2, 4);
     weight_matrix.body[0][0] = 3;
@@ -40,8 +37,6 @@ int main() {
     weight_matrix.body[1][2] = 2;
     weight_matrix.body[1][3] = 3;
 
-    int num_of_weights = 0;
-    int *num_of_weights_ptr = &num_of_weights;
     int ***polynomial_matrix = (int***)malloc(sizeof(int**) * weight_matrix.rows);
     for (i = 0; i < weight_matrix.rows; i++) {
         polynomial_matrix[i] = (int**)malloc(sizeof(int*) * weight_matrix.columns);
@@ -52,42 +47,15 @@ int main() {
             }
         }
     }
-
-    weight_number_pair *w_n_pairs = get_weight_number_pairs(weight_matrix, num_of_weights_ptr);
-
-    /*printf("%i\n", num_of_weights);
-    printf("%i %i\n", w_n_pairs[0].weight, w_n_pairs[0].number);
-    printf("%i %i\n", w_n_pairs[1].weight, w_n_pairs[1].number);*/
+    
+	int num_of_weights = 0;
+    weight_number_pair *w_n_pairs = get_weight_number_pairs(weight_matrix, &num_of_weights);
     get_polynomial_matrix(weight_matrix, SUBMATRIX_SIZE, num_of_weights, w_n_pairs, polynomial_matrix);
-	/*printf("polynomial_matrix:\n");
-    for (i = 0; i < weight_matrix.rows; i++) {
-        for (j = 0; j < weight_matrix.columns; j++) {
-            for (k = 0; k < SUBMATRIX_SIZE; k++) {
-                printf("%i ", polynomial_matrix[i][j][k]);
-            }
-            printf("\n");
-        }
-    }*/
 	get_polynomial_matrix_with_shift(polynomial_matrix, weight_matrix, SUBMATRIX_SIZE);
-    /*printf("polynomial_matrix:\n");
-    for (i = 0; i < weight_matrix.rows; i++) {
-        for (j = 0; j < weight_matrix.columns; j++) {
-            for (k = 0; k < SUBMATRIX_SIZE; k++) {
-                printf("%i ", polynomial_matrix[i][j][k]);
-            }
-            printf("\n");
-        }
-    }*/
-
-    //print_matrix(create_H_matrix_use_polynomial_matrix_with_shifts(polynomial_matrix, weight_matrix, SUBMATRIX_SIZE));
+    create_H_matrix_use_polynomial_matrix_with_shifts(polynomial_matrix, weight_matrix, SUBMATRIX_SIZE);
     free(w_n_pairs);
-
-    /*FILE *file = fopen("decoding_simulation.txt", "w");
-    simulate_decoding(ldpc_object, SNR, file);
-    fclose(file);*/
     	
     system("pause");
-    //free_ldpc(ldpc_object);
 
     return 0;
 }
