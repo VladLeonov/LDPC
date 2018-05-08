@@ -289,8 +289,6 @@ ldpc create_ldpc(code_type type, int J, int K, int M, matrix weight_matrix) {
 
     matrix G = create_G_from_H_matrix(cutted_H, columns_mdata);
     
-    free_matrix(cutted_H);
-    
     ldpc ldpc_object;
     ldpc_object.G = G;
     ldpc_object.H = H;
@@ -298,10 +296,12 @@ ldpc create_ldpc(code_type type, int J, int K, int M, matrix weight_matrix) {
     ldpc_object.n = G.columns;
     ldpc_object.k = G.rows;
     ldpc_object.r = H.rows;
-    ldpc_object.systematic_r = H_copy.rows;
+    ldpc_object.systematic_r = cutted_H.rows;
     ldpc_object.systematic_H = H_copy;
     ldpc_object.C = get_non_zero_column_data(H);
     ldpc_object.V = get_non_zero_column_data(transpose_matrix(H));
+    
+    free_matrix(cutted_H);
 
     return ldpc_object;
 }
