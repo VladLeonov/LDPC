@@ -548,13 +548,15 @@ void get_polynomial_matrix(matrix weight_matrix, int submatrix_size, int num_of_
                         l++;
                         break;
                     }
-                }
-                if (l == weight_matrix.columns) {
-                    l = 0;
-                }
+            	}
                 if (polynom_generated) {
+                	if (l == weight_matrix.columns) {
+                		k++;
+                		l = 0;
+					}
                     break;
                 }
+                if (l == weight_matrix.columns) l = 0;
             }
             free(current_distances_array);
         }
