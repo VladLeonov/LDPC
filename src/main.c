@@ -22,20 +22,13 @@ void print_graph(graph G);
 
 int main() {
     int J = 2, K = 4, M = 67;
-    const int SUBMATRIX_SIZE = 67;
+    const int SUBMATRIX_SIZE = M;
     int i = 0;
     int j = 0;
     int k = 0;
 
-    matrix weight_matrix = create_zero_matrix(2, 4);
-    weight_matrix.body[0][0] = 3;
-    weight_matrix.body[0][1] = 2;
-    weight_matrix.body[0][2] = 3;
-    weight_matrix.body[0][3] = 2;
-    weight_matrix.body[1][0] = 0;
-    weight_matrix.body[1][1] = 3;
-    weight_matrix.body[1][2] = 2;
-    weight_matrix.body[1][3] = 3;
+	int array[2][4] = {{3,2,3,2}, {0,3,2,3}};
+    matrix weight_matrix = array_to_matrix(J, K, array);;
 
     int ***polynomial_matrix = (int***)malloc(sizeof(int**) * weight_matrix.rows);
     for (i = 0; i < weight_matrix.rows; i++) {
@@ -52,7 +45,7 @@ int main() {
     weight_number_pair *w_n_pairs = get_weight_number_pairs(weight_matrix, &num_of_weights);
     get_polynomial_matrix(weight_matrix, SUBMATRIX_SIZE, num_of_weights, w_n_pairs, polynomial_matrix);
 	get_polynomial_matrix_with_shift(polynomial_matrix, weight_matrix, SUBMATRIX_SIZE);
-    create_H_matrix_use_polynomial_matrix_with_shifts(polynomial_matrix, weight_matrix, SUBMATRIX_SIZE);
+    matrix H = create_H_matrix_use_polynomial_matrix_with_shifts(polynomial_matrix, weight_matrix, SUBMATRIX_SIZE);
     free(w_n_pairs);
     	
     system("pause");
