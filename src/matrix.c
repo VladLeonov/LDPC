@@ -5,7 +5,7 @@
 	for using by other methods.
 
     @author Leonov V.R.
-    @version 24.04.18
+    @version 08.05.18
 */
 
 
@@ -228,4 +228,17 @@ char compare_matrices(matrix M1, matrix M2) {
     }
 
     return TRUE;
+}
+
+
+//Converts two-dimensional array to matrix.
+matrix array_to_matrix(int rows, int columns, int array[rows][columns]) {
+    matrix new_matrix = create_empty_matrix(rows, columns);
+    int i, j;
+    for (i = 0; i < rows; i++) {
+        for (j = 0; j < columns; j++) {
+            new_matrix.body[i][j] = array[i][j];
+        }
+    }
+    return new_matrix;
 }

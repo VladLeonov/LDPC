@@ -5,7 +5,7 @@
 	for using by other methods.
 
     @author Leonov V.R.
-    @version 24.04.18
+    @version 08.05.18
 */
 
 
@@ -134,5 +134,15 @@ matrix copy_matrix_part(matrix M, int rows, int columns);
     @return TRUE, if matrices equal, FALSE otherwise.
 */
 char compare_matrices(matrix M1, matrix M2);
+
+/**
+    Converts two-dimensional array to matrix.
+
+    @param rows Number of rows in array.
+    @param columns Number of columns in array.
+    @param array Array.
+    @return Matrix, created from array.
+*/
+matrix array_to_matrix(int rows, int columns, int array[rows][columns]);
 
 #endif // MATRIX_CORRECT_VERSION_H_INCLUDED
