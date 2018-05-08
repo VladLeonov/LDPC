@@ -396,7 +396,8 @@ weight_number_pair* get_weight_number_pairs(matrix weight_matrix, int *num_of_we
 
 int* generate_polynom_use_distances(int weight, int *distances, int submatrix_size) {
 
-    int *polynom = (int*)malloc(submatrix_size * sizeof(int));
+    int *polynom = NULL;
+    polynom = (int*)calloc(submatrix_size, sizeof(int));
     int i = 0;
 
     for (i = 0; i < submatrix_size; i++) {
@@ -415,16 +416,16 @@ int* generate_polynom_use_distances(int weight, int *distances, int submatrix_si
 
 int* get_distances_array(int *possible_distances_array, int num_of_distances, int weight, int submatrix_size) {
 
-    int *distances_array = (int*)malloc(weight * sizeof(int)); //MAKE DYNAMICAL
+    int *distances_array = (int*)malloc(weight * sizeof(int));
     srand(time(NULL));
     int i = 0;
     int j = 0;
+
     for (i = 0; i < weight; i++) {
         distances_array[i] = 0;
     }
 
     int distance_is_used = TRUE;
-
     while (distance_is_used) {
         distances_array[0] = possible_distances_array[(rand() % num_of_distances)];
         for (i = 1; i < weight - 1; i++) {
@@ -447,7 +448,6 @@ int* get_distances_array(int *possible_distances_array, int num_of_distances, in
         }
 
         distance_is_used = TRUE;
-
         for (i = 0; i < num_of_distances; i++) {
             if (last == possible_distances_array[i]) {
                 distance_is_used = FALSE;
@@ -456,43 +456,41 @@ int* get_distances_array(int *possible_distances_array, int num_of_distances, in
             }
         }
     }
-
     return distances_array;
 }
 
-int delete_distances_from_array(int *possible_distances_array, int num_of_possible_distances, int *distances_array, int weight) {
+int* delete_distances_from_array(int *possible_distances_array, int *num_of_possible_distances, int *distances_array, int weight) {
     int i = 0;
     int j = 0;
     int buf = 0;
-    int last_index = num_of_possible_distances - 1;
-    for (i = 0; i < num_of_possible_distances; i++) {
-        for (j = 0; j < weight; j++) {
+    int last_index = *num_of_possible_distances - 1;
+    for (i = 0; i < *num_of_possible_distances; i++) {
+		for (j = 0; j < weight; j++) {
             if (possible_distances_array[i] == distances_array[j]) {
                 buf = possible_distances_array[i];
                 possible_distances_array[i] = possible_distances_array[last_index];
                 possible_distances_array[last_index] = buf;
                 last_index--;
-                num_of_possible_distances--;
+                (*num_of_possible_distances)--;
             }
         }
     }
 
-    (int*)realloc(possible_distances_array, sizeof(int) * num_of_possible_distances);
-
-    return num_of_possible_distances;
+    possible_distances_array = (int*)realloc(possible_distances_array, sizeof(int) * (*num_of_possible_distances));
+    return possible_distances_array;
 }
 
-void get_polynomial_matrix(matrix weight_matrix, int submatrix_size, int num_of_weights, weight_number_pair *w_n_pairs, int ***polynomial_matrix) {
+void get_polynomial_matrix(matrix weight_matrix, const int submatrix_size, int num_of_weights, weight_number_pair *w_n_pairs, int ***polynomial_matrix) {
 
-    //submatrix_size = 67
     int *possible_distances_array = (int*)malloc(sizeof(int) * (submatrix_size - 1));
     int num_of_distances = submatrix_size - 1;
+    int *num_of_distances_pointer = &num_of_distances;
     int i = 0;
     int j = 0;
     int k = 0;
     int l = 0;
 
-    for (i = 0; i < submatrix_size; i++) {
+    for (i = 0; i < num_of_distances; i++) {
         possible_distances_array[i] = i + 1;
     }
 
@@ -505,6 +503,7 @@ void get_polynomial_matrix(matrix weight_matrix, int submatrix_size, int num_of_
     }
 
     int *current_distances_array;
+    int *buf;
     for (i = 0; i < num_of_weights; i++) {
         k = 0;
         l = 0;
@@ -515,13 +514,12 @@ void get_polynomial_matrix(matrix weight_matrix, int submatrix_size, int num_of_
                                         num_of_distances,
                                         w_n_pairs[i].weight,
                                         submatrix_size);
-
             //delete used distances from array
-            num_of_distances = delete_distances_from_array(
-                                possible_distances_array,
-                                num_of_distances,
-                                current_distances_array,
-                                w_n_pairs[i].weight);
+            possible_distances_array = delete_distances_from_array(
+                                            possible_distances_array,
+                                            num_of_distances_pointer,
+                                            current_distances_array,
+                                            w_n_pairs[i].weight);
 
             //searching for place for polynomial
             int polynom_generated = FALSE;
@@ -529,7 +527,8 @@ void get_polynomial_matrix(matrix weight_matrix, int submatrix_size, int num_of_
                 for (; l < weight_matrix.columns; l++) {
                     if (weight_matrix.body[k][l] == w_n_pairs[i].weight) {
                         //generate polynomial using distances
-                        int *buf = generate_polynom_use_distances(
+                        buf = NULL;
+                        buf = generate_polynom_use_distances(
                                     w_n_pairs[i].weight,
                                     current_distances_array,
                                     submatrix_size);
@@ -538,6 +537,7 @@ void get_polynomial_matrix(matrix weight_matrix, int submatrix_size, int num_of_
                             polynomial_matrix[k][l][m] = buf[m];
                         }
                         free(buf);
+                        buf = NULL;
                         polynom_generated = TRUE;
                         l++;
                         break;
@@ -553,6 +553,5 @@ void get_polynomial_matrix(matrix weight_matrix, int submatrix_size, int num_of_
             free(current_distances_array);
         }
     }
-
     free(possible_distances_array);
 }
