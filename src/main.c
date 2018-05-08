@@ -8,7 +8,6 @@
 #include "ldpc_generator.h"
 #include "ldpc_tester.h"
 #include  "subsidary_math.h"
-#include "tanner_graph.h"
 
 
 #define TRUE !0
@@ -17,40 +16,143 @@
 
 void print_matrix(matrix M);
 void print_ldpc(ldpc ldpc_object);
-void print_graph(graph G);
 
 
 int main() {
-    int J = 2, K = 4, M = 3;
-    ldpc ldpc_object = create_ldpc(Gallager, J, K, M);
-    
-    printf("H =\n");
-    print_matrix(ldpc_object.H);
-    printf("\n");
-    
-    graph tanner_graph = get_tanner_graph_from_ldpc(ldpc_object);
-    printf("tanner_graph:\n");
-    print_graph(tanner_graph);
-    printf("\n");
-    
-    /*int i, j;
-    for (i = 0; i < ldpc_object.n; i++) {
-    	for (j = 0; j < J; j++) {
-    		remove_edge_from_graph(tanner_graph, i);
+    int J = 4, K = 8, M = 8;
+    const int SUBMATRIX_SIZE = 67;
+    //ldpc ldpc_object = create_ldpc(Gallager, J, K, M);
+    int i = 0;
+    int j = 0;
+    int k = 0;
+    //print_ldpc(ldpc_object);
+    //SNR_interval SNR = {1., 5., 0.5};
+
+    matrix weight_matrix = create_zero_matrix(2, 4);
+    weight_matrix.body[0][0] = 3;
+    weight_matrix.body[0][1] = 2;
+    weight_matrix.body[0][2] = 3;
+    weight_matrix.body[0][3] = 2;
+    weight_matrix.body[1][0] = 0;
+    weight_matrix.body[1][1] = 3;
+    weight_matrix.body[1][2] = 2;
+    weight_matrix.body[1][3] = 3;
+
+    int num_of_weights = 0;
+    int *num_of_weights_ptr = &num_of_weights;
+    int ***polynomial_matrix = (int***)malloc(sizeof(int**) * weight_matrix.rows);
+    for (i = 0; i < weight_matrix.rows; i++) {
+        polynomial_matrix[i] = (int**)malloc(sizeof(int*) * weight_matrix.columns);
+        for (j = 0; j < weight_matrix.columns; j++) {
+            polynomial_matrix[i][j] = (int*)malloc(sizeof(int) * SUBMATRIX_SIZE);
+            for (k = 0; k < SUBMATRIX_SIZE; k++) {
+                polynomial_matrix[i][j][k] = 0;
+            }
+        }
+    }
+
+    weight_number_pair *w_n_pairs = get_weight_number_pairs(weight_matrix, num_of_weights_ptr);
+
+    printf("%i\n", num_of_weights);
+    printf("%i %i\n", w_n_pairs[0].weight, w_n_pairs[0].number);
+    printf("%i %i\n", w_n_pairs[1].weight, w_n_pairs[1].number);
+    get_polynomial_matrix(weight_matrix, SUBMATRIX_SIZE, num_of_weights, w_n_pairs, polynomial_matrix);
+
+    printf("polynomial_matrix:\n");
+    for (i = 0; i < weight_matrix.rows; i++) {
+        for (j = 0; j < weight_matrix.columns; j++) {
+            for (k = 0; k < SUBMATRIX_SIZE; k++) {
+                printf("%i ", polynomial_matrix[i][j][k]);
+            }
+            printf("\n");
+        }
+    }
+
+    free(w_n_pairs);
+
+    /*if (TRUE) {
+
+    	FILE *file = fopen("decoding_simulation.txt", "w");
+    	simulate_decoding(ldpc_object, SNR, file);
+    	fclose(file);
+
+	} else {
+
+	    int k = ldpc_object.k, n = ldpc_object.n;
+		int num_sigmas = (int) roundf((SNR.max - SNR.min) / SNR.step + 1);
+		int i = 0;
+
+		float *sigma_values = gen_sigma_values(SNR, (float) k / (float) n);
+		printf("Sigma values:\n");
+		for (i = 0; i < num_sigmas; i++) {
+			printf("%.2f ", sigma_values[i]);
 		}
+	    printf("\n\n");
+
+	    matrix U = create_random_matrix(1, k);
+	    printf("U:\n");
+	    print_matrix(U);
+	    printf("\n");
+
+	    matrix X = encode_message(ldpc_object, U);
+	    printf("X:\n");
+	    print_matrix(X);
+	    printf("\n");
+
+	    float *y = get_channel_output(X);
+	    printf("Channel output:\n");
+	    for (i = 0; i < n; i++) {
+	    	printf("%.1f ", y[i]);
+		}
+		printf("\n\n");
+
+		int SIGMA_INDEX = 2;
+	    printf("Changes = %d\n", add_noise(y, n, sigma_values[SIGMA_INDEX]));
+	    printf("Noised y:\n");
+	    for (i = 0; i < n; i++) {
+	    	printf("%.1f ", y[i]);
+		}
+		printf("\n\n");
+
+	    normalize_message(y, n, sigma_values[SIGMA_INDEX] *
+		                        sigma_values[SIGMA_INDEX]);
+	    printf("Normalized y:\n");
+	    for (i = 0; i < n; i++) {
+	    	printf("%.1f ", y[i]);
+		}
+		printf("\n\n");
+
+		for (i = 0; i < n; i++) {
+	    	if (((y[i] < 0) ? 1 : 0) == X.body[0][i]) {
+	    		printf(". ");
+			} else {
+				printf("# ");
+			}
+		}
+		printf("\n\n");
+
+		matrix *hard_solution = (matrix*)malloc(sizeof(matrix));
+	    printf("Iterations = %d\n", flooding(ldpc_object, y, hard_solution));
+	    printf("Hard solution:\n");
+		print_matrix(*hard_solution);
+	    printf("\n");
+
+	    for (i = 0; i < n; i++) {
+	    	if (hard_solution->body[0][i] == X.body[0][i]) {
+	    		printf(". ");
+			} else {
+				printf("# ");
+			}
+		}
+		printf("\n\n");
+
+		printf("Syndrome:\n");
+	    print_matrix(count_syndrome(ldpc_object, *hard_solution, TRUE));
+	    printf("\n");
 	}
-	
-	print_graph(tanner_graph);
-	printf("\n");*/
-	
-	length_and_number shortest_cycles = find_shortest_cycles_in_graph(tanner_graph);
-	printf("shortest_cycles:\n");
-	printf("length = %d\n", shortest_cycles.length);
-	printf("number = %d\n", shortest_cycles.number);
-	printf("\n");
-	
+*/
     system("pause");
-    free_ldpc(ldpc_object);
+    //free_ldpc(ldpc_object);
 
     return 0;
 }
@@ -85,7 +187,7 @@ void print_ldpc(ldpc ldpc_object) {
     printf("H =\n");
     print_matrix(ldpc_object.H);
     printf("\n");
-    
+
 	int i = 0;
     int j = 0;
     columns_metadata columns_mdata = ldpc_object.columns_mdata;
@@ -118,18 +220,6 @@ void print_ldpc(ldpc ldpc_object) {
             printf("%d ", ldpc_object.V.element_data[i][j]);
         }
         if (ldpc_object.V.element_length[i] == 0) printf("-");
-        printf("\n");
-    }
-}
-
-
-void print_graph(graph G) {
-	int i, j;
-	for (i = 0; i < G.number_of_vertices; i++) {
-		printf("%d(%d) - ", i, G.degrees_of_vertices[i]);
-        for (j = 0; j < G.degrees_of_vertices[i]; j++) {
-            printf("%d ", G.adjacency_list[i][j]);
-        }
         printf("\n");
     }
 }
