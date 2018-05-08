@@ -183,10 +183,10 @@ matrix create_H_rand(code_type type, int J, int K, int M) {
 
     switch (type)
     {
-        case Gallager:
+        case GALLAGER:
             V = create_V_Gallager(J, K, M);
             break;
-        case RU_code:
+        case RU_CODE:
             V = create_V_RU(J, K, M);
             break;
         default:
@@ -268,7 +268,7 @@ ldpc create_ldpc(code_type type, int J, int K, int M, matrix weight_matrix) {
     columns_metadata columns_mdata;
     matrix G;
         
-    if (type != New_ldpc_code) {
+    if (type != NEW_CODE) {
         H = create_H_rand(type, J, K, M);
         H_copy = copy_matrix(H);
         check_set = perform_gauss_elimination(H_copy);
@@ -277,10 +277,10 @@ ldpc create_ldpc(code_type type, int J, int K, int M, matrix weight_matrix) {
 
         switch (type)
         {
-            case Gallager:
+            case GALLAGER:
                 cutted_H = copy_matrix_part(H_copy, M * J - J + 1, K * M);
                 break;
-            case RU_code:
+            case RU_CODE:
                 cutted_H = copy_matrix(H_copy);
                 break;
             default:

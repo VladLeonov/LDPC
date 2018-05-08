@@ -18,9 +18,9 @@
     Enumeration contains types of LDPC codes
 */
 typedef enum {
-    Gallager,           //Gallager code
-    RU_code,            //RU_code
-    New_ldpc_code       //New class of ldpc code
+    GALLAGER,           //Gallager code
+    RU_CODE,            //RU_code
+    NEW_CODE       //New class of ldpc code
 } code_type;
 
 /**
