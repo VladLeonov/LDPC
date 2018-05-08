@@ -57,7 +57,16 @@ int main() {
     printf("%i %i\n", w_n_pairs[0].weight, w_n_pairs[0].number);
     printf("%i %i\n", w_n_pairs[1].weight, w_n_pairs[1].number);
     get_polynomial_matrix(weight_matrix, SUBMATRIX_SIZE, num_of_weights, w_n_pairs, polynomial_matrix);
-
+	printf("polynomial_matrix:\n");
+    for (i = 0; i < weight_matrix.rows; i++) {
+        for (j = 0; j < weight_matrix.columns; j++) {
+            for (k = 0; k < SUBMATRIX_SIZE; k++) {
+                printf("%i ", polynomial_matrix[i][j][k]);
+            }
+            printf("\n");
+        }
+    }
+	get_polynomial_matrix_with_shift(polynomial_matrix, weight_matrix, SUBMATRIX_SIZE);
     printf("polynomial_matrix:\n");
     for (i = 0; i < weight_matrix.rows; i++) {
         for (j = 0; j < weight_matrix.columns; j++) {
