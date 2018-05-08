@@ -646,13 +646,13 @@ matrix create_H_matrix_use_polynomial_matrix_with_shifts(const int ***polynomial
 
 matrix create_H_matrix_of_new_code(matrix weight_matrix, const int submatrix_size) {
 
-    //function for initialization of 3-D array must be here
-    int ***polynomial_matrix;
+    int ***polynomial_matrix = create_three_dimensional_array(weight_matrix.rows, weight_matrix.columns, submatrix_size);
     int num_of_weights = 0;
     weight_number_pair *w_n_pairs = get_weight_number_pairs(weight_matrix, &num_of_weights);
     get_polynomial_matrix(weight_matrix, submatrix_size, num_of_weights, w_n_pairs, polynomial_matrix);
 	get_polynomial_matrix_with_shift(polynomial_matrix, weight_matrix, submatrix_size);
     matrix H = create_H_matrix_use_polynomial_matrix_with_shifts(polynomial_matrix, weight_matrix, submatrix_size);
-    //free polynomial_matrix
+    free_three_dimensional_array(polynomial_matrix, weight_matrix.rows, weight_matrix.columns);
+
     return H;
 }
