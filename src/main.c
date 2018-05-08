@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
+#include <time.h>
 
 #include "matrix.h"
 #include "encoder.h"
@@ -21,21 +22,39 @@ void print_graph(graph G);
 
 
 int main() {
+	
+	srand(time(NULL));
+	
     int J = 2, K = 4, M = 67;
-    int i = 0;
-    int j = 0;
-    int k = 0;
 
 	int array[2][4] = {{3,2,3,2}, {0,3,2,3}};
     matrix weight_matrix = array_to_matrix(J, K, array);
 
-    ldpc ldpc_object = create_ldpc(GALLAGER, J, K, M, weight_matrix);
-    print_ldpc(ldpc_object);
+    ldpc ldpc_object = create_ldpc(NEW_CODE, J, K, M, weight_matrix);
     
-    SNR_interval SNR = {1., 5., 0.5};
-    FILE *file = fopen("GALLAGER.txt", "w");
-    //simulate_decoding(ldpc_object, SNR, file);
-    fclose(file);
+    matrix H = ldpc_object.H;
+    int i, j, k;
+    for (i = 0; i < J; i++) {
+    	for (j = 0; j < K; j++) {
+    			printf("%d(%d,%d) - ", array[i][j], i, j);
+    		for (k = 0; k < M; k++) {
+    			printf("%d", H.body[i * M][j * M + k]);
+			}
+			printf("\n");
+		}
+	}
+	printf("\n");
+	
+    graph tanner_graph = get_tanner_graph_from_ldpc(ldpc_object);
+    length_and_number shortest_cycles = find_shortest_cycles_in_graph(tanner_graph);
+    printf("shortest_cycles:\n");
+    printf("length = %d\n", shortest_cycles.length);
+    printf("number = %d\n", shortest_cycles.number);
+    
+    /*SNR_interval SNR = {1., 5., 0.5};
+    FILE *file = fopen("NEW_CODE.txt", "w");
+    simulate_decoding(ldpc_object, SNR, file);
+    fclose(file);*/
     
     free_ldpc(ldpc_object);
     system("pause");
