@@ -22,7 +22,6 @@ void print_graph(graph G);
 
 int main() {
     int J = 2, K = 4, M = 67;
-    const int SUBMATRIX_SIZE = M;
     int i = 0;
     int j = 0;
     int k = 0;
@@ -30,27 +29,14 @@ int main() {
 	int array[2][4] = {{3,2,3,2}, {0,3,2,3}};
     matrix weight_matrix = array_to_matrix(J, K, array);
 
-    /*int ***polynomial_matrix = (int***)malloc(sizeof(int**) * weight_matrix.rows);
-    for (i = 0; i < weight_matrix.rows; i++) {
-        polynomial_matrix[i] = (int**)malloc(sizeof(int*) * weight_matrix.columns);
-        for (j = 0; j < weight_matrix.columns; j++) {
-            polynomial_matrix[i][j] = (int*)malloc(sizeof(int) * SUBMATRIX_SIZE);
-            for (k = 0; k < SUBMATRIX_SIZE; k++) {
-                polynomial_matrix[i][j][k] = 0;
-            }
-        }
-    }
-
-	int num_of_weights = 0;
-    weight_number_pair *w_n_pairs = get_weight_number_pairs(weight_matrix, &num_of_weights);
-    get_polynomial_matrix(weight_matrix, SUBMATRIX_SIZE, num_of_weights, w_n_pairs, polynomial_matrix);
-	get_polynomial_matrix_with_shift(polynomial_matrix, weight_matrix, SUBMATRIX_SIZE);
-    matrix H = create_H_matrix_use_polynomial_matrix_with_shifts(polynomial_matrix, weight_matrix, SUBMATRIX_SIZE);
-    free(w_n_pairs);
-    */
-
-    ldpc ldpc_object = create_ldpc(New_ldpc_code, 0, 0, SUBMATRIX_SIZE, weight_matrix);
+    ldpc ldpc_object = create_ldpc(GALLAGER, J, K, M, weight_matrix);
     print_ldpc(ldpc_object);
+    
+    SNR_interval SNR = {1., 5., 0.5};
+    FILE *file = fopen("GALLAGER.txt", "w");
+    //simulate_decoding(ldpc_object, SNR, file);
+    fclose(file);
+    
     free_ldpc(ldpc_object);
     system("pause");
 
