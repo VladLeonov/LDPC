@@ -117,3 +117,33 @@ float randn() {
 
 	return X1;
 }
+
+
+//Creates three-dimensional array filled with zeros.
+int*** create_three_dimensional_array(int x, int y, int z) {
+	int ***array = (int***) malloc(x * sizeof(int**));
+	int i, j, k;
+    for (i = 0; i < x; i++) {
+        array[i] = (int**) malloc(y * sizeof(int*));
+        for (j = 0; j < y; j++) {
+            array[i][j] = (int*) malloc(z * sizeof(int));
+            for (k = 0; k < z; k++) {
+                array[i][j][k] = 0;
+            }
+        }
+    }
+    return array;
+}
+
+
+//Frees the memory occupied by the three-dimensional array.
+void free_three_dimensional_array(int*** array, int x, int y) {
+	int i, j, k;
+    for (i = 0; i < x; i++) {
+        for (j = 0; j < y; j++) {
+            free(array[i][j]);
+        }
+        free(array[i]);
+    }
+    free(array);
+}
