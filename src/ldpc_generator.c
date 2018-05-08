@@ -1,5 +1,4 @@
 #include <stdlib.h>
-#include <time.h>
 
 #include "ldpc_generator.h"
 #include "matrix.h"
@@ -263,42 +262,34 @@ columns_metadata create_columns_metadata(int* check_set, int n, int k) {
 */
 ldpc create_ldpc(code_type type, int J, int K, int M, matrix weight_matrix) {
 	matrix H;
-    matrix H_copy;
-    int* check_set;
-    columns_metadata columns_mdata;
-    matrix G;
-        
     if (type != NEW_CODE) {
         H = create_H_rand(type, J, K, M);
-        H_copy = copy_matrix(H);
-        check_set = perform_gauss_elimination(H_copy);
-        columns_mdata = create_columns_metadata(check_set, K * M, J * M);
-        matrix cutted_H;
-
-        switch (type)
-        {
-            case GALLAGER:
-                cutted_H = copy_matrix_part(H_copy, M * J - J + 1, K * M);
-                break;
-            case RU_CODE:
-                cutted_H = copy_matrix(H_copy);
-                break;
-            default:
-                cutted_H = create_random_matrix(J * M, K * M);
-        }
-
-        matrix G = create_G_from_H_matrix(cutted_H, columns_mdata);
-        
-        free_matrix(cutted_H);
-        
     } else {
-    	
-        H = create_H_matrix_of_new_code(weight_matrix, M);
-        H_copy = copy_matrix(H);
-        check_set = perform_gauss_elimination(H_copy);
-        columns_mdata = create_columns_metadata(check_set, weight_matrix.columns * M, weight_matrix.rows * M);
-        G = create_G_from_H_matrix(H_copy, columns_mdata);     
+    	H = create_H_matrix_of_new_code(weight_matrix, M);
+	}
+	
+	matrix H_copy = copy_matrix(H);
+    int* check_set = perform_gauss_elimination(H_copy);
+    columns_metadata columns_mdata = create_columns_metadata(check_set, K * M, J * M);
+        
+    matrix cutted_H;
+    switch (type)
+    {
+        case GALLAGER:
+            cutted_H = copy_matrix_part(H_copy, M * J - J + 1, K * M);
+            break;
+        case RU_CODE:
+            cutted_H = copy_matrix(H_copy);
+            break;
+        case NEW_CODE:
+        	cutted_H = copy_matrix(H_copy);
+        default:
+            cutted_H = create_random_matrix(J * M, K * M);
     }
+
+    matrix G = create_G_from_H_matrix(cutted_H, columns_mdata);
+    
+    free_matrix(cutted_H);
     
     ldpc ldpc_object;
     ldpc_object.G = G;
@@ -433,7 +424,6 @@ int* generate_polynom_use_distances(int weight, int *distances, int submatrix_si
 int* get_distances_array(int *possible_distances_array, int num_of_distances, int weight, int submatrix_size) {
 
     int *distances_array = (int*)malloc(weight * sizeof(int));
-    srand(time(NULL));
     int i = 0;
     int j = 0;
 
@@ -496,7 +486,7 @@ int* delete_distances_from_array(int *possible_distances_array, int *num_of_poss
     return possible_distances_array;
 }
 
-void get_polynomial_matrix(matrix weight_matrix, const int submatrix_size, int num_of_weights, weight_number_pair *w_n_pairs, int ***polynomial_matrix) {
+void get_polynomial_matrix(matrix weight_matrix, int submatrix_size, int num_of_weights, weight_number_pair *w_n_pairs, int ***polynomial_matrix) {
 
     int *possible_distances_array = (int*)malloc(sizeof(int) * (submatrix_size - 1));
     int num_of_distances = submatrix_size - 1;
@@ -572,7 +562,7 @@ void get_polynomial_matrix(matrix weight_matrix, const int submatrix_size, int n
     free(possible_distances_array);
 }
 
-void get_polynomial_matrix_with_shift(int ***polynomial_matrix, matrix weight_matrix, const int submatrix_size) {
+void get_polynomial_matrix_with_shift(int ***polynomial_matrix, matrix weight_matrix, int submatrix_size) {
 
 	int i = 0;
 	int j = 0;
@@ -614,7 +604,7 @@ void get_polynomial_matrix_with_shift(int ***polynomial_matrix, matrix weight_ma
 	}
 }
 
-matrix create_H_matrix_use_polynomial_matrix_with_shifts(const int ***polynomial_matrix, matrix weight_matrix, int submatrix_size) {
+matrix create_H_matrix_use_polynomial_matrix_with_shifts(int ***polynomial_matrix, matrix weight_matrix, int submatrix_size) {
 
 	matrix H_matrix = create_empty_matrix(weight_matrix.rows * submatrix_size, weight_matrix.columns * submatrix_size);
 	int i = 0;
@@ -636,7 +626,7 @@ matrix create_H_matrix_use_polynomial_matrix_with_shifts(const int ***polynomial
 	return H_matrix;
 }
 
-matrix create_H_matrix_of_new_code(matrix weight_matrix, const int submatrix_size) {
+matrix create_H_matrix_of_new_code(matrix weight_matrix, int submatrix_size) {
 
     int ***polynomial_matrix = create_three_dimensional_array(weight_matrix.rows, weight_matrix.columns, submatrix_size);
     int num_of_weights = 0;
