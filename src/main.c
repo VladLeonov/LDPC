@@ -28,7 +28,7 @@ int main() {
     int k = 0;
 
 	int array[2][4] = {{3,2,3,2}, {0,3,2,3}};
-    matrix weight_matrix = array_to_matrix(J, K, array);;
+    matrix weight_matrix = array_to_matrix(J, K, array);
 
     int ***polynomial_matrix = (int***)malloc(sizeof(int**) * weight_matrix.rows);
     for (i = 0; i < weight_matrix.rows; i++) {
@@ -40,14 +40,14 @@ int main() {
             }
         }
     }
-    
+
 	int num_of_weights = 0;
     weight_number_pair *w_n_pairs = get_weight_number_pairs(weight_matrix, &num_of_weights);
     get_polynomial_matrix(weight_matrix, SUBMATRIX_SIZE, num_of_weights, w_n_pairs, polynomial_matrix);
 	get_polynomial_matrix_with_shift(polynomial_matrix, weight_matrix, SUBMATRIX_SIZE);
     matrix H = create_H_matrix_use_polynomial_matrix_with_shifts(polynomial_matrix, weight_matrix, SUBMATRIX_SIZE);
     free(w_n_pairs);
-    	
+
     system("pause");
 
     return 0;
