@@ -44,28 +44,6 @@ typedef struct {
 graph get_tanner_graph_from_ldpc(ldpc ldpc_object);
 
 /**
-    Removes edge from graph by one of vertices.
-	The second vertex will be taken from adjacency list.
-
-    @param graph_object Graph.
-    @param vertex_index Index of vertex, belonging to edge.
-*/
-void remove_edge_from_graph(graph graph_object, int vertex_index);
-
-/**
-    Find shortest paths between two vertices in graph 
-	and returns information about them.
-
-    @param graph_object Graph.
-    @param vertex_index1 First vertex.
-    @param vertex_index2 Second vertex.
-    @return Length and number of shortest paths.
-*/
-length_and_number find_shortest_paths_between_vertices(graph graph_object, 
-													   int vertex_index1,
-													   int vertex_index2);
-
-/**
     Find shortest cycles in graph and returns information about them.
 
     @param graph_object Graph.
