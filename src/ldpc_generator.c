@@ -375,8 +375,18 @@ int* get_distances_array(int *possible_distances_array, int num_of_distances, in
         for (i = 0; i < (weight - 1); i++) {
             last -= distances_array[i];
         }
+        
+        distance_is_used = FALSE;
+        for (i = 0; i < weight - 1; i++) {
+        	if (last == distances_array[i]) {
+        		distance_is_used = TRUE;
+        		break;
+        	}
+        }
+        
+        if (distance_is_used) continue;
 
-        distance_is_used = TRUE;
+		distance_is_used = TRUE;
         for (i = 0; i < num_of_distances; i++) {
             if (last == possible_distances_array[i]) {
                 distance_is_used = FALSE;
