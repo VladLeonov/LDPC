@@ -42,7 +42,7 @@ float* get_channel_output(matrix M) {
 }
 
 
-//Calculates sigma value for each SRN value in interval.
+//Transform message to normalized form for decoding.
 void normalize_message(float *message, int length, float square_of_sigma) {
 	int i = 0;
 	
@@ -52,7 +52,7 @@ void normalize_message(float *message, int length, float square_of_sigma) {
 }
 
 
-//Adds additive white Gaussian noise to message.
+//Calculates sigma value for each SRN value in interval.
 float* gen_sigma_values(SNR_interval SNRs, float R) {
 	int array_size = (int) roundf((SNRs.max - SNRs.min) / SNRs.step + 1);
 	float *sigma_values = (float*) malloc(array_size * sizeof(float));
