@@ -33,13 +33,14 @@ int calculate_sum_row_elements(matrix G, int row_index);
     Calculates the sum of all elements of a two-dimensional array coloumn.
 
     @param coloumns Number of coloumns in array.
+    @param rows Number of rows in array.
     @param array Two-dimensional array.
     @param coloumn_index Index of the required coloumn.
-    @param rows Number of rows in array.
     @return Sum of elements of coloumn.
 */
-float calculate_sum_coloumn_elements(int coloumns, float array[][coloumns], 
-                                     int coloumn_index, int rows);
+float calculate_sum_column_elements(int columns, int rows, 
+                                    float array[rows][columns],
+									int column_index);
 
 /**
     Creates matrix that randomly filled with zeros and ones.

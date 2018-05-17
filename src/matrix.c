@@ -32,13 +32,14 @@ int calculate_sum_row_elements(matrix G, int row_index) {
 
 
 //Calculates the sum of all elements of a two-dimensional array coloumn.
-float calculate_sum_coloumn_elements(int coloumns, float array[][coloumns],
-                                     int coloumn_index, int rows) {
+float calculate_sum_column_elements(int columns, int rows, 
+                                    float array[rows][columns],
+									int column_index) {
     int i = 0;
     float sum = 0.0;
     
     for (i = 0; i < rows; i++) {
-        sum += array[i][coloumn_index];
+        sum += array[i][column_index];
     }
     
     return sum;

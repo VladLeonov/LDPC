@@ -252,7 +252,7 @@ int decode_belief_propogandation(ldpc ldpc_object, float *y, matrix *hard_soluti
 
         //result forming
         for (i = 0; i < n; i++) {
-            soft[i] = y[i] + calculate_sum_coloumn_elements(n, Z, i, r);
+            soft[i] = y[i] + calculate_sum_column_elements(n, r, Z, i);
         }
 
         free_matrix(hard);
